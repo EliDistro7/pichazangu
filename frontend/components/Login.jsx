@@ -50,7 +50,7 @@ const Login = () => {
       <div className="grid md:grid-cols-2 items-center gap-10 max-w-6xl max-md:max-w-md w-full">
         <div>
           <h2 className="lg:text-5xl text-3xl font-extrabold lg:leading-[55px] text-white">
-            Welcome Back to Eventify
+            Welcome Back to PichaZangu Store
           </h2>
           <p className="text-sm mt-6 text-gray-400">
             Sign in to unlock exclusive event experiences, manage your bookings, and connect with a vibrant community of event enthusiasts.

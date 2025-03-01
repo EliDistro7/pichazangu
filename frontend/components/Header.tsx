@@ -28,7 +28,7 @@ export default function Header() {
         <div className="flex justify-between items-center">
           {/* Logo */}
           <a href="/" className=" text-blue-500 text-xl font-bold tracking-wide sm:text-2xl px-2 py-1 rounded-full">
-  Eventify
+  PichaZangu Store
 </a>
 
 

@@ -49,7 +49,7 @@ function SignUp() {
               Showcase Your Art
             </h2>
             <p className="text-[13px] text-gray-300 mt-3 leading-relaxed">
-              Join Eventify and let your photos reach the world. Capture moments, share your vision, and let others explore your creativity.
+              Join PichaZangu store and let your photos reach the world. Capture moments, share your vision, and let others explore your creativity.
             </p>
           </div>
           <div>
