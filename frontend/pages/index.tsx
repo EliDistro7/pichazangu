@@ -1,10 +1,11 @@
-// pages/Events.js
 import React, { useState, useEffect } from "react";
 import { getAllEvents, createEvent, deleteEvent } from "../actions/event";
 import EventForm from "../components/EventForm";
 import EventList from "../components/EventList";
 import { getLoggedInUserId, getLoggedInUsername } from "../hooks/useUser";
 import { Plus } from "lucide-react";
+import Link from "next/link";
+import Modal from "../components/SimpleModal"; // Import the Modal component
 
 const Events = () => {
   const loggedInUserId = getLoggedInUserId();
@@ -14,6 +15,7 @@ const Events = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     fetchEvents();
@@ -32,6 +34,11 @@ const Events = () => {
   };
 
   const handleCreateEvent = async (eventToCreate) => {
+    if (!loggedInUserId) {
+      setShowLoginModal(true); // Show the modal if the user is not logged in
+      return;
+    }
+
     try {
       const result = await createEvent(eventToCreate);
       setEvents((prevEvents) => [result.event, ...prevEvents]);
@@ -87,6 +94,21 @@ const Events = () => {
           </section>
         )}
       </div>
+
+      {/* Modal for Login Prompt */}
+      {showLoginModal && (
+        <Modal onClose={() => setShowLoginModal(false)}>
+          <div className="text-center">
+            <h2 className="text-xl font-semibold mb-4">Please Log In</h2>
+            <p className="mb-4">You need to log in first before you can submit your created event.</p>
+            <Link href="/login">
+              <a className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                Go to Login
+              </a>
+            </Link>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };
