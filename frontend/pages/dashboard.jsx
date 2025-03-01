@@ -21,7 +21,7 @@ const Dashboard = () => {
   const fetchUserEvents = async () => {
     try {
       const data = await getAllEventsByUser(userId);
-      console.log('events', data);
+      console.log('events', )
       setEvents(data);
     } catch (err) {
       toast.error("Failed to fetch events.");

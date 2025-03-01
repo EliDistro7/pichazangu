@@ -1,5 +1,6 @@
 const Event = require("../models/eventSchema"); // Import the Event model
 const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
 
 // ✅ Create a New Event
 exports.createEvent = async (req, res) => {
@@ -36,17 +37,30 @@ exports.createEvent = async (req, res) => {
   }
 };
 
-exports.getAllEventsByUser= async(req, res) => {
- 
 
-  try {
-    const { userId } = req.query;
-    const events = await Event.find({ "author.userId": userId });
-    res.status(200).json(events);
+exports.getAllEventsByUser = async (req, res) => {
+  try { 
+    console.log('it opened getAllEventsByUser');
+    
+    const { userId } = req.params;
+  
+
+    console.log("User ID:", userId);
+
+    // Find events where author.userId matches userId as a string
+    const events = await Event.find({}).lean(); // `.lean()` returns plain JavaScript objects
+
+     // Filter events manually (ensuring author and userId exist before calling .toString())
+     const filteredEvents = events.filter(event => 
+      event.author && event.author.userId && event.author.userId.toString() === userId
+    );
+
+    res.status(200).json(filteredEvents);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "Failed to fetch events." });
   }
-}
+};
 
 // ✅ Update Event Media (Add New Images and Videos)// Controller for updating event media (add new images and videos)
 exports.updateEventMedia = async (req, res) => {
