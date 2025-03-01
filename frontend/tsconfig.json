@@ -19,6 +19,6 @@
       "@/*": ["./"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "utils/cloudinary.js", "utils/animationVariants.js", "utils/generateBlurPlaceholder.js", "utils/range.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "utils/cloudinary.js" ],
   "exclude": ["node_modules"]
 }
