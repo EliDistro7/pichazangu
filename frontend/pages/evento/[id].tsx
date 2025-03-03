@@ -325,11 +325,7 @@ const EventDetails = ({ initialEvent }) => {
         </div>
       </main>
   
-      <footer className="p-8 text-center text-white/80 sm:p-12 bg-black/90 backdrop-blur-lg">
-        <p className="text-lg">
-          © {new Date().getFullYear()} Eventify. All rights reserved.
-        </p>
-      </footer>
+    
   
       {/* Toast notifications container */}
       <ToastContainer />

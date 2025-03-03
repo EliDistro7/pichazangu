@@ -65,7 +65,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   // getResults returns an array of strings (URLs)
   const mediaUrls: string[] = await getResults(eventId as string, type);
 
-  console.log("media urls", mediaUrls);
+ // console.log("media urls", mediaUrls);
 
   // Transform the array of strings into objects expected by your component.
   const reducedResults = mediaUrls.map((url, index) => ({
