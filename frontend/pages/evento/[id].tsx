@@ -13,7 +13,7 @@ import { useRouter } from "next/router";
 import { useLastViewedPhoto } from "../../utils/useLastViewedPhoto";
 
 const EventDetails = ({ initialEvent }) => {
-  console.log('initial event', initialEvent);
+ // console.log('initial event', initialEvent);
   const [event, setEvent] = useState(initialEvent);
   const [activeTab, setActiveTab] = useState("photo");
   const [uploadProgress, setUploadProgress] = useState(0); // Track upload progress
