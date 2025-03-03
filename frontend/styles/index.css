@@ -13,3 +13,13 @@
     --radius: 0.5rem;
   }
 }
+
+
+@keyframes scrollGallery {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+.animate-scroll-gallery {
+  animation: scrollGallery 10s linear infinite;
+}

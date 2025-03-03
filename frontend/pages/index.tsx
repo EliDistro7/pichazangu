@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getAllEvents, createEvent, deleteEvent } from "../actions/event";
 import EventForm from "../components/EventForm";
 import EventList from "../components/EventList";
+
 import { getLoggedInUserId, getLoggedInUsername } from "../hooks/useUser";
 import { Plus } from "lucide-react";
 import Link from "next/link";
@@ -78,6 +79,7 @@ const Events = () => {
             Create
           </button>
         </div>
+       
 
         {activeTab === "create" ? (
           <section>
@@ -89,7 +91,7 @@ const Events = () => {
           </section>
         ) : (
           <section>
-            <h2 className="text-2xl font-semibold mb-4">Recent Events</h2>
+           
             <EventList events={events} loading={loading} onDelete={handleDeleteEvent} />
           </section>
         )}
