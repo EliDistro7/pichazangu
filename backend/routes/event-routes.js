@@ -28,7 +28,7 @@ router.patch("/events/updateMedia", eventController.updateEventMedia);
 router.patch("/events/updateCoverPhoto", eventController.updateEventCoverPhoto);
 
 // 🔍 New Route: Get  by Author Name (Supports Fuzzy Search)
-router.get("/events/author", eventController.getEventsByAuthor);
+router.get("/events/author", eventController.getEventsByAuthor)
 
 router.get("/search-events", eventController.searchEvents);
 
