@@ -225,28 +225,28 @@ export default function SharedModal({
                           src={media.url}
                         />
                       ) : (
-                        // Use VideoThumbnail for videos
                         <VideoThumbnail
-                          videoUrl={media.url}
-                          thumbnailHandler={(thumbnail) => {
-                            // Use the generated thumbnail as the background
-                            return (
-                              <Image
-                                alt="small video thumbnail on the bottom"
-                                width={180}
-                                height={120}
-                                className={`${
-                                  media.id === index
-                                    ? "brightness-110 hover:brightness-110"
-                                    : "brightness-50 contrast-125 hover:brightness-75"
-                                } h-full transform object-cover transition`}
-                                src={thumbnail}
-                              />
-                            );
-                          }}
-                          width={180}
-                          height={120}
-                        />
+                        videoUrl={media.url}
+                        thumbnailHandler={(thumbnail) => {
+                          // Use the generated thumbnail as the background
+                          return (
+                            <Image
+                              alt="large video thumbnail"
+                              width={400} // Increased width
+                              height={300} // Increased height
+                              className={`${
+                                media.id === index
+                                  ? "brightness-110 hover:brightness-110"
+                                  : "brightness-50 contrast-125 hover:brightness-75"
+                              } h-full w-full transform object-cover transition`} // Added w-full for full width
+                              src={thumbnail}
+                            />
+                          );
+                        }}
+                        width={400} // Increased width
+                        height={300} // Increased height
+                      />
+                      
                       )}
                     </motion.button>
                   ))}

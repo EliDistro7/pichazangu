@@ -17,6 +17,9 @@ router.get("/event-media", eventController.getEventMedia);
 router.post("/:eventId/follow", eventController.followEvent);
 router.post("/:eventId/unfollow", eventController.unfollowEvent);
 
+// Follow/Unfollow Route
+router.post("/:eventId/toggle-follow", eventController.toggleFollowEvent);
+
 router.post("/events/:eventId/authenticate", eventController.authenticateEvent);
 
 router.get("/events/user/:userId", eventController.getAllEventsByUser);

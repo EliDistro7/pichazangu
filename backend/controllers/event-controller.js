@@ -309,6 +309,43 @@ exports.followEvent = async (req, res) => {
   }
 };
 
+exports.toggleFollowEvent = async (req, res) => {
+  const { eventId } = req.params;
+  const { userId } = req.body; // Assuming userId is passed in the request body
+  console.log('user id: ' + userId)
+
+  try {
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    // Check if the user is already following the event
+    const isFollowing = event.followers.includes(userId);
+
+    if (isFollowing) {
+      // Unfollow the event
+      event.followers = event.followers.filter((id) => id !== userId);
+    } else {
+      // Follow the event
+      event.followers.push(userId);
+    }
+
+    await event.save();
+
+    res.status(200).json({
+      message: isFollowing ? "Unfollowed successfully" : "Followed successfully",
+      isFollowing: !isFollowing, // Return the new follow state
+    });
+  } catch (error) {
+    console.error("Error toggling follow:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+
 // ✅ Unfollow an Event
 exports.unfollowEvent = async (req, res) => {
   try {

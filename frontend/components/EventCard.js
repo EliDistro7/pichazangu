@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/router";
 import { authenticateEvent } from "../actions/event";
+import { getLoggedInUserId } from "hooks/useUser";
+import axios from "axios";
 
 const EventCard = ({ event }) => {
   const router = useRouter();
@@ -10,6 +12,19 @@ const EventCard = ({ event }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false); // Track follow state
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+
+  // Check if the user is logged in and if they are following the event
+  useEffect(() => {
+    const userId = getLoggedInUserId();
+    setIsLoggedIn(!!userId);
+
+    if (userId && event.followers.includes(userId)) {
+      setIsFollowing(true);
+    }
+  }, [event.followers]);
 
   const handleViewClick = () => {
     if (!event.private) {
@@ -26,6 +41,34 @@ const EventCard = ({ event }) => {
       router.push(`/evento/${event._id}`);
     } catch (err) {
       setError("Incorrect password. Please try again.");
+    }
+  };
+
+  const handleFollowClick = async () => {
+    if (!isLoggedIn) {
+      setShowLoginPrompt(true);
+      setTimeout(() => setShowLoginPrompt(false), 3000);
+      return;
+    }
+
+    const userId = getLoggedInUserId();
+   // console.log('userId', userId);
+    try {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER}/${event._id}/toggle-follow`, {
+       
+         userId:userId
+      });
+
+      const data = response.data;
+      console.log('data', data)
+
+      if (data.isFollowing) {
+        setIsFollowing(data.isFollowing); // Update follow state
+      } else {
+        console.error("Error toggling follow:", data.message);
+      }
+    } catch (error) {
+      console.error("Error toggling follow:", error);
     }
   };
 
@@ -63,7 +106,29 @@ const EventCard = ({ event }) => {
             <Eye size={16} className="text-white" />
             <span className="text-white text-xs">View</span>
           </button>
+          {/* Follow/Unfollow Button */}
+          <button
+            onClick={handleFollowClick}
+            disabled={!isLoggedIn}
+            className={`flex items-center space-x-1 ${
+              isLoggedIn
+                ? isFollowing
+                  ? "bg-red-600 hover:bg-red-700"
+                  : "bg-blue-600 hover:bg-blue-700"
+                : "bg-gray-600 cursor-not-allowed"
+            } px-3 py-1 rounded transition`}
+          >
+            <span className="text-white text-xs">
+              {isFollowing ? "Unfollow" : "Follow"}
+            </span>
+          </button>
         </div>
+        {/* Login Prompt */}
+        {showLoginPrompt && (
+          <div className="absolute top-4 right-4 bg-gray-800 text-white px-4 py-2 rounded-md shadow-lg">
+            Please log in to follow this event.
+          </div>
+        )}
       </div>
 
       {/* Password Input Modal for Private Events */}
@@ -98,9 +163,7 @@ const EventCard = ({ event }) => {
                   )}
                 </button>
               </div>
-              {error && (
-                <p className="text-red-500 text-sm mt-2">{error}</p>
-              )}
+              {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
               <div className="flex justify-end mt-4 space-x-3">
                 <button
                   type="button"
