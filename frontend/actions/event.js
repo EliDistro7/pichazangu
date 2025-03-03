@@ -41,6 +41,21 @@ export const getEventMedia = async ({eventId, mediaType}) => {
   }
 };
 
+// 🔍 Get Events by Author Name (Supports Fuzzy Search)
+export const getEventsByAuthor = async (authorName) => {
+  try {
+    const response = await axios.get(`${api}/events/author`, {
+      params: { author: authorName },
+    });
+    return response.data.events; // Returns the list of events
+  } catch (error) {
+    console.error("Error retrieving events by author:", error.response?.data || error.message);
+    throw new Error(
+      error.response?.data?.error || "Failed to fetch events. Please try again."
+    );
+  }
+};
+
 // Update event media (add new images and videos)
 export const updateEventMedia = async ({ eventId, newImages, newVideos, userId }) => {
   try {

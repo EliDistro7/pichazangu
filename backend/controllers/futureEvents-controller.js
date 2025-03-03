@@ -22,6 +22,8 @@ const deleteAllFutureEvents = async (req, res) => {
 
 
 
+
+
 // Create a New Future Event
 const createFutureEvent = async (req, res) => {
   try {

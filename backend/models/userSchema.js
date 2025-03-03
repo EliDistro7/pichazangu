@@ -6,8 +6,7 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true }, // Hashed password
   createdAt: { type: Date, default: Date.now },
+  following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // Array of followed users
 });
-
-
 
 module.exports = mongoose.model("User", UserSchema);

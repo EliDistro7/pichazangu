@@ -82,7 +82,7 @@ const Events = () => {
           </section>
         ) : (
           <section>
-            <h2 className="text-2xl font-semibold mb-4">Recent Events</h2>
+            
             <EventList events={events} loading={loading} onDelete={handleDeleteEvent} />
           </section>
         )}

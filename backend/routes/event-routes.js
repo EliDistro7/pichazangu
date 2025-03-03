@@ -23,12 +23,11 @@ router.get("/events/user/:userId", eventController.getAllEventsByUser);
 
 router.patch("/:eventId/update-password", eventController.updateEventPassword);
 
-router.patch('/events/updateMedia', eventController.updateEventMedia);
+router.patch("/events/updateMedia", eventController.updateEventMedia);
 
-router.patch('/events/updateCoverPhoto', eventController.updateEventCoverPhoto);
+router.patch("/events/updateCoverPhoto", eventController.updateEventCoverPhoto);
 
-
-
-
+// 🔍 New Route: Get Events by Author Name (Supports Fuzzy Search)
+router.get("/events/author", eventController.getEventsByAuthor);
 
 module.exports = router;
