@@ -76,7 +76,7 @@ export default function Header() {
         <div className="flex justify-center items-center mt-3 space-x-3">
           {/* New Event Icon */}
           <a
-            href="/events"
+            href="/events?tab=create"
             className="flex items-center p-2 rounded-full bg-gray-700 hover:bg-gray-800 transition-colors duration-300"
           >
             <CalendarPlus size={22} className="text-blue-400" />

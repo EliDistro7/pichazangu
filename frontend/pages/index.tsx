@@ -61,24 +61,7 @@ const Events = () => {
   return (
     <div className="min-h-screen bg-black text-white p-6">
       <div className="max-w-4xl mx-auto">
-        <div className="flex border-b border-gray-700 mb-4">
-          <button
-            onClick={() => setActiveTab("recent")}
-            className={`px-4 py-2 focus:outline-none ${
-              activeTab === "recent" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-500"
-            }`}
-          >
-            Events
-          </button>
-          <button
-            onClick={() => setActiveTab("create")}
-            className={`px-4 py-2 focus:outline-none ${
-              activeTab === "create" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-500"
-            }`}
-          >
-            Create
-          </button>
-        </div>
+     
        
 
         {activeTab === "create" ? (

@@ -1,5 +1,5 @@
-// pages/Events.js
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import { getAllEvents, createEvent, deleteEvent } from "../actions/event";
 import EventForm from "../components/EventForm";
 import EventList from "../components/EventList";
@@ -7,13 +7,22 @@ import { getLoggedInUserId, getLoggedInUsername } from "../hooks/useUser";
 import { Plus } from "lucide-react";
 
 const Events = () => {
+  const router = useRouter();
+  const { tab } = router.query;
+
   const loggedInUserId = getLoggedInUserId();
   const loggedInUsername = getLoggedInUsername();
 
-  const [activeTab, setActiveTab] = useState("recent");
+  const [activeTab, setActiveTab] = useState(tab || "recent");
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [tab]);
 
   useEffect(() => {
     fetchEvents();
@@ -36,6 +45,7 @@ const Events = () => {
       const result = await createEvent(eventToCreate);
       setEvents((prevEvents) => [result.event, ...prevEvents]);
       setActiveTab("recent");
+      router.push("/events?tab=recent"); // Update URL
     } catch (err) {
       setError("Error creating event.");
     }
@@ -55,7 +65,7 @@ const Events = () => {
       <div className="max-w-4xl mx-auto">
         <div className="flex border-b border-gray-700 mb-4">
           <button
-            onClick={() => setActiveTab("recent")}
+            onClick={() => router.push("/events?tab=recent")}
             className={`px-4 py-2 focus:outline-none ${
               activeTab === "recent" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-500"
             }`}
@@ -63,7 +73,7 @@ const Events = () => {
             Events
           </button>
           <button
-            onClick={() => setActiveTab("create")}
+            onClick={() => router.push("/events?tab=create")}
             className={`px-4 py-2 focus:outline-none ${
               activeTab === "create" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-500"
             }`}
@@ -82,7 +92,6 @@ const Events = () => {
           </section>
         ) : (
           <section>
-            
             <EventList events={events} loading={loading} onDelete={handleDeleteEvent} />
           </section>
         )}

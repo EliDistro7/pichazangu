@@ -87,9 +87,9 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Create Event Button */}
+        {/* Create Event Button  href="/events?tab=create" */}
         <button
-          onClick={() => router.push("/create-event")}
+          onClick={() => router.push("/events?tab=create")}
           className="mb-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md flex items-center space-x-2"
         >
           <Plus size={20} />
