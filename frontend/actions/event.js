@@ -47,9 +47,24 @@ export const getEventsByAuthor = async (authorName) => {
     const response = await axios.get(`${api}/events/author`, {
       params: { author: authorName },
     });
-    return response.data.events; // Returns the list of events
+    console.log("Events retrieved by author:", response.data);
+    return response// Returns the list of events
   } catch (error) {
     console.error("Error retrieving events by author:", error.response?.data || error.message);
+    throw new Error(
+      error.response?.data?.error || "Failed to fetch events. Please try again."
+    );
+  }
+};
+
+export const searchEvents = async (query) => {
+  try {
+    const response = await axios.get(`${api}/search-events`, {
+      params: { query }, // Use `query` instead of `author`
+    });
+    return response; // Returns the list of events
+  } catch (error) {
+    console.error("Error retrieving events:", error.response?.data || error.message);
     throw new Error(
       error.response?.data?.error || "Failed to fetch events. Please try again."
     );

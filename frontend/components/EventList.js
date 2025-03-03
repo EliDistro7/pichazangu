@@ -4,6 +4,7 @@ import EventCard from "./EventCard";
 import RandomAd from "./RandomAd";
 import FeaturedEvent from "./FeaturedEvent";
 import PricingBanner from "./PricingBanner";
+import SearchEvents from "components/SearchEvents";
 
 const EventList = ({ events, loading, onDelete }) => {
   if (loading) return <p>Loading events...</p>;
@@ -30,6 +31,7 @@ const EventList = ({ events, loading, onDelete }) => {
 
   return (
     <div className="space-y-4">
+      <SearchEvents />
       {events.map((event, index) => {
         // Render a random component at random intervals
         if (shouldRenderRandomComponent()) {

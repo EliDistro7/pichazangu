@@ -88,6 +88,39 @@ exports.getEventsByAuthor = async (req, res) => {
   }
 };
 
+exports.searchEvents = async (req, res) => {
+  try {
+    const { query } = req.query; // Rename `author` to `query` for broader search
+    if (!query) return res.status(400).json({ error: "Search query is required" });
+
+    // Fuzzy search using regex (case-insensitive) for both username and title
+    const regexQuery = {
+      $or: [
+        { "author.username": { $regex: query, $options: "i" } }, // Search by username
+        { title: { $regex: query, $options: "i" } }, // Search by title
+      ],
+    };
+
+    // Fetch matching events
+    const events = await Event.find(regexQuery).sort({ createdAt: -1 });
+
+    // If no exact match, try full-text fuzzy search (if indexed)
+    if (events.length === 0) {
+      const fuzzyQuery = { $text: { $search: query } };
+      const fuzzyEvents = await Event.find(fuzzyQuery).sort({ createdAt: -1 });
+
+      return res.status(200).json(fuzzyEvents);
+    }
+
+    res.status(200).json(events);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error", details: error.message });
+  }
+};
+
+
+
+
 // ✅ Update Event Media (Add New Images and Videos)// Controller for updating event media (add new images and videos)
 exports.updateEventMedia = async (req, res) => {
   try {
