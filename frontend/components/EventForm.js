@@ -31,7 +31,7 @@ const EventForm = ({ onSubmit, loggedInUsername, loggedInUserId }) => {
       setShowLoginPrompt(true)
     }
 
-   })
+   },[])
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
