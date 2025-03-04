@@ -2,16 +2,18 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {useRouter} from "next/router";
+import { useRouter } from 'next/router';
+import { Eye, EyeOff } from 'lucide-react'; // Import eye icons for password toggle
+
 function SignUp() {
-  const  router  = useRouter();
-  // Controlled form state
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
   });
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // State for password visibility
 
   // Update state on input change
   const handleChange = (e) => {
@@ -30,8 +32,7 @@ function SignUp() {
       // Call your registration API
       const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER}/register`, formData);
       toast.success('Registration successful!');
-      // Optionally, redirect the user here (e.g., to login)
-      router.push('/login')
+      router.push('/login'); // Redirect to login page
     } catch (error) {
       toast.error(
         error.response?.data?.message || 'Registration failed. Please try again.'
@@ -46,16 +47,16 @@ function SignUp() {
         <div className="max-md:order-1 flex flex-col justify-center md:space-y-16 space-y-8 max-md:mt-16 min-h-full bg-gradient-to-r from-gray-800 to-gray-700 lg:px-8 px-4 py-4">
           <div>
             <h2 className="lg:text-5xl text-3xl font-extrabold lg:leading-[55px] text-white">
-              Showcase Your Art
+              Capture & Share Your Vision
             </h2>
             <p className="text-[13px] text-gray-300 mt-3 leading-relaxed">
-              Join PichaZangu store and let your photos reach the world. Capture moments, share your vision, and let others explore your creativity.
+              Join <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent font-bold">PichaZangu</span> and showcase your photography to the world. Share your unique perspective, connect with fellow artists, and grow your audience.
             </p>
           </div>
           <div>
-            <h4 className="text-white text-lg">Seamless & Secure</h4>
+            <h4 className="text-white text-lg">Your Platform, Your Art</h4>
             <p className="text-[13px] text-gray-300 mt-3 leading-relaxed">
-              Our platform is designed for photographers to showcase their best work while ensuring a smooth and secure experience for users.
+              <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent font-bold">PichaZangu</span> is built for photographers like you. Share your work, get inspired, and be part of a thriving creative community.
             </p>
           </div>
         </div>
@@ -63,7 +64,7 @@ function SignUp() {
         {/* Registration Form */}
         <form onSubmit={handleSubmit} className="md:col-span-2 w-full py-6 px-6 sm:px-16 max-md:max-w-xl mx-auto">
           <div className="mb-6">
-            <h3 className="text-white text-xl font-bold">Join Us Today</h3>
+            <h3 className="text-white text-xl font-bold">Join <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">PichaZangu</span></h3>
           </div>
 
           <div className="space-y-6">
@@ -76,7 +77,7 @@ function SignUp() {
                 onChange={handleChange}
                 required
                 className="text-gray-300 bg-gray-700 border border-gray-600 w-full text-sm p-2.5 rounded-md focus:ring-blue-500"
-                placeholder="Enter name"
+                placeholder="Enter your full name"
               />
             </div>
 
@@ -89,21 +90,28 @@ function SignUp() {
                 onChange={handleChange}
                 required
                 className="text-gray-300 bg-gray-700 border border-gray-600 w-full text-sm p-2.5 rounded-md focus:ring-blue-500"
-                placeholder="Enter email"
+                placeholder="Enter your email"
               />
             </div>
 
-            <div>
+            <div className="relative">
               <label className="text-gray-300 text-sm mb-2 block">Password</label>
               <input
                 name="password"
-                type="password"
+                type={showPassword ? 'text' : 'password'} // Toggle password visibility
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="text-gray-300 bg-gray-700 border border-gray-600 w-full text-sm p-2.5 rounded-md focus:ring-blue-500"
-                placeholder="Enter password"
+                className="text-gray-300 bg-gray-700 border border-gray-600 w-full text-sm p-2.5 rounded-md focus:ring-blue-500 pr-10"
+                placeholder="Create a password"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)} // Toggle password visibility
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm text-gray-400 mt-6"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
 
             <div className="flex items-center">
@@ -141,7 +149,7 @@ function SignUp() {
           </p>
         </form>
       </div>
-      <ToastContainer   
+      <ToastContainer
         position="top-right"
         autoClose={5000}
         hideProgressBar={false}

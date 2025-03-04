@@ -183,7 +183,7 @@ const EventForm = ({ onSubmit, loggedInUsername, loggedInUserId }) => {
           <input
             type="text"
             name="title"
-            placeholder="Enter event name"
+            placeholder="Enter album name"
             value={newEvent.title}
             onChange={handleInputChange}
             className="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
