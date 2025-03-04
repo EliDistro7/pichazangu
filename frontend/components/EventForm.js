@@ -138,26 +138,7 @@ const EventForm = ({ onSubmit, loggedInUsername, loggedInUserId }) => {
   };
 
     // If no user is logged in, render a Login UI.
-  // If no user is logged in, render a Login UI.
-  if (!user) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white p-6">
-        <p className="mb-4 text-lg">Login or signup first</p>
-        <div className="flex space-x-4">
-          <Link href="/login" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded">
-          
-              Login
-        
-          </Link>
-          <Link href="/sign-up" className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded">
-          
-              Sign Up
-           
-          </Link>
-        </div>
-      </div>
-    );
-  }
+
 
 
   return (
