@@ -52,12 +52,7 @@ const EventSchema = new mongoose.Schema(
 );
 
 // 🔐 Hash password before saving the event (only if private)
-EventSchema.pre('save', async function (next) {
-  if (this.private && this.isModified('password')) {
-    this.password = await bcrypt.hash(this.password, 10); // Hash password
-  }
-  next();
-});
+
 
 const Event = mongoose.model('Event', EventSchema);
 

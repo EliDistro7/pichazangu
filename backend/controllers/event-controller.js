@@ -344,6 +344,7 @@ exports.authenticateEvent = async (req, res) => {
       return res.status(400).json({ error: "Password is required" });
     }
 
+    //password = password.trim();
     console.log("Event ID:", eventId);
     console.log("Provided password:", password);
 
@@ -359,12 +360,15 @@ exports.authenticateEvent = async (req, res) => {
       return res.status(400).json({ error: "No password set for this event" });
     }
 
+    console.log("Stored password hash:", event.password);
     password = password.trim();
+    // Correct bcrypt comparison
+    const isMatch = await bcrypt.compare(password, event.password);
 
-    if (password !== event.password) {
+    if (!isMatch) {
       console.log("Password did not match");
       console.log('event._id: ' + event._id);
-      console.log('event title', event.title);
+      console.log('event title', event.title)
       return res.status(401).json({ error: "Incorrect password" });
     }
 
@@ -376,7 +380,6 @@ exports.authenticateEvent = async (req, res) => {
   }
 };
 
-
 // ✅ Create a New Event
 exports.createEvent = async (req, res) => {
   try {
@@ -384,12 +387,15 @@ exports.createEvent = async (req, res) => {
     console.log('received body:', req.body);
 
     // Validate password if event is private
-    let eventPassword = null;
+    let hashedPassword = null;
     if (isPrivate) {
       if (!password) {
         return res.status(400).json({ error: "Password is required for private events" });
       }
-      eventPassword = password.trim();
+      let password1 = password.trim();
+      // Hash the password
+            const salt = await bcrypt.genSalt(10);
+      hashedPassword = await bcrypt.hash(password, salt);
     }
 
     const newEvent = new Event({
@@ -400,7 +406,7 @@ exports.createEvent = async (req, res) => {
       videoUrls: videoUrls || [],
       author,
       private: isPrivate || false, // Default to public if not provided
-      password: eventPassword, // Plain text password if private
+      password: hashedPassword, // Set only if private
     });
 
     await newEvent.save();
@@ -411,7 +417,6 @@ exports.createEvent = async (req, res) => {
     res.status(500).json({ error: "Server error while creating event" });
   }
 };
-
 
   // ✅ Update Event Password (Only Event Creator Can Do This)
 exports.updateEventPassword = async (req, res) => {
