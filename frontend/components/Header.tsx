@@ -13,14 +13,15 @@ import { getLoggedInUserId } from "hooks/useUser";
 
 export default function Header() {
   const [darkMode, setDarkMode] = useState(true);
-  const [user, setUser] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const user1 = getLoggedInUserId();
     if (user1) {
       console.log("user is logged in", user1);
-      setUser(true);
+      setUser(user1);
     } else {
+      console.log('it did not get user from cookies')
       setUser(false);
     }
   }, []);
@@ -55,7 +56,7 @@ export default function Header() {
             className="flex items-center p-2 rounded-full bg-gray-700 hover:bg-gray-800 transition-colors duration-300"
           >
             <CalendarPlus size={22} className="text-blue-400" />
-            <span className="hidden md:inline ml-2 text-blue-400">New Event</span>
+            <span className="hidden md:inline ml-2 text-blue-400">New Album</span>
           </a>
 
           {/* Conditional Rendering for Notifications and Messages */}
