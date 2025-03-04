@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useRouter } from "next/router";
 import { authenticateEvent } from "../actions/event";
 import { getLoggedInUserId } from "hooks/useUser";
@@ -13,8 +13,11 @@ const EventCard = ({ event }) => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false); // Track follow state
+  const [isFollowing, setIsFollowing] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [loadingView, setLoadingView] = useState(false);
+  const [loadingFollow, setLoadingFollow] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   // Check if the user is logged in and if they are following the event
   useEffect(() => {
@@ -26,19 +29,21 @@ const EventCard = ({ event }) => {
     }
   }, [event.followers]);
 
-  const handleViewClick = () => {
+  const handleViewClick = async () => {
+    setLoadingView(true);
     if (!event.private) {
-      router.push(`/evento/${event._id}`);
+      await router.push(`/evento/${event._id}`);
     } else {
       setShowPasswordInput(true);
     }
+    setLoadingView(false);
   };
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     try {
       await authenticateEvent({ eventId: event._id, password });
-      router.push(`/evento/${event._id}`);
+      await router.push(`/evento/${event._id}`);
     } catch (err) {
       setError("Incorrect password. Please try again.");
     }
@@ -51,25 +56,19 @@ const EventCard = ({ event }) => {
       return;
     }
 
+    setLoadingFollow(true);
     const userId = getLoggedInUserId();
-   // console.log('userId', userId);
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER}/${event._id}/toggle-follow`, {
-       
-         userId:userId
-      });
-
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_SERVER}/${event._id}/toggle-follow`,
+        { userId }
+      );
       const data = response.data;
-      console.log('data', data)
-
-      if (data.isFollowing) {
-        setIsFollowing(data.isFollowing); // Update follow state
-      } else {
-        console.error("Error toggling follow:", data.message);
-      }
+      setIsFollowing(data.isFollowing);
     } catch (error) {
       console.error("Error toggling follow:", error);
     }
+    setLoadingFollow(false);
   };
 
   return (
@@ -85,6 +84,7 @@ const EventCard = ({ event }) => {
           layout="fill"
           objectFit="cover"
           className="transition-transform duration-500 group-hover:scale-110"
+          onLoad={() => setImageLoaded(true)}
         />
         {/* Gradient overlay for readability */}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
@@ -102,14 +102,19 @@ const EventCard = ({ event }) => {
           <button
             onClick={handleViewClick}
             className="flex items-center space-x-1 bg-white bg-opacity-20 px-3 py-1 rounded hover:bg-opacity-40 transition"
+            disabled={loadingView}
           >
-            <Eye size={16} className="text-white" />
+            {loadingView ? (
+              <Loader2 size={16} className="text-white animate-spin" />
+            ) : (
+              <Eye size={16} className="text-white" />
+            )}
             <span className="text-white text-xs">View</span>
           </button>
           {/* Follow/Unfollow Button */}
           <button
             onClick={handleFollowClick}
-            disabled={!isLoggedIn}
+            disabled={!isLoggedIn || loadingFollow}
             className={`flex items-center space-x-1 ${
               isLoggedIn
                 ? isFollowing
@@ -118,6 +123,9 @@ const EventCard = ({ event }) => {
                 : "bg-gray-600 cursor-not-allowed"
             } px-3 py-1 rounded transition`}
           >
+            {loadingFollow ? (
+              <Loader2 size={16} className="text-white animate-spin" />
+            ) : null}
             <span className="text-white text-xs">
               {isFollowing ? "Unfollow" : "Follow"}
             </span>
