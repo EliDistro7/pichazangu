@@ -232,8 +232,8 @@ export default function SharedModal({
                           return (
                             <Image
                               alt="large video thumbnail"
-                              width={400} // Increased width
-                              height={300} // Increased height
+                              width={180} // Increased width
+                              height={120} // Increased height
                               className={`${
                                 media.id === index
                                   ? "brightness-110 hover:brightness-110"

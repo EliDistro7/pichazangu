@@ -3,6 +3,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Trash2, Edit, Eye, Plus, Users, BarChart2 } from "lucide-react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import { getLoggedInUserId } from "../hooks/useUser";
 import { getAllEventsByUser, deleteEvent } from "../actions/event";
 
@@ -11,6 +12,27 @@ const Dashboard = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const userId = getLoggedInUserId();
+
+  // If no user is logged in, render a Login UI.
+  if (!userId) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white p-6">
+        <p className="mb-4 text-lg">Login or signup first</p>
+        <div className="flex space-x-4">
+          <Link href="/login">
+            <a className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded">
+              Login
+            </a>
+          </Link>
+          <Link href="/sign-up">
+            <a className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded">
+              Sign Up
+            </a>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     if (userId) {
@@ -21,7 +43,6 @@ const Dashboard = () => {
   const fetchUserEvents = async () => {
     try {
       const data = await getAllEventsByUser(userId);
-      console.log('events', )
       setEvents(data);
     } catch (err) {
       toast.error("Failed to fetch events.");
@@ -33,7 +54,9 @@ const Dashboard = () => {
   const handleDeleteEvent = async (eventId) => {
     try {
       await deleteEvent(eventId);
-      setEvents((prevEvents) => prevEvents.filter((event) => event._id !== eventId));
+      setEvents((prevEvents) =>
+        prevEvents.filter((event) => event._id !== eventId)
+      );
       toast.success("Event deleted successfully!");
     } catch (err) {
       toast.error("Failed to delete event.");
@@ -48,9 +71,15 @@ const Dashboard = () => {
     router.push(`/evento/${eventId}`);
   };
 
-  // Calculate total followers and views across all events
-  const totalFollowers = events.reduce((acc, event) => acc + event.followers.length, 0);
-  const totalViews = events.reduce((acc, event) => acc + (event.views || 0), 0);
+  // Calculate overall stats
+  const totalFollowers = events.reduce(
+    (acc, event) => acc + event.followers.length,
+    0
+  );
+  const totalViews = events.reduce(
+    (acc, event) => acc + (event.views || 0),
+    0
+  );
 
   return (
     <div className="min-h-screen bg-black text-white p-6">
@@ -87,7 +116,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Create Event Button  href="/events?tab=create" */}
+        {/* Create Event Button */}
         <button
           onClick={() => router.push("/events?tab=create")}
           className="mb-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md flex items-center space-x-2"
