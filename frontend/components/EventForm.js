@@ -209,7 +209,7 @@ const EventForm = ({ onSubmit, loggedInUsername, loggedInUserId }) => {
 
         {/* Event Description */}
         <div>
-          <label className="block text-sm font-medium text-gray-300">Event Description</label>
+          <label className="block text-sm font-medium text-gray-300">Album Description</label>
           <textarea
             name="description"
             placeholder="Enter event description"
@@ -230,7 +230,7 @@ const EventForm = ({ onSubmit, loggedInUsername, loggedInUserId }) => {
             onChange={handleInputChange}
             className="h-4 w-4 text-blue-600 border-gray-700 rounded focus:ring-blue-500"
           />
-          <label className="ml-2 text-sm text-gray-300">Private Event</label>
+          <label className="ml-2 text-sm text-gray-300">Private Album</label>
         </div>
 
         {/* Password Field (Conditional) */}
