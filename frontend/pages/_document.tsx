@@ -27,7 +27,6 @@ class MyDocument extends Document {
           />
           <meta property="og:image" content="https://pichazangu.store/img/nyamachoma.jpg" />
           
-
           {/* Twitter Meta Tags */}
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:site" content="@PichaZangu" />
@@ -42,6 +41,13 @@ class MyDocument extends Document {
           {/* Additional SEO Meta Tags */}
           <meta name="keywords" content="photography, videography, event photos, event videos, photographers, videographers, event photography, PichaZangu" />
           <meta name="author" content="PichaZangu Team" />
+
+          {/* Google AdSense */}
+          <script
+            async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3024582236485351"
+            crossOrigin="anonymous"
+          ></script>
         </Head>
         <body className="font-sans bg-black antialiased">
           <Header />

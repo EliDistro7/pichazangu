@@ -42,6 +42,7 @@ const Events = () => {
 
   const handleCreateEvent = async (eventToCreate) => {
     try {
+      console.log('Creating event', eventToCreate);
       const result = await createEvent(eventToCreate);
       setEvents((prevEvents) => [result.event, ...prevEvents]);
       setActiveTab("recent");
