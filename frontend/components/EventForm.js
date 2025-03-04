@@ -166,7 +166,7 @@ const EventForm = ({ onSubmit, loggedInUsername, loggedInUserId }) => {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Event Name */}
         <div>
-          <label className="block text-sm font-medium text-gray-300">Event Name</label>
+          <label className="block text-sm font-medium text-gray-300">Name</label>
           <input
             type="text"
             name="title"
@@ -333,7 +333,7 @@ const EventForm = ({ onSubmit, loggedInUsername, loggedInUserId }) => {
           type="submit"
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
         >
-          Create Event
+          Create 
         </button>
       </form>
     </>

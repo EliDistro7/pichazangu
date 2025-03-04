@@ -71,7 +71,7 @@ const Events = () => {
               activeTab === "recent" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-500"
             }`}
           >
-            Events
+            Albums
           </button>
           <button
             onClick={() => router.push("/events?tab=create")}
@@ -86,7 +86,7 @@ const Events = () => {
         {activeTab === "create" ? (
           <section>
             <h2 className="text-2xl font-semibold mb-4 flex items-center">
-              <Plus size={24} className="mr-2" /> Create New Event
+              <Plus size={24} className="mr-2" /> Create New Album
             </h2>
             {error && <p className="text-red-500 mb-2">{error}</p>}
             <EventForm onSubmit={handleCreateEvent} loggedInUsername={loggedInUsername} loggedInUserId={loggedInUserId} />
