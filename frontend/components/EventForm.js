@@ -140,14 +140,6 @@ const EventForm = ({ onSubmit, loggedInUsername, loggedInUserId }) => {
     }
   };
 
-  if(showLoginPrompt) {
-    return (
-      <LoginModal isOpen={showLoginPrompt} onClose={()=>{
-        setShowLoginPrompt(false)
-       
-      }}/>
-    )
-  }
 
   return (
     <>
