@@ -8,6 +8,7 @@ import {
   Camera,
   CalendarPlus,
   MessageCircle,
+  Home,
 } from "lucide-react";
 import { getLoggedInUserId } from "hooks/useUser";
 
@@ -50,6 +51,14 @@ export default function Header() {
 
         {/* Second Row - Centered Icons */}
         <div className="flex justify-center items-center mt-3 space-x-3">
+            {/* Home */}
+            <a
+            href="/"
+            className="flex items-center p-2 rounded-full bg-gray-700 hover:bg-gray-800 transition-colors duration-300"
+          >
+            <Home size={22} className="text-blue-400" />
+            <span className="hidden md:inline ml-2 text-blue-400">Home</span>
+          </a>
           {/* New Event Icon */}
           <a
             href="/events?tab=create"
