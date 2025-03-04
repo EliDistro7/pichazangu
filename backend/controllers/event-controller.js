@@ -276,6 +276,31 @@ exports.followEvent = async (req, res) => {
   }
 };
 
+// ✅ Add Viewer to an Event
+exports.viewEvent = async (req, res) => {
+  try {
+ 
+    const { userId, eventId  } = req.body; // User ID of the viewer
+    console.log('user id: ' + userId)
+    console.log('event id: ' + eventId)
+
+    const event = await Event.findById(eventId);
+    if (!event) return res.status(404).json({ error: "Event not found" });
+
+    // Check if user has already viewed
+    if (event.views.includes(userId))
+      return res.status(400).json({ error: "User already viewed this event" });
+
+    event.views.push(userId);
+    await event.save();
+
+    res.status(200).json({ message: "User viewed the event", event });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to record event view" });
+  }
+};
+
+
 exports.toggleFollowEvent = async (req, res) => {
   const { eventId } = req.params;
   const { userId } = req.body; // Assuming userId is passed in the request body

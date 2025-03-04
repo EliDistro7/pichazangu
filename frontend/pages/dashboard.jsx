@@ -11,45 +11,41 @@ const Dashboard = () => {
   const router = useRouter();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const userId = getLoggedInUserId();
+  const [user, setUser] = useState(null);
+  const [totalFollowers, setTotalFollowers] = useState(0);
+  const [totalViews, setTotalViews] = useState(0);
+  
 
-  // If no user is logged in, render a Login UI.
-  if (!userId) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white p-6">
-        <p className="mb-4 text-lg">Login or signup first</p>
-        <div className="flex space-x-4">
-          <Link href="/login">
-            <a className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded">
-              Login
-            </a>
-          </Link>
-          <Link href="/sign-up">
-            <a className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded">
-              Sign Up
-            </a>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
+  
   useEffect(() => {
+    const userId = getLoggedInUserId();
     if (userId) {
+       setUser(userId);
+       const fetchUserEvents = async () => {
+        try {
+          const data = await getAllEventsByUser(userId);
+          console.log('events', data)
+          const totaFollowers= data.reduce((acc, event) => acc + event.followers.length,0)
+          console.log('tota followers', totaFollowers)
+          const totalViews= data.reduce((acc, event) => acc + event.views.length,0)
+          console.log('total views', totalViews)
+          setTotalFollowers(data.reduce((acc, event) => acc + event.followers.length, 0));
+          setTotalViews(data.reduce((acc, event) => acc + event.views.length, 0));
+          setEvents(data);
+        } catch (err) {
+          toast.error("Failed to fetch events.");
+        } finally {
+          setLoading(false);
+        }
+      };
       fetchUserEvents();
     }
-  }, [userId]);
+  }, []);
 
-  const fetchUserEvents = async () => {
-    try {
-      const data = await getAllEventsByUser(userId);
-      setEvents(data);
-    } catch (err) {
-      toast.error("Failed to fetch events.");
-    } finally {
-      setLoading(false);
-    }
-  };
+
+
+
+  
 
   const handleDeleteEvent = async (eventId) => {
     try {
@@ -71,15 +67,28 @@ const Dashboard = () => {
     router.push(`/evento/${eventId}`);
   };
 
-  // Calculate overall stats
-  const totalFollowers = events.reduce(
-    (acc, event) => acc + event.followers.length,
-    0
-  );
-  const totalViews = events.reduce(
-    (acc, event) => acc + (event.views || 0),
-    0
-  );
+ 
+
+    // If no user is logged in, render a Login UI.
+    if (!user) {
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white p-6">
+          <p className="mb-4 text-lg">Login or signup first</p>
+          <div className="flex space-x-4">
+            <Link href="/login" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded">
+            
+                Login
+          
+            </Link>
+            <Link href="/sign-up" className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded">
+            
+                Sign Up
+             
+            </Link>
+          </div>
+        </div>
+      );
+    }
 
   return (
     <div className="min-h-screen bg-black text-white p-6">

@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { getLoggedInUserId } from "hooks/useUser";
+import LoginModal from "components/LoginModal";
 import { uploadToCloudinary } from "../actions/uploadToCloudinary";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -19,6 +21,17 @@ const EventForm = ({ onSubmit, loggedInUsername, loggedInUserId }) => {
   const [imageProgress, setImageProgress] = useState([]);
   const [videoProgress, setVideoProgress] = useState([]);
    const [showPassword, setShowPassword] = useState(false);
+   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+
+   useEffect(() =>{
+   const userId = getLoggedInUserId();
+    if(userId){
+      setShowLoginPrompt(false)
+    }else{
+      setShowLoginPrompt(true)
+    }
+
+   })
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -126,6 +139,15 @@ const EventForm = ({ onSubmit, loggedInUsername, loggedInUserId }) => {
       toast.error("Error creating event. Please try again.");
     }
   };
+
+  if(showLoginPrompt) {
+    return (
+      <LoginModal isOpen={showLoginPrompt} onClose={()=>{
+        setShowLoginPrompt(false)
+       
+      }}/>
+    )
+  }
 
   return (
     <>

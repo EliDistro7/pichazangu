@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import { Camera, ImagePlus, Video, Loader2 } from "lucide-react";
-import { getEventById, updateEventCoverPhoto, updateEventMedia } from "../../actions/event";
+import { getEventById, updateEventCoverPhoto, updateEventMedia,addViewToEvent } from "../../actions/event";
 import { getLoggedInUserId } from "hooks/useUser";
 import { uploadToCloudinary } from "actions/uploadToCloudinary";
 import { ToastContainer, toast } from "react-toastify";
@@ -17,7 +17,8 @@ const EventDetails = ({ initialEvent }) => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [isMediaLoading, setIsMediaLoading] = useState(false); // Controls loading UI for media clicks
-  const loggedInUserId = getLoggedInUserId();
+  //const loggedInUserId = getLoggedInUserId();
+  const [loggedInUserId, setLoggedUserId] = useState(null);
   const router = useRouter();
   const { photoId } = router.query;
   const [lastViewedPhoto, setLastViewedPhoto] = useLastViewedPhoto();
@@ -25,11 +26,41 @@ const EventDetails = ({ initialEvent }) => {
 
   // Scroll to last viewed photo if available
   useEffect(() => {
+    let logged = getLoggedInUserId();
+    setLoggedUserId(logged);
     if (lastViewedPhoto && !photoId) {
       lastViewedPhotoRef.current?.scrollIntoView({ block: "center" });
       setLastViewedPhoto(null);
     }
   }, [photoId, lastViewedPhoto, setLastViewedPhoto]);
+
+
+  useEffect(() => {
+    const localStorageKey = "viewedEvents";
+    
+    // Get stored viewed events
+    let viewedEvents = JSON.parse(localStorage.getItem(localStorageKey)) || {};
+  
+    // Get userId or use 'guest' as identifier
+    const userKey = loggedInUserId || "guest";
+  
+    // If event already viewed, don't send request
+    if (viewedEvents[userKey]?.includes(initialEvent._id)) return;
+  
+    // Send request to add view
+    console.log('initial event: ' + initialEvent._id)
+    addViewToEvent({ eventId: initialEvent._id, userId: loggedInUserId || "guest" })
+      .then(() => {
+        // Update localStorage after successful request
+        viewedEvents[userKey] = [...(viewedEvents[userKey] || []), initialEvent._id];
+        localStorage.setItem(localStorageKey, JSON.stringify(viewedEvents));
+        console.log('viewed succesfully')
+      })
+      .catch((error) => {
+        console.error("Error adding event view:", error);
+      });
+  }, [initialEvent._id, loggedInUserId]);
+  
 
   // Listen for route change events to display media loading UI
   useEffect(() => {

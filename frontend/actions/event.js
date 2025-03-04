@@ -191,6 +191,8 @@ export const followEvent = async ({ eventId, userId }) => {
   }
 };
 
+
+
 // Unfollow an event
 export const unfollowEvent = async ({ eventId, userId }) => {
   try {
@@ -199,6 +201,17 @@ export const unfollowEvent = async ({ eventId, userId }) => {
   } catch (error) {
     console.error("Error unfollowing event:", error.response?.data || error.message);
     throw new Error(error.response?.data?.message || "Failed to unfollow event.");
+  }
+};
+
+// Add a view to an event
+export const addViewToEvent = async ({ eventId, userId }) => {
+  try {
+    const response = await axios.post(`${api}/events/add-view`, { eventId, userId });
+    return response.data; // Returns success message or updated event data
+  } catch (error) {
+    console.error("Error adding view to event:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || "Failed to add view.");
   }
 };
 

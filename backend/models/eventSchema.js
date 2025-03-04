@@ -44,15 +44,18 @@ const EventSchema = new mongoose.Schema(
       },
     },
     followers: {
-      type: [String], // Array of user IDs who follow this event
+      type: [mongoose.Schema.Types.ObjectId], // Array of user IDs who follow this event
+      ref: 'User',
       default: [],
     },
+    views: {
+      type: [mongoose.Schema.Types.Mixed], // Accepts both ObjectId and string
+      default: [],
+    },
+    
   },
   { timestamps: true } // Automatically handles `createdAt` and `updatedAt`
 );
-
-// 🔐 Hash password before saving the event (only if private)
-
 
 const Event = mongoose.model('Event', EventSchema);
 
