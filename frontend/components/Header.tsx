@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import {
-  Search,
   User,
   LogIn,
   UserPlus,
@@ -8,25 +7,23 @@ import {
   Bell,
   Camera,
   CalendarPlus,
+  MessageCircle,
 } from "lucide-react";
 import { getLoggedInUserId } from "hooks/useUser";
 
 export default function Header() {
   const [darkMode, setDarkMode] = useState(true);
   const [user, setUser] = useState(false);
-  const [isSearchExpanded, setIsSearchExpanded] = useState(false); // State to toggle search bar
- useEffect( ()=>{
-    
-  const user1 = getLoggedInUserId();
-  if(user1){
-    console.log('user is logged in', user1)
-    setUser(true)
-  }else{
-    setUser(false)
-  }
-  // Replace this with actual API call to fetch user data
- },[]) 
- 
+
+  useEffect(() => {
+    const user1 = getLoggedInUserId();
+    if (user1) {
+      console.log("user is logged in", user1);
+      setUser(true);
+    } else {
+      setUser(false);
+    }
+  }, []);
 
   return (
     <>
@@ -37,40 +34,18 @@ export default function Header() {
             : "bg-gradient-to-r from-white via-gray-100 to-white shadow-md text-gray-900"
         } fixed w-full top-0 left-0 z-40 sm:z-50 p-4 transition-all duration-300`}
       >
-        {/* Top Row - Brand Name and Search Icon */}
+        {/* Top Row - Brand Name and Home Icon */}
         <div className="flex justify-between items-center">
-          {/* Brand Name */}
-        
-
-<a
-  href="/"
-  className="text-2xl sm:text-3xl font-bold tracking-wide bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent hover:from-blue-500 hover:to-purple-600 transition-all duration-500 flex items-center gap-2"
->
-  <Camera size={28} className="text-purple-500 font-bold" /> {/* Icon added here */}
-  pichazangu
-</a>
-
-          {/* Search Icon (Toggles Search Bar) */}
-          <button
-            onClick={() => setIsSearchExpanded(!isSearchExpanded)}
-            className="p-2 rounded-full bg-gray-700/50 hover:bg-gray-800/70 transition-colors duration-300"
+          {/* Brand Name with Home Icon */}
+          <a
+            href="/"
+            className="text-2xl sm:text-3xl font-bold tracking-wide bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent hover:from-blue-500 hover:to-purple-600 transition-all duration-500 flex items-center gap-2"
           >
-            <Search size={20} className="text-gray-400" />
-          </button>
+            <Camera size={28} className="text-purple-500 font-bold" />{" "}
+            {/* Home Icon */}
+            pichazangu
+          </a>
         </div>
-
-        {/* Expanded Search Bar (Conditional Rendering) */}
-      {/* Expanded Search Bar (Conditional Rendering) */}
-{isSearchExpanded && (
-  <div className="absolute left-0 top-full mt-2 w-full flex items-center bg-gray-800/60 px-4 py-2 rounded-full transition-all duration-300">
-    <Search size={20} className="text-gray-400" />
-    <input
-      type="text"
-      placeholder="Search..."
-      className="ml-2 bg-transparent outline-none text-white placeholder-gray-400 flex-1"
-    />
-  </div>
-)}
 
         {/* Second Row - Centered Icons */}
         <div className="flex justify-center items-center mt-3 space-x-3">
@@ -83,39 +58,32 @@ export default function Header() {
             <span className="hidden md:inline ml-2 text-blue-400">New Event</span>
           </a>
 
-          {/* Notifications Icon */}
-          <a
-            href="/#"
-            className="flex items-center p-2 rounded-full bg-gray-700 hover:bg-gray-800 transition-colors duration-300"
-          >
-            <Bell size={22} className="text-blue-400" />
-            <span className="hidden md:inline ml-2 text-blue-400">Notifications</span>
-          </a>
-
-          {/* User Auth UI */}
+          {/* Conditional Rendering for Notifications and Messages */}
           {user ? (
             <>
-              {/* Dashboard */}
+              {/* Notifications Icon */}
               <a
-                href="/dashboard"
+                href="/notifications"
                 className="flex items-center p-2 rounded-full bg-gray-700 hover:bg-gray-800 transition-colors duration-300"
               >
-                <LayoutDashboard size={22} className="text-blue-400" />
-                <span className="hidden md:inline ml-2 text-blue-400">Dashboard</span>
+                <Bell size={22} className="text-blue-400" />
+                <span className="hidden md:inline ml-2 text-blue-400">
+                  Notifications
+                </span>
               </a>
 
-              {/* Profile */}
+              {/* Messages Icon */}
               <a
-                href="#"
+                href="/messages"
                 className="flex items-center p-2 rounded-full bg-gray-700 hover:bg-gray-800 transition-colors duration-300"
               >
-                <User size={22} className="text-blue-400" />
-                <span className="hidden md:inline ml-2 text-blue-400">Profile</span>
+                <MessageCircle size={22} className="text-blue-400" />
+                <span className="hidden md:inline ml-2 text-blue-400">Messages</span>
               </a>
             </>
           ) : (
             <>
-              {/* Login */}
+              {/* Login Icon */}
               <a
                 href="/login"
                 className="flex items-center p-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300"
@@ -124,13 +92,36 @@ export default function Header() {
                 <span className="hidden md:inline ml-2">Login</span>
               </a>
 
-              {/* Signup */}
+              {/* Signup Icon */}
               <a
                 href="/sign-up"
                 className="flex items-center p-2 rounded-full border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors duration-300"
               >
                 <UserPlus size={20} />
                 <span className="hidden md:inline ml-2">Signup</span>
+              </a>
+            </>
+          )}
+
+          {/* Dashboard and Profile Icons (Conditional Rendering) */}
+          {user && (
+            <>
+              {/* Dashboard Icon */}
+              <a
+                href="/dashboard"
+                className="flex items-center p-2 rounded-full bg-gray-700 hover:bg-gray-800 transition-colors duration-300"
+              >
+                <LayoutDashboard size={22} className="text-blue-400" />
+                <span className="hidden md:inline ml-2 text-blue-400">Dashboard</span>
+              </a>
+
+              {/* Profile Icon */}
+              <a
+                href="/profile"
+                className="flex items-center p-2 rounded-full bg-gray-700 hover:bg-gray-800 transition-colors duration-300"
+              >
+                <User size={22} className="text-blue-400" />
+                <span className="hidden md:inline ml-2 text-blue-400">Profile</span>
               </a>
             </>
           )}
