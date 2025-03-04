@@ -8,22 +8,40 @@ class MyDocument extends Document {
       <Html lang="en">
         <Head>
           <link rel="icon" href="/favicon.ico" />
+          
+          {/* Primary Meta Tags */}
+          <meta name="title" content="PichaZangu | Relive Events Through Photos & Videos" />
           <meta
             name="description"
-            content="See pictures from Next.js Conf and the After Party."
+            content="Discover and relive events through high-quality photos and videos captured by talented photographers and videographers. Explore unforgettable moments at PichaZangu."
           />
-          <meta property="og:site_name" content="nextjsconf-pics.vercel.app" />
+
+          {/* Open Graph / Facebook */}
+          <meta property="og:type" content="website" />
+          <meta property="og:url" content="https://pichazangu.store" />
+          <meta property="og:site_name" content="PichaZangu" />
+          <meta property="og:title" content="PichaZangu | Relive Events Through Photos & Videos" />
           <meta
             property="og:description"
-            content="See pictures from Next.js Conf and the After Party."
+            content="Discover and relive events through high-quality photos and videos captured by talented photographers and videographers. Explore unforgettable moments at PichaZangu."
           />
-          <meta property="og:title" content="Next.js Conf 2022 Pictures" />
+          <meta property="og:image" content="https://pichazangu.store/img/nyamachoma.jpg" />
+          
+
+          {/* Twitter Meta Tags */}
           <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:title" content="Next.js Conf 2022 Pictures" />
+          <meta name="twitter:site" content="@PichaZangu" />
+          <meta name="twitter:title" content="PichaZangu | Relive Events Through Photos & Videos" />
           <meta
             name="twitter:description"
-            content="See pictures from Next.js Conf and the After Party."
+            content="Discover and relive events through high-quality photos and videos captured by talented photographers and videographers. Explore unforgettable moments at PichaZangu."
           />
+          <meta name="twitter:image" content="https://pichazangu.store/twitter-card.jpg" />
+          <meta name="twitter:player" content="https://pichazangu.store/twitter-video.mp4" />
+
+          {/* Additional SEO Meta Tags */}
+          <meta name="keywords" content="photography, videography, event photos, event videos, photographers, videographers, event photography, PichaZangu" />
+          <meta name="author" content="PichaZangu Team" />
         </Head>
         <body className="font-sans bg-black antialiased">
           <Header />

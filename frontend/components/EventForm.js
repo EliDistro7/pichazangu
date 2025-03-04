@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { uploadToCloudinary } from "../actions/uploadToCloudinary";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { Eye, EyeOff } from "lucide-react";
 const EventForm = ({ onSubmit, loggedInUsername, loggedInUserId }) => {
   const [newEvent, setNewEvent] = useState({
     title: "",
@@ -18,6 +18,7 @@ const EventForm = ({ onSubmit, loggedInUsername, loggedInUserId }) => {
   const [coverProgress, setCoverProgress] = useState(0);
   const [imageProgress, setImageProgress] = useState([]);
   const [videoProgress, setVideoProgress] = useState([]);
+   const [showPassword, setShowPassword] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -103,6 +104,7 @@ const EventForm = ({ onSubmit, loggedInUsername, loggedInUserId }) => {
       };
 
       await onSubmit(eventToCreate);
+      console.log("event to create",eventToCreate);
       toast.success("Event created successfully!");
 
       // Reset form
@@ -214,7 +216,7 @@ const EventForm = ({ onSubmit, loggedInUsername, loggedInUserId }) => {
           <div>
             <label className="block text-sm font-medium text-gray-300">Password</label>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
               placeholder="Set password for private event"
               value={newEvent.password}
@@ -222,6 +224,17 @@ const EventForm = ({ onSubmit, loggedInUsername, loggedInUserId }) => {
               className="mt-1 block w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
+               <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-2 flex items-center"
+                >
+                  {showPassword ? (
+                    <EyeOff size={20} className="text-gray-400" />
+                  ) : (
+                    <Eye size={20} className="text-gray-400" />
+                  )}
+                </button>
           </div>
         )}
 

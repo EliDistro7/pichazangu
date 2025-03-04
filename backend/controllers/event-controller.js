@@ -2,40 +2,7 @@ const Event = require("../models/eventSchema"); // Import the Event model
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 
-// ✅ Create a New Event
-exports.createEvent = async (req, res) => {
-  try {
-    const { title, description, coverPhoto, imageUrls, videoUrls, author, private: isPrivate, password } = req.body;
-    console.log('received body:', req.body);
 
-    // Validate password if event is private
-    let hashedPassword = null;
-    if (isPrivate) {
-      if (!password) {
-        return res.status(400).json({ error: "Password is required for private events" });
-      }
-      let password1 = password.trim();
-      hashedPassword = await bcrypt.hash(password1, 10);
-    }
-
-    const newEvent = new Event({
-      title,
-      description,
-      coverPhoto, // Set cover photo URL
-      imageUrls: imageUrls || [],
-      videoUrls: videoUrls || [],
-      author,
-      private: isPrivate || false, // Default to public if not provided
-      password: hashedPassword, // Set only if private
-    });
-
-    await newEvent.save();
-    res.status(201).json({ message: "Event created successfully", event: newEvent });
-  } catch (error) {
-    console.log("Error creating event:", error);
-    res.status(500).json({ error: "Server error while creating event" });
-  }
-};
 
 
 exports.getAllEventsByUser = async (req, res) => {
@@ -365,47 +332,91 @@ exports.unfollowEvent = async (req, res) => {
   }
 };
 
-// ✅ Authenticate and Retrieve an Event by Password
+// ✅ Authenticate and Retrieve an Event by Passwordconst bcrypt = require("bcrypt");
+
+
 exports.authenticateEvent = async (req, res) => {
-    try {
-      const { eventId } = req.params;
-      let { password } = req.body; // User-provided password
+  try {
+    const { eventId } = req.params;
+    let { password } = req.body;
 
-      console.log('event id is', eventId)
-      console.log('password is', password);
-
-      password = password.trim();
-  
-      const event = await Event.findById(eventId);
-      if (!event){ 
-        console.log('Event not found');
-        return res.status(404).json({ error: "Event not found" });
-      }
-  
-      // Check if the provided password matches the stored hashed password
-      console.log('Checking password', event.password)
-      const isMatch = await new Promise((resolve, reject) => {
-        bcrypt.compare(password, event.password, (err, result) => {
-          if (err) return reject(err);
-          resolve(result);
-        });
-      });
-      
-      
-      if (!isMatch) {
-        console.log('Password did not match');
-        return res.status(401).json({ error: "Incorrect password" });
-      }
-
-      console.log('It was successful')
-  
-      res.status(200).json(event);
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ error: "Failed to authenticate event" });
+    if (!password) {
+      return res.status(400).json({ error: "Password is required" });
     }
-  };
 
+    //password = password.trim();
+    console.log("Event ID:", eventId);
+    console.log("Provided password:", password);
+
+    // Fetch the event and ensure password is included
+    const event = await Event.findById(eventId).select('+password');
+    if (!event) {
+      console.log("Event not found");
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    if (!event.password) {
+      console.log("Event has no stored password");
+      return res.status(400).json({ error: "No password set for this event" });
+    }
+
+    console.log("Stored password hash:", event.password);
+    password = password.trim();
+    // Correct bcrypt comparison
+    const isMatch = await bcrypt.compare(password, event.password);
+
+    if (!isMatch) {
+      console.log("Password did not match");
+      console.log('event._id: ' + event._id);
+      console.log('event title', event.title)
+      return res.status(401).json({ error: "Incorrect password" });
+    }
+
+    console.log("Authentication successful");
+    res.status(200).json(event);
+  } catch (error) {
+    console.log("Error during authentication:", error);
+    res.status(500).json({ error: "Failed to authenticate event" });
+  }
+};
+
+// ✅ Create a New Event
+exports.createEvent = async (req, res) => {
+  try {
+    const { title, description, coverPhoto, imageUrls, videoUrls, author, private: isPrivate, password } = req.body;
+    console.log('received body:', req.body);
+
+    // Validate password if event is private
+    let hashedPassword = null;
+    if (isPrivate) {
+      if (!password) {
+        return res.status(400).json({ error: "Password is required for private events" });
+      }
+      let password1 = password.trim();
+      // Hash the password
+            const salt = await bcrypt.genSalt(10);
+      hashedPassword = await bcrypt.hash(password, salt);
+    }
+
+    const newEvent = new Event({
+      title,
+      description,
+      coverPhoto, // Set cover photo URL
+      imageUrls: imageUrls || [],
+      videoUrls: videoUrls || [],
+      author,
+      private: isPrivate || false, // Default to public if not provided
+      password: hashedPassword, // Set only if private
+    });
+
+    await newEvent.save();
+    console.log("event id", newEvent._id);
+    res.status(201).json({ message: "Event created successfully", event: newEvent });
+  } catch (error) {
+    console.log("Error creating event:", error);
+    res.status(500).json({ error: "Server error while creating event" });
+  }
+};
 
   // ✅ Update Event Password (Only Event Creator Can Do This)
 exports.updateEventPassword = async (req, res) => {
