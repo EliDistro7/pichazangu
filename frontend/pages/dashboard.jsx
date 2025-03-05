@@ -25,7 +25,7 @@ const Dashboard = () => {
        const fetchUserEvents = async () => {
         try {
           const data = await getAllEventsByUser(userId);
-         console.log('events', data)
+         //console.log('events', data)
          setEvents(data)
       setTotalFollowers(data.reduce((acc, event) => acc + event.followers.length, 0));
          setTotalViews(data.reduce((acc, event) => acc + event.views?.length || 0, 0));
