@@ -5,6 +5,7 @@ import EventForm from "../components/EventForm";
 import EventList from "../components/EventList";
 import { getLoggedInUserId, getLoggedInUsername } from "../hooks/useUser";
 import { Plus } from "lucide-react";
+import SearchEvents from "components/SearchEvents";
 
 const Events = () => {
   const router = useRouter();
@@ -63,6 +64,7 @@ const Events = () => {
 
   return (
     <div className="min-h-screen bg-black text-white p-6">
+      <SearchEvents />
       <div className="max-w-4xl mx-auto">
         <div className="flex border-b border-gray-700 mb-4">
           <button

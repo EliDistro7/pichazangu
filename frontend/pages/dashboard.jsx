@@ -7,6 +7,7 @@ import Link from "next/link";
 import { getLoggedInUserId } from "../hooks/useUser";
 import { getAllEventsByUser, deleteEvent } from "../actions/event";
 import EventCard from "components/EventCard2";
+import SearchEvents from "components/SearchEvents";
 
 
 const Dashboard = () => {
@@ -98,6 +99,7 @@ const Dashboard = () => {
         pauseOnHover
         theme="dark"
       />
+      <SearchEvents />
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Your Events</h1>
 

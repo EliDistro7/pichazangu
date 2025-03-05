@@ -11,6 +11,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useLastViewedPhoto } from "../../utils/useLastViewedPhoto";
 import MessageForm from 'components/MessageForm';
+import SearchEvents from "components/SearchEvents";
 
 const EventDetails = ({ initialEvent }) => {
   const [event, setEvent] = useState(initialEvent);
@@ -173,6 +174,7 @@ const EventDetails = ({ initialEvent }) => {
       </Head>
   
       <main className=" max-w-[1960px] p-4 px-0 mx-0">
+        <SearchEvents />
         {/* Cover Photo Banner */}
         <div
           className="relative h-96 w-full overflow-hidden mb-8 px-0 mt-0"
