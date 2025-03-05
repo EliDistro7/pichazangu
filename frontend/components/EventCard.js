@@ -89,7 +89,7 @@ const EventCard = ({ event }) => {
     />
   ) : (
     <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-r from-gray-500 via-gray-400 to-gray-500">
-      <span className="text-white text-lg font-semibold">No Cover Photo</span>
+      <span className="text-white text-lg font-semibold"></span>
     </div>
   )}
   {/* Gradient overlay for readability */}
