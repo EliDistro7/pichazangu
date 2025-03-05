@@ -159,17 +159,17 @@ const EventDetails = ({ initialEvent }) => {
   return (
     <>
        <Head>
-        <title>{event.title} - Event Details</title>
-        <meta name="description" content={event.description} />
-        <meta property="og:title" content={`${event.title} - Event Details`} />
-        <meta property="og:description" content={event.description} />
-        <meta property="og:image" content={event.coverPhoto} />
+        <title>{event.title} </title>
+        <meta name="description" content={initialEvent.description} />
+        <meta property="og:title" content={`${initialEvent.title} - Event Details`} />
+        <meta property="og:description" content={initialEvent.description} />
+        <meta property="og:image" content={initialEvent.coverPhoto} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={event.coverPhoto}  />
+        <meta property="og:url" content={initialEvent.coverPhoto}  />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`${event.title} - Event Details`} />
-        <meta name="twitter:description" content={event.description} />
-        <meta name="twitter:image" content={event.coverPhoto} />
+        <meta name="twitter:title" content={`${initialEvent.title} `} />
+        <meta name="twitter:description" content={initialEvent.description} />
+        <meta name="twitter:image" content={initialEvent.coverPhoto} />
       </Head>
   
       <main className="mx-auto max-w-[1960px] p-4">
