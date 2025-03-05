@@ -172,10 +172,10 @@ const EventDetails = ({ initialEvent }) => {
         <meta name="twitter:image" content={initialEvent.coverPhoto} />
       </Head>
   
-      <main className="mx-auto max-w-[1960px] p-4">
+      <main className=" max-w-[1960px] p-4 px-0 mx-0">
         {/* Cover Photo Banner */}
         <div
-          className="relative h-96 w-full overflow-hidden mb-8"
+          className="relative h-96 w-full overflow-hidden mb-8 px-0 mt-0"
           style={{
             backgroundImage: `url(${event.coverPhoto})`,
             backgroundSize: "cover",
