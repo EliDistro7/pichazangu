@@ -34,7 +34,7 @@ export default function Header() {
           darkMode
             ? "bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white backdrop-blur-lg font-sans"
             : "bg-gradient-to-r from-white via-gray-100 to-white shadow-md text-gray-900"
-        } fixed w-full top-0 left-0 z-40 sm:z-50 p-4 transition-all duration-300`}
+        }  w-full  sm:z-50 p-4 transition-all duration-300`}
       >
         {/* Top Row - Brand Name and Home Icon */}
         <div className="flex justify-between items-center">
@@ -137,8 +137,8 @@ export default function Header() {
           )}
         </div>
       </header>
-      {/* Spacer to prevent fixed header from covering content */}
-      <div className="h-32" />
+      {/* Spacer to prevent <div className="h-32" /> fixed header from covering content */}
+      
     </>
   );
 }

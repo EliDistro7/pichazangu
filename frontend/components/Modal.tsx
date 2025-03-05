@@ -8,9 +8,11 @@ import SharedModal from "./SharedModal";
 export default function Modal({
   mediaUrls,
   mediaType,
+  eventId,
   onClose,
 }: {
   mediaUrls: string[];
+  eventId: string; // Event ID for navigation
   mediaType: "photo" | "video";
   onClose?: () => void;
 }) {
@@ -27,7 +29,7 @@ export default function Modal({
 
   // Function to handle modal close
   function handleClose() {
-    router.push("/", undefined, { shallow: true }); // Remove photoId from URL
+    router.push(`/evento/${eventId}`, undefined, { shallow: true }); // Remove photoId from URL
     onClose?.(); // Call the onClose callback if provided
   }
 

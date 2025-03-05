@@ -38,6 +38,7 @@ const MediaPage: NextPage<MediaPageProps> = ({
       <main className="mx-auto max-w-[1960px] p-4">
         {/* Replace Carousel with Modal */}
         <Modal
+          eventId={eventId}
           mediaUrls={mediaUrls}
           mediaType={mediaType}
           onClose={() => router.push("/")} // Close modal and navigate back to home
