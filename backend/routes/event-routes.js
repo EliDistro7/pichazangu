@@ -17,6 +17,12 @@ router.get("/event-media", eventController.getEventMedia);
 router.post("/:eventId/follow", eventController.followEvent);
 router.post("/:eventId/unfollow", eventController.unfollowEvent);
 
+// Message Routes
+router.post("/events/:eventId/messages", eventController.addMessage); // Add a message
+router.patch("/events/:eventId/messages/:messageId/read", eventController.markMessageAsRead); // Mark message as read
+router.delete("/events/:eventId/messages/:messageId", eventController.deleteMessage); // Delete a message
+
+
 // Follow/Unfollow Route
 router.post("/:eventId/toggle-follow", eventController.toggleFollowEvent);
 

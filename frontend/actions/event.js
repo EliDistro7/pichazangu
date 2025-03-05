@@ -242,3 +242,45 @@ export const getAllEventsByUser = async (userId) => {
   return response.json();
 };
 
+// 📝 Add a message to an event
+export const addMessage = async ({ eventId, senderName, phoneNumber, content }) => {
+  try {
+    const response = await axios.post(`${api}/events/${eventId}/messages`, {
+      senderName,
+      phoneNumber,
+      content,
+    });
+    return response.data; // Returns the added message
+  } catch (error) {
+    console.error("Error adding message:", error.response?.data || error.message);
+    throw new Error(
+      error.response?.data?.error || "Failed to add message. Please try again."
+    );
+  }
+};
+
+// ✅ Mark a message as read
+export const markMessageAsRead = async ({ eventId, messageId }) => {
+  try {
+    const response = await axios.patch(`${api}/events/${eventId}/messages/${messageId}/read`);
+    return response.data; // Returns the updated message status
+  } catch (error) {
+    console.error("Error marking message as read:", error.response?.data || error.message);
+    throw new Error(
+      error.response?.data?.error || "Failed to mark message as read. Please try again."
+    );
+  }
+};
+
+// ❌ Delete a message from an event
+export const deleteMessage = async ({ eventId, messageId }) => {
+  try {
+    const response = await axios.delete(`${api}/events/${eventId}/messages/${messageId}`);
+    return response.data; // Returns success confirmation
+  } catch (error) {
+    console.error("Error deleting message:", error.response?.data || error.message);
+    throw new Error(
+      error.response?.data?.error || "Failed to delete message. Please try again."
+    );
+  }
+};

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import Head from "next/head";
 import Image from "next/image";
-import { Camera, ImagePlus, Video, Loader2 } from "lucide-react";
+import { Camera, ImagePlus, Video, Loader2,MessageSquare,X } from "lucide-react";
 import { getEventById, updateEventCoverPhoto, updateEventMedia,addViewToEvent } from "../../actions/event";
 import { getLoggedInUserId } from "hooks/useUser";
 import { uploadToCloudinary } from "actions/uploadToCloudinary";
@@ -10,6 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useLastViewedPhoto } from "../../utils/useLastViewedPhoto";
+import MessageForm from 'components/MessageForm';
 
 const EventDetails = ({ initialEvent }) => {
   const [event, setEvent] = useState(initialEvent);
@@ -18,6 +19,7 @@ const EventDetails = ({ initialEvent }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [isMediaLoading, setIsMediaLoading] = useState(false); // Controls loading UI for media clicks
   //const loggedInUserId = getLoggedInUserId();
+  const [isMessageModalOpen, setIsMessageModalOpen] = useState(false); // State for message modal
   const [loggedInUserId, setLoggedUserId] = useState(null);
   const router = useRouter();
   const { photoId } = router.query;
@@ -156,10 +158,18 @@ const EventDetails = ({ initialEvent }) => {
 
   return (
     <>
-      <Head>
+       <Head>
         <title>{event.title} - Event Details</title>
         <meta name="description" content={event.description} />
-        {/* Additional meta tags omitted for brevity */}
+        <meta property="og:title" content={`${event.title} - Event Details`} />
+        <meta property="og:description" content={event.description} />
+        <meta property="og:image" content={event.coverPhoto} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={event.coverPhoto}  />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${event.title} - Event Details`} />
+        <meta name="twitter:description" content={event.description} />
+        <meta name="twitter:image" content={event.coverPhoto} />
       </Head>
   
       <main className="mx-auto max-w-[1960px] p-4">
@@ -183,8 +193,18 @@ const EventDetails = ({ initialEvent }) => {
               View Profile
             </Link>
           </div>
+          <div className="absolute bottom-4 left-4">
+              {/* Message Icon */}
+          <button
+            onClick={() => setIsMessageModalOpen(true)}
+            className=" p-2 bg-white/80 rounded-full cursor-pointer hover:bg-white/90 transition"
+          >
+            <MessageSquare className="w-5 h-5 text-gray-700" />
+          </button>
+          </div>
           {isAuthor && (
             <div className="absolute bottom-4 right-4">
+            
               <label className="flex items-center justify-center p-2 bg-white/80 rounded-full cursor-pointer hover:bg-white/90 transition">
                 <Camera className="w-5 h-5 text-gray-700" />
                 <input
@@ -325,8 +345,23 @@ const EventDetails = ({ initialEvent }) => {
             </div>
           )}
         </div>
+
+          {/* Message Modal */}
+          {isMessageModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-lg flex items-center justify-center z-50">
+            <div className="relative bg-gray-900 text-white rounded-lg shadow-lg p-6 max-w-sm w-full">
+              <button
+                onClick={() => setIsMessageModalOpen(false)}
+                className="absolute top-3 right-3 p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition"
+              >
+                <X className="text-white" size={20} />
+              </button>
+              <MessageForm eventId={initialEvent._id} />
+            </div>
+          </div>
+        )}
       </main>
-  
+      
       {/* Global Loading UI for media route changes */}
       {isMediaLoading && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">

@@ -85,6 +85,85 @@ exports.searchEvents = async (req, res) => {
   }
 };
 
+// Add a new message to an event
+exports.addMessage = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const { senderName, phoneNumber, content } = req.body;
+
+    if (!senderName || !phoneNumber || !content) {
+      return res.status(400).json({ error: "All message fields are required." });
+    }
+
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ error: "Event not found." });
+    }
+
+    const newMessage = {
+      senderName,
+      phoneNumber,
+      content,
+      status: "unread",
+    };
+
+    event.messages.push(newMessage);
+    await event.save();
+
+    res.status(201).json({ message: "Message added successfully.", newMessage });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to add message.", details: error.message });
+  }
+};
+
+// Mark a message as read
+exports.markMessageAsRead = async (req, res) => {
+  try {
+    const { eventId, messageId } = req.params;
+
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ error: "Event not found." });
+    }
+
+    const message = event.messages.id(messageId);
+    if (!message) {
+      return res.status(404).json({ error: "Message not found." });
+    }
+
+    message.status = "read";
+    await event.save();
+
+    res.status(200).json({ message: "Message marked as read.", updatedMessage: message });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update message status.", details: error.message });
+  }
+};
+
+// Delete a message
+exports.deleteMessage = async (req, res) => {
+  try {
+    const { eventId, messageId } = req.params;
+
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ error: "Event not found." });
+    }
+
+    const messageIndex = event.messages.findIndex((msg) => msg._id.toString() === messageId);
+    if (messageIndex === -1) {
+      return res.status(404).json({ error: "Message not found." });
+    }
+
+    event.messages.splice(messageIndex, 1);
+    await event.save();
+
+    res.status(200).json({ message: "Message deleted successfully." });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete message.", details: error.message });
+  }
+};
+
 
 
 
