@@ -21,14 +21,15 @@ const Dashboard = () => {
     const userId = getLoggedInUserId();
     if (userId) {
        setUser(userId);
+       console.log('userid ', userId)
        const fetchUserEvents = async () => {
         try {
           const data = await getAllEventsByUser(userId);
-         
-        
-          setTotalFollowers(data.reduce((acc, event) => acc + event.followers.length, 0));
-          setTotalViews(data.reduce((acc, event) => acc + event.views.length, 0));
-          setEvents(data);
+         console.log('events', data)
+         setEvents(data)
+      setTotalFollowers(data.reduce((acc, event) => acc + event.followers.length, 0));
+         setTotalViews(data.reduce((acc, event) => acc + event.views?.length || 0, 0));
+          ;
         } catch (err) {
           toast.error("Failed to fetch events.");
         } finally {
@@ -128,7 +129,7 @@ const Dashboard = () => {
           className="mb-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md flex items-center space-x-2"
         >
           <Plus size={20} />
-          <span>Create New Event</span>
+          <span>Create New Album</span>
         </button>
 
         {/* Event Cards */}
@@ -168,7 +169,7 @@ const Dashboard = () => {
                     </div>
                     <div className="flex items-center space-x-2 text-sm text-gray-300">
                       <Eye size={16} />
-                      <span>{event.views || 0} Views</span>
+                      <span>{event.views?.length || 0} Views</span>
                     </div>
                   </div>
 
