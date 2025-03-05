@@ -186,75 +186,75 @@ export default function SharedModal({
     </div>
   )}
   {/* Bottom Nav Bar */}
-  {navigation && (
-    <div className="fixed inset-x-0 bottom-0 z-40 overflow-hidden bg-gradient-to-b from-black/0 to-black/60">
-      <motion.div
-        initial={false}
-        className="mx-auto mt-6 mb-6 flex aspect-[3/2] h-14"
-      >
-        <AnimatePresence initial={false}>
-          {filteredMedia.map((media) => (
-            <motion.button
-              key={media.id}
-              initial={{
-                width: "0%",
-                x: `${Math.max((index - 1) * -100, 15 * -100)}%`,
-              }}
-              animate={{
-                scale: media.id === index ? 1.25 : 1,
-                width: "100%",
-                x: `${Math.max(index * -100, 15 * -100)}%`,
-              }}
-              exit={{ width: "0%" }}
-              onClick={() => changePhotoId(media.id)}
-              className={`${
-                media.id === index
-                  ? "z-20 rounded-md shadow shadow-black/50"
-                  : "z-10"
-              } ${media.id === 0 ? "rounded-l-md" : ""} ${
-                media.id === mediaUrls.length - 1 ? "rounded-r-md" : ""
-              } relative inline-block w-full shrink-0 transform-gpu overflow-hidden focus:outline-none`}
-            >
-              {mediaType === "photo" ? (
-                <Image
-                  alt="small media on the bottom"
-                  width={180}
-                  height={120}
-                  className={`${
-                    media.id === index
-                      ? "brightness-110 hover:brightness-110"
-                      : "brightness-50 contrast-125 hover:brightness-75"
-                  } h-full transform object-cover transition`}
-                  src={media.url}
-                />
-              ) : (
-                <VideoThumbnail
-                  videoUrl={media.url}
-                  thumbnailHandler={(thumbnail) => {
-                    return (
-                      <Image
-                        alt="large video thumbnail"
-                        width={220}
-                        height={220}
-                        className={`${
-                          media.id === index
-                            ? "brightness-110 hover:brightness-110"
-                            : "brightness-50 contrast-125 hover:brightness-75"
-                        } h-full w-full transform object-cover transition`}
-                        src={thumbnail}
-                      />
-                    );
-                  }}
-                  width={400}
-                  height={300}
-                />
-              )}
-            </motion.button>
-          ))}
-        </AnimatePresence>
-      </motion.div>
-    </div>
-  )}
+ {/* Bottom Nav Bar */}
+{navigation && (
+  <div className="fixed inset-x-0 bottom-0 z-40 overflow-hidden bg-gradient-to-b from-black/0 to-black/60">
+    <motion.div
+      initial={false}
+      className="mx-auto mt-6 mb-6 flex aspect-[3/2] h-16 gap-1"
+    >
+      <AnimatePresence initial={false}>
+        {filteredMedia.map((media) => (
+          <motion.button
+            key={media.id}
+            initial={{
+              width: "0%",
+              x: `${Math.max((index - 1) * -100, 15 * -100)}%`,
+            }}
+            animate={{
+              scale: media.id === index ? 1.3 : 1,
+              width: "100%",
+              x: `${Math.max(index * -100, 15 * -100)}%`,
+            }}
+            exit={{ width: "0%" }}
+            onClick={() => changePhotoId(media.id)}
+            className={`${
+              media.id === index
+                ? "z-20 rounded-md shadow-lg shadow-black/50"
+                : "z-10"
+            } ${media.id === 0 ? "rounded-l-md" : ""} ${
+              media.id === mediaUrls.length - 1 ? "rounded-r-md" : ""
+            } relative inline-block w-full shrink-0 transform-gpu overflow-hidden focus:outline-none transition-all`}
+          >
+            {mediaType === "photo" ? (
+              <Image
+                alt="small media on the bottom"
+                width={180}
+                height={120}
+                className={`${
+                  media.id === index
+                    ? "brightness-110 hover:brightness-110"
+                    : "brightness-50 contrast-125 hover:brightness-75"
+                } h-full w-full object-cover transition-all rounded-md`}
+                src={media.url}
+              />
+            ) : (
+              <VideoThumbnail
+                videoUrl={media.url}
+                thumbnailHandler={(thumbnail) => (
+                  <Image
+                    alt="video thumbnail"
+                    width={220}
+                    height={220}
+                    className={`${
+                      media.id === index
+                        ? "brightness-110 hover:brightness-110"
+                        : "brightness-50 contrast-125 hover:brightness-75"
+                    } h-full w-full object-cover transition-all rounded-md`}
+                    src={thumbnail}
+                  />
+                )}
+                width={400}
+                height={300}
+              />
+            )}
+          </motion.button>
+        ))}
+      </AnimatePresence>
+    </motion.div>
+  </div>
+)}
+
 </div>
       </div>
     </MotionConfig>

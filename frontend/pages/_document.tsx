@@ -9,6 +9,9 @@ class MyDocument extends Document {
         <Head>
           <link rel="icon" href="/favicon.ico" />
 
+          {/* Theme Color for Dark Mode */}
+  <meta name="theme-color" content="#000000" /> {/* Black for dark theme */}
+
           {/* Primary Meta Tags */}
           <meta name="title" content="PichaZangu | Relive Events Through Photos & Videos" />
           <meta
