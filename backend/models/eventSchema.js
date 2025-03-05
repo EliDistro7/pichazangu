@@ -1,5 +1,6 @@
+
+
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
 
 const EventSchema = new mongoose.Schema(
   {
@@ -11,15 +12,19 @@ const EventSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    elaborateDescription: {
+      type: String, // Stores long, detailed descriptions
+      required: false,
+    },
     coverPhoto: {
       type: String, // URL to the cover photo
     },
     imageUrls: {
-      type: [String], // Array of image URLs
+      type: [mongoose.Schema.Types.Mixed], // Accepts both old strings and new objects
       default: [],
     },
     videoUrls: {
-      type: [String], // Array of video URLs
+      type: [mongoose.Schema.Types.Mixed], // Accepts both old strings and new objects
       default: [],
     },
     author: {
@@ -52,7 +57,25 @@ const EventSchema = new mongoose.Schema(
       type: [mongoose.Schema.Types.Mixed], // Accepts both ObjectId and string
       default: [],
     },
-    
+    visibleOnHomepage: {
+      type: Boolean,
+      default: false, // Events are hidden from homepage by default
+    },
+    boosted: {
+      type: Boolean,
+      default: false, // Boosted events get higher visibility
+    },
+    messages: {
+      type: [
+        {
+          senderName: { type: String, required: true },
+          phoneNumber: { type: String, required: true },
+          status: { type: String, enum: ["read", "unread"], default: "unread" },
+          content: { type: String, required: true },
+        },
+      ],
+      default: [],
+    },
   },
   { timestamps: true } // Automatically handles `createdAt` and `updatedAt`
 );

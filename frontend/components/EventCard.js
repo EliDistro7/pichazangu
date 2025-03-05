@@ -76,19 +76,26 @@ const EventCard = ({ event }) => {
       id={event._id}
       className="font-sans relative group overflow-hidden rounded-xl shadow-2xl"
     >
-      {/* Cover Photo */}
-      <div className="relative h-64 w-full">
-        <Image
-          src={event.coverPhoto}
-          alt={event.title}
-          layout="fill"
-          objectFit="cover"
-          className="transition-transform duration-500 group-hover:scale-110"
-          onLoad={() => setImageLoaded(true)}
-        />
-        {/* Gradient overlay for readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-      </div>
+     {/* Cover Photo */}
+<div className="relative h-64 w-full bg-gray-300 flex items-center justify-center">
+  {event.coverPhoto ? (
+    <Image
+      src={event.coverPhoto}
+      alt={event.title}
+      layout="fill"
+      objectFit="cover"
+      className="transition-transform duration-500 group-hover:scale-110"
+      onLoad={() => setImageLoaded(true)}
+    />
+  ) : (
+    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-r from-gray-500 via-gray-400 to-gray-500">
+      <span className="text-white text-lg font-semibold">No Cover Photo</span>
+    </div>
+  )}
+  {/* Gradient overlay for readability */}
+  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+</div>
+
 
       {/* Event details overlay */}
       <div className="absolute inset-0 flex flex-col justify-end p-6">
