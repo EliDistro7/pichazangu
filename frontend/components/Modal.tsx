@@ -29,7 +29,7 @@ export default function Modal({
 
   // Function to handle modal close
   function handleClose() {
-    router.push(`/evento/${eventId}`, undefined, { shallow: true }); // Remove photoId from URL
+    router.push(`/evento/${eventId}`); // Remove photoId from URL
     onClose?.(); // Call the onClose callback if provided
   }
 

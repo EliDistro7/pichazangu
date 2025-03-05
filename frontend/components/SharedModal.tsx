@@ -65,51 +65,50 @@ export default function SharedModal({
       }}
     >
       
-   <div
-        className="relative z-[1000] flex w-full max-w-7xl items-center aspect-[3/2] md:mt-40 md:mb-16 lg:mt-48 lg:mb-20 xl:mt-60 xl:mb-24 wide:h-full xl:taller-than-854:h-auto"
-        {...handlers}
-      >
-
-        {/* Main Media Display */}
-        <div className="w-full overflow-hidden">
-          <div className="relative flex aspect-[3/2] items-center justify-center">
-            <AnimatePresence initial={false} custom={direction}>
-              <motion.div
-                key={index}
-                custom={direction}
-                variants={variants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                className="absolute"
-              >
-                {mediaType === "photo" ? (
-                  <Image
-                    src={currentMedia.url}
-                    width={navigation ? 1280 : 1920} // Increased width for large screens
-                    height={navigation ? 853 : 1280} // Increased height for large screens
-                    priority
-                    alt={`Event media ${currentMedia.id}`}
-                    placeholder="blur"
-                    blurDataURL={currentMedia.url}
-                    onLoad={() => setLoaded(true)}
-                    className="object-contain"
-                  />
-                ) : (
-                  <video
-                    src={currentMedia.url}
-                    width={navigation ? 1280 : 1920} // Increased width for large screens
-                    height={navigation ? 853 : 1280} // Increased height for large screens
-                    controls
-                    autoPlay
-                    onLoadedData={() => setLoaded(true)}
-                    className="object-contain"
-                  />
-                )}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
+      <div
+    className="relative z-[1000] flex w-full max-w-7xl items-center aspect-[3/2] md:mt-40 md:mb-16 lg:mt-48 lg:mb-20 xl:mt-60 xl:mb-24 wide:h-full xl:taller-than-854:h-auto"
+    {...handlers}
+  >
+    {/* Main Media Display */}
+    <div className="w-full overflow-hidden">
+      <div className="relative flex aspect-[3/2] items-center justify-center">
+        <AnimatePresence initial={false} custom={direction}>
+          <motion.div
+            key={index}
+            custom={direction}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            className="absolute w-full h-full flex items-center justify-center"
+          >
+            {mediaType === "photo" ? (
+              <Image
+                src={currentMedia.url}
+                width={navigation ? 1280 : 1920}
+                height={navigation ? 853 : 1280}
+                priority
+                alt={`Event media ${currentMedia.id}`}
+                placeholder="blur"
+                blurDataURL={currentMedia.url}
+                onLoad={() => setLoaded(true)}
+                className="w-full h-full object-contain"
+              />
+            ) : (
+              <video
+                src={currentMedia.url}
+                width={navigation ? 1280 : 1920}
+                height={navigation ? 853 : 1280}
+                controls
+                autoPlay
+                onLoadedData={() => setLoaded(true)}
+                className="w-full h-full object-contain"
+              />
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
 
         {/* Buttons + Top Nav Bar */}
        {/* Buttons + Top Nav Bar */}
