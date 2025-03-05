@@ -94,7 +94,7 @@ const login = async (
       headers: { 'Content-Type': 'application/json' },
     });
 
-    console.log('Response:', response);
+    //console.log('Response:', response);
 
     if (!response.data || !response.data.user.name){
       throw new Error('Login failed: Invalid response structure');

@@ -381,6 +381,30 @@ const removeFollower = async (req, res) => {
     }
 };
 
+// Controller to retrieve user by ID
+const getUserById = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        // Validate userId format
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: "Invalid user ID" });
+        }
+
+        // Fetch user details (excluding password)
+        const user = await User.findById(userId).select("-password");
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json(user);
+    } catch (error) {
+        console.error("Error fetching user:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
 // Controller for user registration (sign-up)
 const userRegister = async (req, res) => {
     try {
@@ -584,6 +608,7 @@ module.exports = {
     getUserDetail,
     checkEmailExists,
     addFollower,
+    getUserById,
     removeFollower,
     updateUserProfile,
     getUserWithFollowers,

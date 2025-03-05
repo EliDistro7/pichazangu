@@ -1,7 +1,24 @@
 
 
 import axios from 'axios';
+
 const api = process.env.NEXT_PUBLIC_SERVER;
+
+/**
+ * Fetch user details by userId
+ * @param {string} userId - The ID of the user to retrieve
+ * @returns {Promise<object>} - The user data
+ */
+export const getUserById = async (userId) => {
+    try {
+        const response = await axios.get(`${api}/user/${userId}`);
+        return response.data; // Returns the user object
+    } catch (error) {
+        console.error("Error fetching user:", error);
+        throw error; // Handle errors in the calling component
+    }
+};
+
 
 export const getUsersByRole = async ({ adminId, role, page = 1, limit = 10 }) => {
   // Update with your actual API endpoint if needed
@@ -357,3 +374,6 @@ export const fetchUsersBornThisMonth = async () => {
     );
   }
 };
+
+
+
