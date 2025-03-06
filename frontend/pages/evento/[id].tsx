@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import Head from "next/head";
 import Image from "next/image";
-import { Camera, ImagePlus, Video, Loader2,MessageSquare,X } from "lucide-react";
+import { Camera, ImagePlus, Video, Loader2,MessageSquare,X, ArrowLeft } from "lucide-react";
 import { getEventById, updateEventCoverPhoto, updateEventMedia,addViewToEvent } from "../../actions/event";
 import { getLoggedInUserId } from "hooks/useUser";
 import { uploadToCloudinary } from "actions/uploadToCloudinary";
@@ -57,7 +57,7 @@ const EventDetails = ({ initialEvent }) => {
         // Update localStorage after successful request
         viewedEvents[userKey] = [...(viewedEvents[userKey] || []), initialEvent._id];
         localStorage.setItem(localStorageKey, JSON.stringify(viewedEvents));
-        console.log('viewed succesfully')
+        //console.log('viewed succesfully')
       })
       .catch((error) => {
         console.error("Error adding event view:", error);
@@ -175,6 +175,16 @@ const EventDetails = ({ initialEvent }) => {
   
       <main className=" max-w-[1960px] p-4 px-0 mx-0">
         <SearchEvents />
+        
+           {/* Back Button */}
+           <button
+            onClick={() => router.back()}
+            className="flex items-center space-x-2 text-gray-400 ml-3 hover:text-white mb-5 transition-colors"
+          >
+            <ArrowLeft size={20} />
+            <span>Back</span>
+          </button>
+  
         {/* Cover Photo Banner */}
         <div
           className="relative h-96 w-full overflow-hidden mb-8 px-0 mt-0"
@@ -220,11 +230,12 @@ const EventDetails = ({ initialEvent }) => {
           )}
         </div>
   
+  
         <div className="container mx-auto px-4">
           <p className="mb-4 text-lg">
             <span className="font-semibold">Author:</span> {event.author.username}
           </p>
-  
+
           {/* Tabs Section */}
           <div className="flex justify-center mb-6">
             <button
@@ -358,7 +369,7 @@ const EventDetails = ({ initialEvent }) => {
               >
                 <X className="text-white" size={20} />
               </button>
-              <MessageForm eventId={initialEvent._id} />
+              <MessageForm eventId={initialEvent._id} userId={`${loggedInUserId || "guest"}`}/>
             </div>
           </div>
         )}
@@ -393,3 +404,4 @@ export async function getServerSideProps({ params }) {
 }
   
 export default EventDetails;
+

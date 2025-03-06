@@ -181,9 +181,14 @@ export const deleteEvent = async (eventId) => {
 };
 
 // Follow an event
-export const followEvent = async ({ eventId, userId }) => {
+export const followEvent = async ({ eventId, userId, socket = null }) => {
   try {
     const response = await axios.post(`${api}/events/follow`, { eventId, userId });
+
+    if (socket) {
+      socket.emit("follow_event", { userId, eventId });
+    }
+
     return response.data; // Returns success message or updated event data
   } catch (error) {
     console.error("Error following event:", error.response?.data || error.message);
@@ -191,12 +196,15 @@ export const followEvent = async ({ eventId, userId }) => {
   }
 };
 
-
-
 // Unfollow an event
-export const unfollowEvent = async ({ eventId, userId }) => {
+export const unfollowEvent = async ({ eventId, userId, socket = null }) => {
   try {
     const response = await axios.post(`${api}/events/unfollow`, { eventId, userId });
+
+    if (socket) {
+      socket.emit("unfollow_event", { userId, eventId });
+    }
+
     return response.data; // Returns success message or updated event data
   } catch (error) {
     console.error("Error unfollowing event:", error.response?.data || error.message);
@@ -205,13 +213,40 @@ export const unfollowEvent = async ({ eventId, userId }) => {
 };
 
 // Add a view to an event
-export const addViewToEvent = async ({ eventId, userId }) => {
+export const addViewToEvent = async ({ eventId, userId, socket = null }) => {
   try {
     const response = await axios.post(`${api}/events/add-view`, { eventId, userId });
+
+    if (socket) {
+      socket.emit("view_event", { userId, eventId });
+    }
+
     return response.data; // Returns success message or updated event data
   } catch (error) {
     console.error("Error adding view to event:", error.response?.data || error.message);
     throw new Error(error.response?.data?.message || "Failed to add view.");
+  }
+};
+
+// Add a message to an event
+export const addMessage = async ({ eventId, userId, senderName, phoneNumber, content, socket = null }) => {
+  try {
+    const response = await axios.post(`${api}/events/${eventId}/messages`, {
+      senderName,
+      phoneNumber,
+      content,
+    });
+
+    if (socket) {
+      socket.emit("new_message", {senderName, userId,eventId, messageContent:content });
+
+    }
+
+
+    return response.data; // Returns the added message
+  } catch (error) {
+    console.error("Error adding message:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.error || "Failed to add message. Please try again.");
   }
 };
 
@@ -240,23 +275,6 @@ export const getAllEventsByUser = async (userId) => {
   const response = await fetch(`${api}/events/user/${userId}`);
   if (!response.ok) throw new Error("Failed to fetch events.");
   return response.json();
-};
-
-// 📝 Add a message to an event
-export const addMessage = async ({ eventId, senderName, phoneNumber, content }) => {
-  try {
-    const response = await axios.post(`${api}/events/${eventId}/messages`, {
-      senderName,
-      phoneNumber,
-      content,
-    });
-    return response.data; // Returns the added message
-  } catch (error) {
-    console.error("Error adding message:", error.response?.data || error.message);
-    throw new Error(
-      error.response?.data?.error || "Failed to add message. Please try again."
-    );
-  }
 };
 
 // ✅ Mark a message as read

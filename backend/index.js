@@ -12,7 +12,7 @@ dotenv.config();
 const userRoutes = require('./routes/user-routes');
 const eventRoutes = require('./routes/event-routes');
 const mediaRoutes = require('./routes/media-routes');
-//const attendanceRoutes = require("./routes/attendance-routes.js");
+const notificationsRoutes = require("./routes/notifications-routes.js");
 
 //const { initializeGlobalState } = require('./controllers/global-controller.js');
 //const { getAllPosts, deletePost } = require("./controllers/post-controller.js");
@@ -46,7 +46,7 @@ mongoose.connect(process.env.MONGO_URL, {
 });
 
 // Initialize Socket.IO with the HTTP server
-//const io = initSocket(server); // Initialize socket instance
+const io = initSocket(server); // Initialize socket instance
 
 
 
@@ -58,6 +58,10 @@ mongoose.connect(process.env.MONGO_URL, {
 app.use('/', userRoutes);
 app.use('/', eventRoutes);
 app.use('/api/media', mediaRoutes);
+
+// Notifications routes
+
+app.use('/', notificationsRoutes);
 
 
 // Start the server

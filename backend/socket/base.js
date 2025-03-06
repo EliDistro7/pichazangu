@@ -1,14 +1,14 @@
 
 
 const socketIo = require('socket.io');
-const postEvents = require('./events/postEvents');
-const commentEvents = require('./events/commentEvents');
+//const postEvents = require('./events/postEvents');
+//const commentEvents = require('./events/commentEvents');
 const messageEvents = require('./events/messageEvents'); // Import messageEvents
 //const roomEvents = require('./events/roomEvents');
 const searchEvents = require('./events/searchEvents');
 //const audio2Events = require('./events/audio2');
-const questionsEvents = require('./events/questionsEvents');
-//const answerEvents = require('./events/answerEvents');
+//const questionsEvents = require('./events/NotificationsEvents.js');
+const NotificationsEvents = require('./events/NotificationsEvents');
 
 const room2 = require('./events/room2');
 const User = require("../models/userSchema.js");
@@ -39,8 +39,8 @@ function initSocket(server) {
   });
 
   io.on('connection', (socket) => {
- 
-
+  
+console.log('socket connected')
     // Handle guest users (unregistered users)
     socket.on('guestUser', () => {
 
@@ -144,18 +144,18 @@ function initSocket(server) {
     });
 
     // Initialize message-related events
-    messageEvents(io, socket, userSockets);
+    //messageEvents(io, socket, userSockets);
   //  roomEvents(io, socket, userSockets);
     // Initialize post-related events
-    postEvents(io, socket, userSockets);
-    searchEvents(io, socket, userSockets);
+    //postEvents(io, socket, userSockets);
+    //searchEvents(io, socket, userSockets);
     // Initialize comment-related events
-    commentEvents(io, socket, userSockets);
+    NotificationsEvents(io, socket, userSockets);
    // taggingUser(io, socket);
-    audio3(io, socket, userSockets)
+    //audio3(io, socket, userSockets)
    // room2(io, socket, userSockets, roomSocketsMap);
 
-    questionsEvents(io, socket, userSockets);
+    NotificationsEvents(io, socket, userSockets);
    // answerEvents(io, socket, userSockets);
     // Handle user disconnection
     socket.on('disconnect', () => {

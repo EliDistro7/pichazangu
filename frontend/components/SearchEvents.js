@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { searchEvents } from "actions/event";
 import { getLoggedInUserId } from "hooks/useUser";
+import socket from "hooks/socket";
 
 const SearchEvents = () => {
   const router = useRouter();
@@ -25,6 +26,8 @@ const SearchEvents = () => {
   const [error, setError] = useState("");
   const [searched, setSearched] = useState(false); // Tracks if a search has been made
   const [isSearchOpen, setIsSearchOpen] = useState(false); // Toggle search form
+  const [notificationCount, setNotificationCount] = useState(0);
+
 
   // Header Logic
   const [darkMode, setDarkMode] = useState(true);
@@ -35,6 +38,11 @@ const SearchEvents = () => {
       const user1 = await getLoggedInUserId();
       console.log("User ID from getLoggedInUserId:", user1); // Debugging
       if (user1) {
+        
+        socket.on("new_message", (notification) => {
+          setNotificationCount((prevCount) => prevCount + 1);
+        });
+
         console.log("User is logged in:", user1);
         setUser(user1);
       } else {
@@ -44,7 +52,10 @@ const SearchEvents = () => {
     };
 
     fetchUser();
-  }, []);
+    return () => {
+      socket.off("new_message");
+    };
+  }, [user]);
 
   // Search Logic
   const handleSearch = async () => {
@@ -159,8 +170,8 @@ const SearchEvents = () => {
           {/* Conditional Rendering for Notifications and Messages */}
           {user ? (
             <>
-              {/* Notifications 
-              <a
+
+<a      
                 href="/notifications"
                 className="flex items-center p-2 rounded-full bg-gray-700 hover:bg-gray-800 transition-colors"
                 title="Notifications"
@@ -170,6 +181,8 @@ const SearchEvents = () => {
                   Notifications
                 </span>
               </a>
+              {/* Notifications 
+
 
              
               <a
@@ -223,7 +236,7 @@ const SearchEvents = () => {
       <div className="h-32" />
 
       {/* Search Events Content */}
-      <div className="max-w-4xl mx-auto rounded-lg shadow-lg mt-20">
+      <div className="max-w-4xl mx-auto rounded-lg shadow-lg mt-10">
         {/* Before Search UI */}
      
 

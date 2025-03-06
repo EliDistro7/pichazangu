@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { authenticateEvent } from "../actions/event";
 import { getLoggedInUserId } from "hooks/useUser";
 import axios from "axios";
+import socket from "hooks/socket"; // Import global socket instance
 
 const EventCard = ({ event }) => {
   const router = useRouter();
@@ -49,15 +50,17 @@ const EventCard = ({ event }) => {
     }
   };
 
+
   const handleFollowClick = async () => {
     if (!isLoggedIn) {
       setShowLoginPrompt(true);
       setTimeout(() => setShowLoginPrompt(false), 3000);
       return;
     }
-
+  
     setLoadingFollow(true);
     const userId = getLoggedInUserId();
+  
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_SERVER}/${event._id}/toggle-follow`,
@@ -65,11 +68,22 @@ const EventCard = ({ event }) => {
       );
       const data = response.data;
       setIsFollowing(data.isFollowing);
+  
+      if (data.isFollowing) {
+        // Emit socket event when user follows an event
+        socket.emit("follow_event", {
+          userId,
+          eventId: event._id,
+          eventOwnerId: event.ownerId, // Make sure this is available
+        });
+      }
     } catch (error) {
       console.error("Error toggling follow:", error);
     }
+  
     setLoadingFollow(false);
   };
+  
 
   return (
     <div

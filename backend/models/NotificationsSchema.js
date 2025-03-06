@@ -10,19 +10,24 @@ const NotificationSchema = new mongoose.Schema(
       required: true, // The user receiving the notification
     },
     event: {
+        
       type: mongoose.Schema.Types.ObjectId,
       ref: "Event",
       required: false, // Only required if the notification is related to an event
     },
     type: {
       type: String,
-      enum: ["event_follow", "event_update", "new_follower", "message"],
+      enum: ["event_follow", "event_update", "new_follower", "new_message"],
       required: true, // Defines the type of notification
     },
     message: {
       type: String,
       required: true, // Notification message
     },
+    senderName: {
+        type: String,
+        required: true, // Notification message
+      },
     read: {
       type: Boolean,
       default: false, // False by default, marking unread notifications
@@ -31,4 +36,4 @@ const NotificationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Notification", NotificationSchema);
+module.exports = mongoose.model("Notifications", NotificationSchema);

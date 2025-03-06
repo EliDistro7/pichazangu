@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { User, Phone, MessageSquare, Check, X } from "lucide-react";
 import { addMessage } from "actions/event";
+import socket from "hooks/socket";
 
-const MessageForm = ({ eventId }) => {
+const MessageForm = ({ eventId, userId }) => {
   const [message, setMessage] = useState({
     senderName: "",
     phoneNumber: "",
@@ -25,7 +26,7 @@ const MessageForm = ({ eventId }) => {
     setSuccess(null);
 
     try {
-      await addMessage({ eventId, ...message });
+      await addMessage({senderName:message.senderName, userId,socket:socket,eventId, ...message });
       setSuccess("Message sent successfully!");
       setMessage({ senderName: "", phoneNumber: "", content: "" }); // Reset form
     } catch (err) {
