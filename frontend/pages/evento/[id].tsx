@@ -369,7 +369,7 @@ const EventDetails = ({ initialEvent }) => {
               >
                 <X className="text-white" size={20} />
               </button>
-              <MessageForm eventId={initialEvent._id} userId={`${loggedInUserId || "guest"}`}/>
+              <MessageForm eventId={initialEvent._id} userId={`${initialEvent.author.userId}`}/>
             </div>
           </div>
         )}
