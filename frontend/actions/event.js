@@ -231,6 +231,7 @@ export const addViewToEvent = async ({ eventId, userId, socket = null }) => {
 // Add a message to an event
 export const addMessage = async ({ eventId, userId, senderName, phoneNumber, content, socket = null }) => {
   try {
+    console.log('eventId', eventId);
     const response = await axios.post(`${api}/events/${eventId}/messages`, {
       senderName,
       phoneNumber,

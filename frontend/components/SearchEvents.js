@@ -17,6 +17,8 @@ import {
 import { searchEvents } from "actions/event";
 import { getLoggedInUserId } from "hooks/useUser";
 import socket from "hooks/socket";
+import {getNotifications} from "actions/notifications";
+import NotificationModal from "./NotificationModal";
 
 const SearchEvents = () => {
   const router = useRouter();
@@ -27,6 +29,9 @@ const SearchEvents = () => {
   const [searched, setSearched] = useState(false); // Tracks if a search has been made
   const [isSearchOpen, setIsSearchOpen] = useState(false); // Toggle search form
   const [notificationCount, setNotificationCount] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+
 
 
   // Header Logic
@@ -34,28 +39,36 @@ const SearchEvents = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchUserAndNotifications = async () => {
       const user1 = await getLoggedInUserId();
-      console.log("User ID from getLoggedInUserId:", user1); // Debugging
       if (user1) {
-        
+        setUser(user1);
+  
+        try {
+          const notifications = await getNotifications(user1);
+          console.log('notifications', notifications);
+          const unreadCount = notifications.filter(n => !n.read).length;
+          setNotificationCount(unreadCount);
+        } catch (error) {
+          console.error("Error fetching notifications:", error);
+        }
+  
+        // Listen for new notifications via socket
         socket.on("new_message", (notification) => {
           setNotificationCount((prevCount) => prevCount + 1);
         });
-
-        console.log("User is logged in:", user1);
-        setUser(user1);
       } else {
-        console.log("No user found in cookies");
         setUser(false);
       }
     };
-
-    fetchUser();
+  
+    fetchUserAndNotifications();
+  
     return () => {
       socket.off("new_message");
     };
-  }, [user]);
+  }, []);
+  
 
   // Search Logic
   const handleSearch = async () => {
@@ -169,43 +182,23 @@ const SearchEvents = () => {
 
           {/* Conditional Rendering for Notifications and Messages */}
           {user ? (
-            <>
-
-<a      
-                href="/notifications"
-                className="flex items-center p-2 rounded-full bg-gray-700 hover:bg-gray-800 transition-colors"
-                title="Notifications"
-              >
-                <Bell size={22} className="text-blue-400" />
-                <span className="hidden md:inline ml-2 text-blue-400">
-                  Notifications
-                </span>
-              </a>
-              {/* Notifications 
-
-
-             
-              <a
-                href="/messages"
-                className="flex items-center p-2 rounded-full bg-gray-700 hover:bg-gray-800 transition-colors"
-                title="Messages"
-              >
-                <MessageCircle size={22} className="text-blue-400" />
-                <span className="hidden md:inline ml-2 text-blue-400">Messages</span>
-              </a>
-
-              */}
-
-              {/* My Profile */}
-              <a
-                href="/dashboard"
-                className="flex items-center p-2 rounded-full bg-gray-700 hover:bg-gray-800 transition-colors"
-                title="My Profile"
-              >
-                <User size={22} className="text-blue-400" />
-                <span className="hidden md:inline ml-2 text-blue-400">My Profile</span>
-              </a>
-            </>
+          <button      
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center p-2 rounded-full bg-gray-700 hover:bg-gray-800 transition-colors relative cursor-pointer"
+          title="Notifications"
+        >
+          <Bell size={22} className="text-blue-400" />
+          {notificationCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full px-2">
+              {notificationCount}
+            </span>
+          )}
+          <span className="hidden md:inline ml-2 text-blue-400">
+            Notifications
+          </span>
+        </button>
+        
+         
           ) : (
             <>
               {/* Login */}
@@ -233,7 +226,10 @@ const SearchEvents = () => {
       </header>
 
       {/* Spacer to prevent fixed header from covering content */}
-      <div className="h-32" />
+      <div className="h-24" />
+
+      {isModalOpen && <NotificationModal userId={user} onClose={() => setIsModalOpen(false)} />}
+
 
       {/* Search Events Content */}
       <div className="max-w-4xl mx-auto rounded-lg shadow-lg mt-10">

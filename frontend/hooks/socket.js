@@ -9,7 +9,7 @@ socket.on("connection", () => {
   console.log("🔗 Connected to WebSocket:", socket.id);
   const userId = getLoggedInUserId(); // Get logged-in user ID
   if (userId) {
-    socket.emit("user_connected", { userId, socketId: socket.id });
+    socket.emit("loginUser", { userId, socketId: socket.id });
   }
 });
 

@@ -113,7 +113,7 @@ module.exports = function notificationEvents(io, socket, userSockets) {
   });
 
   // Listen for 'send_message' event
-  socket.on("new_message", async ({ senderName, userId, messageContent }) => {
+  socket.on("new_message", async ({eventId, senderName, userId, messageContent }) => {
     try {
       console.log('message received')
       // const senderName = await getUsernameById(senderId);
@@ -124,6 +124,7 @@ module.exports = function notificationEvents(io, socket, userSockets) {
         type: "new_message",
         message,
         senderName: senderName,
+        eventId:eventId,
       });
 
       // Notify the recipient in real time

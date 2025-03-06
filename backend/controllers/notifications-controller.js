@@ -1,5 +1,3 @@
-
-
 const Notification = require("../models/NotificationsSchema.js");
 
 const getNotificationsByUserId = async (req, res) => {
@@ -21,4 +19,38 @@ const getNotificationsByUserId = async (req, res) => {
   }
 };
 
-module.exports = { getNotificationsByUserId };
+const markNotificationAsRead = async (req, res) => {
+  try {
+    const { notificationId } = req.params;
+    
+    const notification = await Notification.findByIdAndUpdate(notificationId, { read: true }, { new: true });
+    
+    if (!notification) {
+      return res.status(404).json({ message: "Notification not found" });
+    }
+    
+    res.status(200).json(notification);
+  } catch (error) {
+    console.error("Error marking notification as read:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const deleteNotification = async (req, res) => {
+  try {
+    const { notificationId } = req.params;
+    
+    const notification = await Notification.findByIdAndDelete(notificationId);
+    
+    if (!notification) {
+      return res.status(404).json({ message: "Notification not found" });
+    }
+    
+    res.status(200).json({ message: "Notification deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting notification:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+module.exports = { getNotificationsByUserId, markNotificationAsRead, deleteNotification };
