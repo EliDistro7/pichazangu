@@ -87,6 +87,8 @@ module.exports = function questionEvents(io, socket, userSockets) {
         createNotification({
           recipientId: questionOwnerId,
           type: 'upvote_answer',
+          
+
           message: `${name} upvoted your answer.`,
           questionId,
           answerId,
