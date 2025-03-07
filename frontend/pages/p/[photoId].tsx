@@ -3,8 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import Modal from "../../components/Modal"; // Use the Modal component
 import getResults from "../../utils/cachedImages"; // Fetches from your DB by eventId and mediaType
-import getBase64ImageUrl from "../../utils/generateBlurPlaceholder";
-import SearchEvents from "components/SearchEvents";
+
 
 interface MediaPageProps {
   currentMedia: {
@@ -37,7 +36,7 @@ const MediaPage: NextPage<MediaPageProps> = ({
         <meta name="twitter:image" content={currentMediaUrl} />
       </Head>
       <main className="mx-auto max-w-[1960px] p-4">
-        <SearchEvents />
+       
         {/* Replace Carousel with Modal */}
         <Modal
           eventId={eventId}
