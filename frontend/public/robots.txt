@@ -1,6 +1,4 @@
 
-
 User-agent: *
-Disallow:
-
-Sitemap: https://pichazangu.store/api/sitemap-index
+Allow: /
+Sitemap: https://pichazangu.store/api/sitemap

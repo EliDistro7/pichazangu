@@ -32,6 +32,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     <>
       <Head>
         {/* Primary Meta Tags */}
+
         <title>PichaZangu | Relive Events Through Photos & Videos</title>
         <meta name="description" content="Discover and relive events through high-quality photos and videos captured by talented photographers and videographers. Explore unforgettable moments at PichaZangu." />
         <meta name="keywords" content="photography, videography, event photos, event videos, photographers, videographers, event photography, PichaZangu" />
@@ -53,6 +54,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <meta name="twitter:description" content="Discover and relive events through high-quality photos and videos captured by talented photographers and videographers. Explore unforgettable moments at PichaZangu." />
         <meta name="twitter:image" content="https://pichazangu.store/twitter-card.jpg" />
         <meta name="twitter:player" content="https://pichazangu.store/twitter-video.mp4" />
+        <link rel="canonical" href="https://www.pichazangu.store/"></link>
 
         {/* Favicon */}
         <link rel="icon" href="/favicon.ico" />
