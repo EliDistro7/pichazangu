@@ -30,7 +30,11 @@ interface ErrorResponse {
 
 // Utility functions for managing secure cookies
 export const setSecureCookie = (key: string, value: string): void => {
-  Cookies.set(key, value, { secure: true, sameSite: 'Strict' });
+  Cookies.set(key, value, { 
+    secure: true, 
+    sameSite: 'Strict', 
+    expires: 14 // Cookie will last for 14 days
+  });
 };
 
  const getSecureCookie = (key: string): string | undefined => {
