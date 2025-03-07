@@ -57,7 +57,7 @@ console.log('socket connected')
     // Handle registered/logged-in users
     socket.on('loginUser', async ({ userId }) => {
      
-      try {
+      try { console.log('new user connected', userId)
         const userDetails = await getUserDetails(userId);
 
         if (userDetails) {

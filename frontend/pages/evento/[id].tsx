@@ -3,7 +3,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { Camera, ImagePlus, Video, Loader2,MessageSquare,X, ArrowLeft } from "lucide-react";
 import { getEventById, updateEventCoverPhoto, updateEventMedia,addViewToEvent } from "../../actions/event";
-import { getLoggedInUserId } from "hooks/useUser";
+import { getLoggedInUserId, getLoggedInUsername } from "hooks/useUser";
 import { uploadToCloudinary } from "actions/uploadToCloudinary";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import { useLastViewedPhoto } from "../../utils/useLastViewedPhoto";
 import MessageForm from 'components/MessageForm';
 import SearchEvents from "components/SearchEvents";
+import socket from "hooks/socket";
 
 const EventDetails = ({ initialEvent }) => {
   const [event, setEvent] = useState(initialEvent);
@@ -22,6 +23,7 @@ const EventDetails = ({ initialEvent }) => {
   //const loggedInUserId = getLoggedInUserId();
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false); // State for message modal
   const [loggedInUserId, setLoggedUserId] = useState(null);
+  const [logggedInUsername, setLogggedInUsername] = useState(null);
   const router = useRouter();
   const { photoId } = router.query;
   const [lastViewedPhoto, setLastViewedPhoto] = useLastViewedPhoto();
@@ -30,6 +32,7 @@ const EventDetails = ({ initialEvent }) => {
   // Scroll to last viewed photo if available
   useEffect(() => {
     let logged = getLoggedInUserId();
+    let userNameLogged = getLoggedInUsername();
     setLoggedUserId(logged);
     if (lastViewedPhoto && !photoId) {
       lastViewedPhotoRef.current?.scrollIntoView({ block: "center" });
@@ -53,7 +56,7 @@ const EventDetails = ({ initialEvent }) => {
   
     // Send request to add view
     console.log('initial event: ' + initialEvent._id)
-    addViewToEvent({ eventId: initialEvent._id, userId: loggedInUserId || "guest" })
+    addViewToEvent({ eventId: initialEvent._id,userId:initialEvent.author.userId, senderName: logggedInUsername || "guest", socket:socket })
       .then(() => {
         
         // Update localStorage after successful request

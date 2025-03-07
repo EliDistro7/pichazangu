@@ -213,12 +213,12 @@ export const unfollowEvent = async ({ eventId, userId, socket = null }) => {
 };
 
 // Add a view to an event
-export const addViewToEvent = async ({ eventId, userId, socket = null }) => {
+export const addViewToEvent = async ({ eventId, userId, socket = null,senderName  }) => {
   try {
-    const response = await axios.post(`${api}/events/add-view`, { eventId, userId });
+    const response = await axios.post(`${api}/events/add-view`, { eventId, userId});
 
     if (socket) {
-      socket.emit("view_event", { userId, eventId });
+      socket.emit("view_event", { userId, eventId,senderName });
     }
 
     return response.data; // Returns success message or updated event data

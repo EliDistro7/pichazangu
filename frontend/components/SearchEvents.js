@@ -46,7 +46,7 @@ const SearchEvents = () => {
   
         try {
           const notifications = await getNotifications(user1);
-          console.log('notifications', notifications);
+          //console.log('notifications', notifications);
           const unreadCount = notifications.filter(n => !n.read).length;
           setNotificationCount(unreadCount);
         } catch (error) {
@@ -55,6 +55,10 @@ const SearchEvents = () => {
   
         // Listen for new notifications via socket
         socket.on("new_message", (notification) => {
+          setNotificationCount((prevCount) => prevCount + 1);
+        });
+        // Listen for new notifications via socket
+        socket.on("view_event", (notification) => {
           setNotificationCount((prevCount) => prevCount + 1);
         });
       } else {
@@ -66,6 +70,7 @@ const SearchEvents = () => {
   
     return () => {
       socket.off("new_message");
+      socket.off('view_event');
     };
   }, []);
   

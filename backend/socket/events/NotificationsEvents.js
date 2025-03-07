@@ -15,8 +15,14 @@ module.exports = function notificationEvents(io, socket, userSockets) {
 
   // Helper function to notify users in real-time via Socket.io
   const notifyUser = async (userId, event, eventData) => {
+    
+
+    console.log('sendng notification to user')
+       // Notify the recipient in real time
+      // notifyUser(userId, "new_message", { senderName, messageContent });
     const targetSocketId = userSockets[userId];
     if (targetSocketId) {
+      console.log('succesful sent message to user')
       io.to(targetSocketId).emit(event, eventData);
     }
   };
@@ -95,18 +101,24 @@ module.exports = function notificationEvents(io, socket, userSockets) {
   });
 
   // Listen for 'view_event' event
-  socket.on("view_event", async ({ userId, eventId, eventOwnerId }) => {
+  socket.on("view_event", async ({ userId, eventId, senderName}) => {
     try {
-      const username = await getUsernameById(userId);
-      const message = `${username} viewed your event.`;
+      //const username = await getUsernameById(userId);
+      const message = `${senderName} viewed your event.`;
 
-      await createNotification({
-        userId: eventOwnerId,
-        type: "event_view",
-        message,
-        eventId,
-        senderId: userId,
-      });
+    
+     
+
+       await createNotification({
+         userId: userId,
+         type: "view_event",
+         message,
+         senderName: senderName,
+         eventId:eventId,
+       });
+
+       // Notify the recipient in real time
+      notifyUser(userId, "view_event", { senderName, message });
     } catch (err) {
       console.error("Error handling view_event event:", err);
     }
