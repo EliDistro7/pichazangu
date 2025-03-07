@@ -1,51 +1,15 @@
-import Document, { Head, Html, Main, NextScript } from "next/document";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-
-
+import Document, { Html, Head, Main, NextScript } from "next/document";
 
 class MyDocument extends Document {
   render() {
     return (
-      <Html lang="en" > {/* AMP Lightning Bolt */}
+      <Html lang="en">
         <Head>
+          {/* Favicon */}
           <link rel="icon" href="/favicon.ico" />
 
           {/* Theme Color for Dark Mode */}
-  <meta name="theme-color" content="#000000" /> {/* Black for dark theme */}
-
-          {/* Primary Meta Tags */}
-          <meta name="title" content="PichaZangu | Relive Events Through Photos & Videos" />
-          <meta
-            name="description"
-            content="Discover and relive events through high-quality photos and videos captured by talented photographers and videographers. Explore unforgettable moments at PichaZangu."
-          />
-
-          {/* Open Graph / Facebook */}
-          <meta property="og:type" content="website" />
-          <meta property="og:url" content="https://pichazangu.store" />
-          <meta property="og:site_name" content="PichaZangu" />
-          <meta property="og:title" content="PichaZangu | Relive Events Through Photos & Videos" />
-          <meta
-            property="og:description"
-            content="Discover and relive events through high-quality photos and videos captured by talented photographers and videographers. Explore unforgettable moments at PichaZangu."
-          />
-          <meta property="og:image" content="https://pichazangu.store/img/nyamachoma.jpg" />
-
-          {/* Twitter Meta Tags */}
-          <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:site" content="@PichaZangu" />
-          <meta name="twitter:title" content="PichaZangu | Relive Events Through Photos & Videos" />
-          <meta
-            name="twitter:description"
-            content="Discover and relive events through high-quality photos and videos captured by talented photographers and videographers. Explore unforgettable moments at PichaZangu."
-          />
-          <meta name="twitter:image" content="https://pichazangu.store/twitter-card.jpg" />
-          <meta name="twitter:player" content="https://pichazangu.store/twitter-video.mp4" />
-
-          {/* Additional SEO Meta Tags */}
-          <meta name="keywords" content="photography, videography, event photos, event videos, photographers, videographers, event photography, PichaZangu" />
-          <meta name="author" content="PichaZangu Team" />
+          <meta name="theme-color" content="#000000" />
 
           {/* Google AdSense */}
           <script
@@ -62,18 +26,15 @@ class MyDocument extends Document {
           ></script>
         </Head>
         <body className="font-sans bg-black antialiased">
-          
-          {/* AMP Auto Ads using dangerouslySetInnerHTML */}
+          {/* AMP Auto Ads */}
           <div
             dangerouslySetInnerHTML={{
               __html: `<amp-auto-ads type="adsense" data-ad-client="ca-pub-3024582236485351"></amp-auto-ads>`,
             }}
           />
 
-         
           <Main />
           <NextScript />
-          <Footer />
         </body>
       </Html>
     );
