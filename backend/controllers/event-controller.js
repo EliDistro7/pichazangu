@@ -116,6 +116,36 @@ exports.addMessage = async (req, res) => {
   }
 };
 
+
+
+// Get all public events with pagination
+exports.getAllEvents = async (req, res) => {
+  try {
+    const { page = 1, limit = 10 } = req.query; // Default: page 1, limit 10
+
+    const events = await Event.find({ private: false }) // Fetch only public events
+      .select("-password -messages") // Exclude sensitive fields
+      .sort({ createdAt: -1 }) // Newest events first
+      .skip((page - 1) * limit) // Skip previous pages
+      .limit(parseInt(limit)); // Limit results
+
+    const totalEvents = await Event.countDocuments({ private: false });
+
+    res.status(200).json({
+      events,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(totalEvents / limit),
+      totalEvents,
+    });
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+
+
 // Mark a message as read
 exports.markMessageAsRead = async (req, res) => {
   try {

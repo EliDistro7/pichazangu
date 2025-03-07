@@ -8,6 +8,7 @@ router.get("/get-events", eventController.getAllEvents);
 router.post("/event/:eventId", eventController.getEventById);
 router.put("/:eventId", eventController.updateEvent);
 router.delete("/:eventId", eventController.deleteEvent);
+router.get("/events", eventController.getAllEvents);
 
 // New route for retrieving event media
 // e.g., GET /event-media?eventId=123&mediaType=photo

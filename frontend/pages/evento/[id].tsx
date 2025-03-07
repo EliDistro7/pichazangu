@@ -41,6 +41,7 @@ const EventDetails = ({ initialEvent }) => {
   useEffect(() => {
     const localStorageKey = "viewedEvents";
     
+    
     // Get stored viewed events
     let viewedEvents = JSON.parse(localStorage.getItem(localStorageKey)) || {};
   
@@ -54,6 +55,7 @@ const EventDetails = ({ initialEvent }) => {
     console.log('initial event: ' + initialEvent._id)
     addViewToEvent({ eventId: initialEvent._id, userId: loggedInUserId || "guest" })
       .then(() => {
+        
         // Update localStorage after successful request
         viewedEvents[userKey] = [...(viewedEvents[userKey] || []), initialEvent._id];
         localStorage.setItem(localStorageKey, JSON.stringify(viewedEvents));

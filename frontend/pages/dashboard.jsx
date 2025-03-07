@@ -9,6 +9,7 @@ import EventCard from "components/EventCard2";
 import SearchEvents from "components/SearchEvents";
 import SidebarModal from "../components/SidebarModal";
 import { getUserById } from "../actions/users";
+import axios from "axios";
 
 const Dashboard = () => {
   const router = useRouter();
@@ -28,6 +29,9 @@ const Dashboard = () => {
 
       const fetchUserEvents = async () => {
         try {
+          const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/events`); // Example API
+  const events = await res.data;
+  console.log("events", events);
           const userD = await getUserById(userId);
           setUserdata(userD);
           const data = await getAllEventsByUser(userId);
