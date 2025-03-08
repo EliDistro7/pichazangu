@@ -31,7 +31,7 @@ const Dashboard = () => {
         try {
           const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/events`); // Example API
           const events = await res.data;
-          console.log("events", events);
+          //console.log("events", events);
           const userD = await getUserById(userId);
           setUserdata(userD);
           const data = await getAllEventsByUser(userId);

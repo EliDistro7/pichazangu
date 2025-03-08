@@ -165,6 +165,7 @@ const SearchEvents = () => {
 
         {/* Second Row - Navigation Icons */}
         <div className="flex justify-center items-center p-4 space-x-4">
+          <button></button>
           {/* Home */}
           <a
             href="/"
