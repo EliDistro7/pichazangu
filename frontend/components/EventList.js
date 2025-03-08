@@ -1,14 +1,24 @@
-// components/EventList.js
 import React from "react";
 import EventCard from "./EventCard";
 import RandomAd from "./RandomAd";
-import FeaturedEvent from "./FeaturedEvent";
 import PricingBanner from "./PricingBanner";
 import SearchEvents from "components/SearchEvents";
 
 const EventList = ({ events, loading, onDelete }) => {
   if (loading) return <p>Loading events...</p>;
   if (events.length === 0) return <p>No events available.</p>;
+
+  // Function to shuffle the events array using the Fisher-Yates algorithm
+  const shuffleArray = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+    }
+    return array;
+  };
+
+  // Shuffle the events array
+  const shuffledEvents = shuffleArray([...events]);
 
   // Function to generate a random number between min and max
   const getRandomNumber = (min, max) => {
@@ -32,7 +42,7 @@ const EventList = ({ events, loading, onDelete }) => {
   return (
     <div className="space-y-4">
       <SearchEvents />
-      {events.map((event, index) => {
+      {shuffledEvents.map((event, index) => {
         // Render a random component at random intervals
         if (shouldRenderRandomComponent()) {
           return (
