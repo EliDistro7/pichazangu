@@ -72,15 +72,26 @@ export const searchEvents = async (query) => {
 };
 
 // Update event media (add new images and videos)
-export const updateEventMedia = async ({ eventId, newImages, newVideos, userId }) => {
+export const updateEventMedia = async ({ eventId, newImages, newVideos, userId,mediaType,
+  socket=null,
+  senderName, }) => {
   try {
     console.log("Updating event media for eventId:", eventId);
     const response = await axios.patch(`${api}/events/updateMedia`, {
       eventId,
       newImages,
       newVideos,
+      
       userId,
     });
+    if(socket){
+      socket.emit('media_added', {
+        senderName,
+        mediaType,
+        eventId,
+        userId,
+      });
+    }
     console.log("Media update response:", response.data);
     return response.data; // Returns success message or updated event data
   } catch (error) {

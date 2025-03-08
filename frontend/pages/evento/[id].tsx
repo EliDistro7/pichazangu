@@ -134,13 +134,19 @@ const EventDetails = ({ initialEvent }) => {
         await updateEventMedia({
           eventId: event._id,
           newImages: secureUrls,
+          mediaType: "image",
+          senderName: event.author.username,
           newVideos: [],
           userId: loggedInUserId,
+          socket:socket,
         });
       } else if (type === "video") {
         await updateEventMedia({
           eventId: event._id,
+          socket:socket,
+          senderName: event.author.username,
           newImages: [],
+          mediaType: "video",
           newVideos: secureUrls,
           userId: loggedInUserId,
         });

@@ -1,5 +1,6 @@
 const Notification = require("../../models/NotificationsSchema.js");
 const User = require("../../models/userSchema.js");
+const Event = require("../../models/eventSchema.js");
 
 module.exports = function notificationEvents(io, socket, userSockets) {
   // Helper function to get the username based on userId
@@ -65,22 +66,42 @@ module.exports = function notificationEvents(io, socket, userSockets) {
   });
 
   // Listen for 'follow_event' event
-  socket.on("follow_event", async ({ userId, eventId, eventOwnerId }) => {
+  socket.on("media_added", async ({ userId, eventId, senderName, mediaType, eventTitle }) => {
     try {
-      const username = await getUsernameById(userId);
-      const message = `${username} started following your event.`;
-
-      await createNotification({
-        userId: eventOwnerId,
-        type: "event_follow",
-        message,
-        eventId,
-        senderId: userId,
-      });
+      console.log("Handling media_added event...");
+  
+      // Fetch the event with followers
+      const event = await Event.findById(eventId).populate("followers");
+      if (!event) {
+        console.error("Event not found:", eventId);
+        return;
+      }
+  
+      const message = `${senderName} added new ${mediaType} in album ${eventTitle}.`;
+  
+      // Get followers (excluding the sender)
+      const recipients = event.followers
+        .map((follower) => follower._id.toString())
+        .filter((followerId) => followerId !== userId.toString());
+  
+      console.log(`Notifying ${recipients.length} followers...`);
+  
+      for (const recipientId of recipients) {
+        await createNotification({
+          userId: recipientId,
+          type: "media_added",
+          message,
+          eventId,
+          senderName,
+        });
+  
+        notifyUser(recipientId, "new_notification", { senderName, message });
+      }
     } catch (err) {
-      console.error("Error handling follow_event event:", err);
+      console.error("Error handling media_added event:", err);
     }
   });
+  
 
   // Listen for 'like_event' event
   socket.on("like_event", async ({ userId, eventId, eventOwnerId }) => {
