@@ -175,13 +175,13 @@ const EventDetails = ({ initialEvent }) => {
         <meta name="description" content={initialEvent.description} />
         <meta property="og:title" content={`${initialEvent.title} `} />
         <meta property="og:description" content={initialEvent.description} />
-        <meta property="og:image" content={`${initialEvent.coverPhoto}`} />
+        <meta property="og:image" content={initialEvent.coverPhoto} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`https://pichazangu.store/evento/${initialEvent._id}`} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={initialEvent.title} />
         <meta name="twitter:description" content={initialEvent.description} />
-        <meta name="twitter:image" content={`${initialEvent.coverPhoto}`} />
+        <meta name="twitter:image" content={initialEvent.coverPhoto} />
       </head>
   
       <main className="max-w-[1960px] p-4 px-0 mx-0">
