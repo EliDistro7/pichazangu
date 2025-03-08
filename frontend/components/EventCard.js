@@ -5,7 +5,10 @@ import { useRouter } from "next/router";
 import { authenticateEvent } from "../actions/event";
 import { getLoggedInUserId } from "hooks/useUser";
 import axios from "axios";
-import socket from "hooks/socket"; // Import global socket instance
+import socket from "hooks/socket";
+import { WhatsappShareButton, FacebookShareButton, TwitterShareButton } from "react-share";
+import { WhatsappIcon, FacebookIcon, TwitterIcon } from "react-share";
+import { FiShare2 } from "react-icons/fi";
 
 const EventCard = ({ event }) => {
   const router = useRouter();
@@ -19,8 +22,8 @@ const EventCard = ({ event }) => {
   const [loadingView, setLoadingView] = useState(false);
   const [loadingFollow, setLoadingFollow] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [isSharePopupOpen, setIsSharePopupOpen] = useState(false);
 
-  // Check if the user is logged in and if they are following the event
   useEffect(() => {
     const userId = getLoggedInUserId();
     setIsLoggedIn(!!userId);
@@ -50,17 +53,16 @@ const EventCard = ({ event }) => {
     }
   };
 
-
   const handleFollowClick = async () => {
     if (!isLoggedIn) {
       setShowLoginPrompt(true);
       setTimeout(() => setShowLoginPrompt(false), 3000);
       return;
     }
-  
+
     setLoadingFollow(true);
     const userId = getLoggedInUserId();
-  
+
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_SERVER}/${event._id}/toggle-follow`,
@@ -68,58 +70,52 @@ const EventCard = ({ event }) => {
       );
       const data = response.data;
       setIsFollowing(data.isFollowing);
-  
+
       if (data.isFollowing) {
-        // Emit socket event when user follows an event
         socket.emit("follow_event", {
           userId,
           eventId: event._id,
-          eventOwnerId: event.ownerId, // Make sure this is available
+          eventOwnerId: event.ownerId,
         });
       }
     } catch (error) {
       console.error("Error toggling follow:", error);
     }
-  
+
     setLoadingFollow(false);
   };
-  
+
+  const toggleSharePopup = () => {
+    setIsSharePopupOpen(!isSharePopupOpen);
+  };
 
   return (
-    <div
-      id={event._id}
-      className="font-sans relative group overflow-hidden rounded-xl shadow-2xl"
-    >
-     {/* Cover Photo */}
-<div className="relative h-64 w-full bg-gray-300 flex items-center justify-center">
-  {event.coverPhoto ? (
-    <Image
-      src={event.coverPhoto}
-      alt={event.title}
-      layout="fill"
-      objectFit="cover"
-      className="transition-transform duration-500 group-hover:scale-110"
-      onLoad={() => setImageLoaded(true)}
-    />
-  ) : (
-    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-r from-gray-500 via-gray-400 to-gray-500">
-      <span className="text-white text-lg font-semibold"></span>
-    </div>
-  )}
-  {/* Gradient overlay for readability */}
-  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-</div>
-
+    <div id={event._id} className="font-sans relative group overflow-hidden rounded-xl shadow-2xl">
+      {/* Cover Photo */}
+      <div className="relative h-64 w-full bg-gray-300 flex items-center justify-center">
+        {event.coverPhoto ? (
+          <Image
+            src={event.coverPhoto}
+            alt={event.title}
+            layout="fill"
+            objectFit="cover"
+            className="transition-transform duration-500 group-hover:scale-110"
+            onLoad={() => setImageLoaded(true)}
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-r from-gray-500 via-gray-400 to-gray-500">
+            <span className="text-white text-lg font-semibold"></span>
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+      </div>
 
       {/* Event details overlay */}
       <div className="absolute inset-0 flex flex-col justify-end p-6">
         <h2 className="text-2xl font-bold text-white">{event.title}</h2>
-        <p className="text-white text-sm mt-1 line-clamp-2">
-          {event.description}
-        </p>
+        <p className="text-white text-sm mt-1 line-clamp-2">{event.description}</p>
         <div className="flex items-center mt-3 space-x-3">
           <span className="text-white text-sm">by {event.author.username}</span>
-          {/* View Button */}
           <button
             onClick={handleViewClick}
             className="flex items-center space-x-1 bg-white bg-opacity-20 px-3 py-1 rounded hover:bg-opacity-40 transition"
@@ -132,7 +128,6 @@ const EventCard = ({ event }) => {
             )}
             <span className="text-white text-xs">View</span>
           </button>
-          {/* Follow/Unfollow Button */}
           <button
             onClick={handleFollowClick}
             disabled={!isLoggedIn || loadingFollow}
@@ -147,12 +142,16 @@ const EventCard = ({ event }) => {
             {loadingFollow ? (
               <Loader2 size={16} className="text-white animate-spin" />
             ) : null}
-            <span className="text-white text-xs">
-              {isFollowing ? "Unfollow" : "Follow"}
-            </span>
+            <span className="text-white text-xs">{isFollowing ? "Unfollow" : "Follow"}</span>
+          </button>
+          <button
+            onClick={toggleSharePopup}
+            className="flex items-center space-x-1 bg-white bg-opacity-20 px-3 py-1 rounded hover:bg-opacity-40 transition"
+          >
+            <FiShare2 size={16} className="text-white" />
+            <span className="text-white text-xs">Share</span>
           </button>
         </div>
-        {/* Login Prompt */}
         {showLoginPrompt && (
           <div className="absolute top-4 right-4 bg-gray-800 text-white px-4 py-2 rounded-md shadow-lg">
             Please log in to follow this event.
@@ -160,16 +159,12 @@ const EventCard = ({ event }) => {
         )}
       </div>
 
-      {/* Password Input Modal for Private Events */}
+      {/* Password Input Modal */}
       {showPasswordInput && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-gray-900 p-6 rounded-lg shadow-lg w-96">
-            <h3 className="text-xl font-semibold text-white mb-4">
-              Private Event
-            </h3>
-            <p className="text-gray-300 mb-4">
-              This event is private. Please enter the password to view.
-            </p>
+            <h3 className="text-xl font-semibold text-white mb-4">Private Event</h3>
+            <p className="text-gray-300 mb-4">This event is private. Please enter the password to view.</p>
             <form onSubmit={handlePasswordSubmit}>
               <div className="relative">
                 <input
@@ -209,6 +204,32 @@ const EventCard = ({ event }) => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Share Popup */}
+      {isSharePopupOpen && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h3 className="mb-4 text-lg font-semibold text-center">Share this event</h3>
+            <div className="flex space-x-4 justify-center">
+              <WhatsappShareButton url={`https://pichazangu.store/evento/${event._id}`} title={event.title}>
+                <WhatsappIcon className="w-8 h-8 rounded-full" />
+              </WhatsappShareButton>
+              <FacebookShareButton url={`https://pichazangu.store/evento/${event._id}`} title={event.title}>
+                <FacebookIcon className="w-8 h-8 rounded-full" />
+              </FacebookShareButton>
+              <TwitterShareButton url={`https://pichazangu.store/evento/${event._id}`} title={event.title}>
+                <TwitterIcon className="w-8 h-8 rounded-full" />
+              </TwitterShareButton>
+            </div>
+            <button
+              onClick={toggleSharePopup}
+              className="mt-4 px-4 py-2 bg-gray-100 text-gray-700 rounded-md block mx-auto"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
