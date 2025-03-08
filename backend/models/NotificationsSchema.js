@@ -17,7 +17,7 @@ const NotificationSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["event_follow", "view_event", "follow_event", "new_message"],
+      enum: ["event_follow", "view_event", "media_added", "new_message"],
       required: true, // Defines the type of notification
     },
     message: {
