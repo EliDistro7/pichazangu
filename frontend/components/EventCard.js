@@ -90,7 +90,16 @@ const EventCard = ({ event }) => {
   };
 
   return (
-    <div id={event._id} className="font-sans relative group overflow-hidden rounded-xl shadow-2xl">
+    <div
+      id={event._id}
+      className="font-sans relative group overflow-hidden rounded-xl shadow-2xl transform transition-transform duration-300 hover:scale-105 cursor-pointer"
+      onClick={(e) => {
+        // Prevent routing if a button is clicked
+        if (!e.target.closest("button")) {
+          handleViewClick();
+        }
+      }}
+    >
       {/* Cover Photo */}
       <div className="relative h-64 w-full bg-gray-300 flex items-center justify-center">
         {event.coverPhoto ? (
@@ -107,58 +116,69 @@ const EventCard = ({ event }) => {
             <span className="text-white text-lg font-semibold"></span>
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-75"></div>
       </div>
-
-      {/* Event details overlay */}
-      <div className="absolute inset-0 flex flex-col justify-end p-6">
-        <h2 className="text-2xl font-bold text-white">{event.title}</h2>
-        <p className="text-white text-sm mt-1 line-clamp-2">{event.description}</p>
-        <div className="flex items-center mt-3 space-x-3">
-          <span className="text-white text-sm">by {event.author.username}</span>
-          <button
-            onClick={handleViewClick}
-            className="flex items-center space-x-1 bg-white bg-opacity-20 px-3 py-1 rounded hover:bg-opacity-40 transition"
-            disabled={loadingView}
-          >
-            {loadingView ? (
-              <Loader2 size={16} className="text-white animate-spin" />
-            ) : (
-              <Eye size={16} className="text-white" />
-            )}
-            <span className="text-white text-xs">View</span>
-          </button>
-          <button
-            onClick={handleFollowClick}
-            disabled={!isLoggedIn || loadingFollow}
-            className={`flex items-center space-x-1 ${
-              isLoggedIn
-                ? isFollowing
-                  ? "bg-red-600 hover:bg-red-700"
-                  : "bg-blue-600 hover:bg-blue-700"
-                : "bg-gray-600 cursor-not-allowed"
-            } px-3 py-1 rounded transition`}
-          >
-            {loadingFollow ? (
-              <Loader2 size={16} className="text-white animate-spin" />
-            ) : null}
-            <span className="text-white text-xs">{isFollowing ? "Unfollow" : "Follow"}</span>
-          </button>
-          <button
-            onClick={toggleSharePopup}
-            className="flex items-center space-x-1 bg-white bg-opacity-20 px-3 py-1 rounded hover:bg-opacity-40 transition"
-          >
-            <FiShare2 size={16} className="text-white" />
-            <span className="text-white text-xs">Share</span>
-          </button>
-        </div>
-        {showLoginPrompt && (
-          <div className="absolute top-4 right-4 bg-gray-800 text-white px-4 py-2 rounded-md shadow-lg">
-            Please log in to follow this event.
-          </div>
-        )}
-      </div>
-
+  
+  {/* Event details overlay */}
+<div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-6">
+  <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">{event.title}</h2>
+  <p className="text-white text-sm mb-4 line-clamp-2">{event.description}</p>
+  <div className="flex flex-wrap items-center gap-2">
+    <p className="text-white text-sm">by {event.author.username}</p>
+    <div className="flex items-center gap-2 w-full">
+    <button
+      onClick={(e) => {
+        e.stopPropagation(); // Prevent card click event
+        handleViewClick();
+      }}
+      className="flex items-center space-x-1 bg-white bg-opacity-20 px-3 py-1 rounded-lg hover:bg-opacity-40 transition-all duration-300"
+      disabled={loadingView}
+    >
+      {loadingView ? (
+        <Loader2 size={16} className="text-white animate-spin" />
+      ) : (
+        <Eye size={16} className="text-white" />
+      )}
+      <span className="text-white text-xs">View</span>
+    </button>
+    <button
+      onClick={(e) => {
+        e.stopPropagation(); // Prevent card click event
+        handleFollowClick();
+      }}
+      disabled={!isLoggedIn || loadingFollow}
+      className={`flex items-center space-x-1 ${
+        isLoggedIn
+          ? isFollowing
+            ? "bg-red-600 hover:bg-red-700"
+            : "bg-blue-600 hover:bg-blue-700"
+          : "bg-gray-600 cursor-not-allowed"
+      } px-3 py-1 rounded-lg transition-all duration-300`}
+    >
+      {loadingFollow ? (
+        <Loader2 size={16} className="text-white animate-spin" />
+      ) : null}
+      <span className="text-white text-xs">{isFollowing ? "Unfollow" : "Follow"}</span>
+    </button>
+    <button
+      onClick={(e) => {
+        e.stopPropagation(); // Prevent card click event
+        toggleSharePopup();
+      }}
+      className="flex items-center space-x-1 bg-white bg-opacity-20 px-3 py-1 rounded-lg hover:bg-opacity-40 transition-all duration-300"
+    >
+      <FiShare2 size={16} className="text-white" />
+      <span className="text-white text-xs">Share</span>
+    </button>
+    </div>
+  </div>
+  {showLoginPrompt && (
+    <div className="absolute top-4 right-4 bg-gray-800 text-white px-4 py-2 rounded-md shadow-lg">
+      Please log in to follow this event.
+    </div>
+  )}
+</div>
+  
       {/* Password Input Modal */}
       {showPasswordInput && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -207,7 +227,7 @@ const EventCard = ({ event }) => {
           </div>
         </div>
       )}
-
+  
       {/* Share Popup */}
       {isSharePopupOpen && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
@@ -226,7 +246,7 @@ const EventCard = ({ event }) => {
             </div>
             <button
               onClick={toggleSharePopup}
-              className="mt-4 px-4 py-2 bg-gray-100 text-gray-700 rounded-md block mx-auto"
+              className="mt-4 px-4 py-2 bg-gray-100 text-gray-700 rounded-md block mx-auto hover:bg-gray-200 transition"
             >
               Close
             </button>

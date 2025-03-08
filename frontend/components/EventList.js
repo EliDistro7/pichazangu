@@ -40,21 +40,25 @@ const EventList = ({ events, loading, onDelete }) => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 p-4">
       <SearchEvents />
-      {shuffledEvents.map((event, index) => {
-        // Render a random component at random intervals
-        if (shouldRenderRandomComponent()) {
-          return (
-            <React.Fragment key={`random-${index}`}>
-              {getRandomComponent()}
-              <EventCard key={event._id} event={event} onDelete={onDelete} />
-            </React.Fragment>
-          );
-        }
-        // Otherwise, just render the event card
-        return <EventCard key={event._id} event={event} onDelete={onDelete} />;
-      })}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {shuffledEvents.map((event, index) => {
+          // Render a random component at random intervals
+          if (shouldRenderRandomComponent()) {
+            return (
+              <React.Fragment key={`random-${index}`}>
+                <div className="col-span-full"> {/* Full-width for random components */}
+                  {getRandomComponent()}
+                </div>
+                <EventCard key={event._id} event={event} onDelete={onDelete} />
+              </React.Fragment>
+            );
+          }
+          // Otherwise, just render the event card
+          return <EventCard key={event._id} event={event} onDelete={onDelete} />;
+        })}
+      </div>
     </div>
   );
 };

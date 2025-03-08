@@ -59,7 +59,7 @@ const Events = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-6">
+    <div className="min-h-screen bg-black text-white p-4 px-0">
       <div className="max-w-4xl mx-auto">
      
        
