@@ -30,8 +30,8 @@ const Dashboard = () => {
       const fetchUserEvents = async () => {
         try {
           const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/events`); // Example API
-  const events = await res.data;
-  console.log("events", events);
+          const events = await res.data;
+          console.log("events", events);
           const userD = await getUserById(userId);
           setUserdata(userD);
           const data = await getAllEventsByUser(userId);
@@ -56,6 +56,38 @@ const Dashboard = () => {
     } catch (err) {
       toast.error("Failed to delete event.");
     }
+  };
+
+  const confirmDelete = (eventId) => {
+    toast.dark(
+      <div className="p-4">
+        <p className="text-white mb-4">Are you sure you want to delete this event?</p>
+        <div className="flex space-x-4">
+          <button
+            onClick={() => {
+              handleDeleteEvent(eventId);
+              toast.dismiss();
+            }}
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-md text-white"
+          >
+            Delete
+          </button>
+          <button
+            onClick={() => toast.dismiss()}
+            className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-md text-white"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>,
+      {
+        position: "top-center",
+        autoClose: false,
+        closeButton: false,
+        draggable: false,
+        closeOnClick: false,
+      }
+    );
   };
 
   const handleEditEvent = (eventId) => {
@@ -180,7 +212,7 @@ const Dashboard = () => {
                 event={event}
                 handleViewEvent={handleViewEvent}
                 handleEditEvent={handleEditEvent}
-                handleDeleteEvent={handleDeleteEvent}
+                handleDeleteEvent={confirmDelete} // Use confirmDelete instead of handleDeleteEvent
               />
             ))}
           </div>
