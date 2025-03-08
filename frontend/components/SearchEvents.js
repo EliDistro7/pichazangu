@@ -187,6 +187,7 @@ const SearchEvents = () => {
 
           {/* Conditional Rendering for Notifications and Messages */}
           {user ? (
+            <div className='flex items-center gap-4'>
           <button      
           onClick={() => setIsModalOpen(true)}
           className="flex items-center p-2 rounded-full bg-gray-700 hover:bg-gray-800 transition-colors relative cursor-pointer"
@@ -202,7 +203,16 @@ const SearchEvents = () => {
             Notifications
           </span>
         </button>
-        
+
+<a
+href="/dashboard"
+className="flex items-center p-2 rounded-full bg-gray-700 hover:bg-gray-800 transition-colors"
+title="New Album"
+>
+<User size={22} className="text-blue-400" />
+<span className="hidden md:inline ml-2 text-blue-400">my profile</span>
+</a>
+</div>
          
           ) : (
             <>
