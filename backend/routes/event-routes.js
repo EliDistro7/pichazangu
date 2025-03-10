@@ -10,6 +10,10 @@ router.put("/:eventId", eventController.updateEvent);
 router.delete("/events/:eventId", eventController.deleteEvent);
 router.get("/events", eventController.getAllEvents);
 
+
+// Route to get followers of an event
+router.get("/event/:eventId/followers", eventController.getEventFollowers);
+
 // New route for retrieving event media
 // e.g., GET /event-media?eventId=123&mediaType=photo
 router.get("/event-media", eventController.getEventMedia);

@@ -223,6 +223,18 @@ export const unfollowEvent = async ({ eventId, userId, socket = null }) => {
   }
 };
 
+// Get followers of an event
+export const getEventFollowers = async (eventId) => {
+  try {
+    const response = await axios.get(`${api}/event/${eventId}/followers`);
+    return response.data; // Returns an array of followers;
+  } catch (error) {
+    console.error("Error fetching event followers:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || "Failed to fetch event followers.");
+  }
+};
+
+
 // Add a view to an event
 export const addViewToEvent = async ({ eventId, userId, socket = null,senderName  }) => {
   try {

@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Trash2, Edit, Eye, Plus, Users, BarChart2, ArrowLeft, User } from "lucide-react";
 import { useRouter } from "next/router";
 import { getLoggedInUserId } from "../hooks/useUser";
-import { getAllEventsByUser, deleteEvent } from "../actions/event";
+import { getAllEventsByUser, deleteEvent, getEventFollowers } from "../actions/event";
 import EventCard from "components/EventCard2";
 import SearchEvents from "components/SearchEvents";
 import SidebarModal from "../components/SidebarModal";
@@ -42,6 +42,7 @@ const Dashboard = () => {
           toast.error("Failed to fetch events.");
         } finally {
           setLoading(false);
+          
         }
       };
       fetchUserEvents();

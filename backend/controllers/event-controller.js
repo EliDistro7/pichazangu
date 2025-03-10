@@ -144,6 +144,30 @@ exports.getAllEvents = async (req, res) => {
 };
 
 
+// Controller to retrieve followers of an event by eventId
+exports.getEventFollowers = async (req, res) => {
+  try {
+      const { eventId } = req.params;
+
+      // Validate eventId format
+      if (!mongoose.Types.ObjectId.isValid(eventId)) {
+          return res.status(400).json({ message: "Invalid event ID" });
+      }
+
+      // Fetch event details along with its followers
+      const event = await Event.findById(eventId).populate("followers", "username email");
+
+      if (!event) {
+          return res.status(404).json({ message: "Event not found" });
+      }
+
+      // Return the list of followers
+      res.status(200).json({ followers: event.followers });
+  } catch (error) {
+      console.error("Error fetching event followers:", error);
+      res.status(500).json({ message: "Server error" });
+  }
+};
 
 
 // Mark a message as read

@@ -280,7 +280,6 @@ const updateUsername = async () => {
     }
 };
 
-updateUsername()
 
 
 
@@ -380,6 +379,32 @@ const removeFollower = async (req, res) => {
         res.status(500).send({ message: 'Error removing follower: ' + error.message });
     }
 };
+
+
+// Controller to retrieve following users
+const getFollowingUsers = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        // Validate userId format
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: "Invalid user ID" });
+        }
+
+        // Find the user and populate the following field with user details
+        const user = await User.findById(userId).populate("following", "-password");
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json({ following: user.following });
+    } catch (error) {
+        console.error("Error fetching following users:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
 
 // Controller to retrieve user by ID
 const getUserById = async (req, res) => {
@@ -616,4 +641,5 @@ module.exports = {
     unverifyUser,
     getUserFollowers,
     getUserFollowing,
+    getFollowingUsers,
 };
