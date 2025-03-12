@@ -46,7 +46,7 @@ const SearchEvents = () => {
   
         try {
           const notifications = await getNotifications(user1);
-          console.log('notifications', notifications);
+         // console.log('notifications', notifications);
           const unreadCount = notifications.filter(n => !n.read).length;
           setNotificationCount(unreadCount);
         } catch (error) {
