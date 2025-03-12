@@ -29,6 +29,11 @@ const EventDetails = ({ initialEvent }) => {
   const { photoId } = router.query;
   const [lastViewedPhoto, setLastViewedPhoto] = useLastViewedPhoto();
   const lastViewedPhotoRef = useRef(null);
+  const [caption, setCaption] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [captions, setCaptions] = useState([]);
+ 
+  const [selectedType, setSelectedType] = useState("");
 
   // Scroll to last viewed photo if available
   useEffect(() => {
@@ -128,58 +133,61 @@ const getMediaData = (media) => {
     }
   };
 
-  // Handle media (images/videos) upload
-  const handleMediaUpload = async (files, type) => {
-    if (!files || files.length === 0) return;
+
+  const handleFileChange = (e, type) => {
+    const files = Array.from(e.target.files);
+    setSelectedFiles(files);
+    setCaptions(new Array(files.length).fill(""));
+    setSelectedType(type);
+  };
+
+  const handleCaptionChange = (e, index) => {
+    const newCaptions = [...captions];
+    newCaptions[index] = e.target.value;
+    setCaptions(newCaptions);
+  };
+
+  const handleMediaUpload = async () => {
+    if (selectedFiles.length === 0) return;
+
     setIsUploading(true);
     setUploadProgress(0);
+
     try {
-      const fileArray = Array.from(files);
-      const uploadPromises = fileArray.map((file) =>
-        uploadToCloudinary(file, (progress) => {
-          setUploadProgress(progress);
-        })
+      const uploadResults = await Promise.all(
+        selectedFiles.map((file) =>
+          uploadToCloudinary(file, (progress) => setUploadProgress(progress))
+        )
       );
-      const uploadResults = await Promise.all(uploadPromises);
-      const secureUrls = uploadResults.map((result) => result.secureUrl);
-      if (type === "image") {
-        await updateEventMedia({
-          eventId: event._id,
-          newImages: secureUrls,
-          mediaType: "image",
-          senderName: event.author.username,
-          newVideos: [],
-          userId: loggedInUserId,
-          socket:socket,
-        });
-      } else if (type === "video") {
-        await updateEventMedia({
-          eventId: event._id,
-          socket:socket,
-          senderName: event.author.username,
-          newImages: [],
-          mediaType: "video",
-          newVideos: secureUrls,
-          userId: loggedInUserId,
-        });
-      }
-      setEvent((prevEvent) => ({
-        ...prevEvent,
-        [type === "image" ? "imageUrls" : "videoUrls"]: [
-          ...(prevEvent[type === "image" ? "imageUrls" : "videoUrls"] || []),
-          ...secureUrls,
-        ],
+
+      const uploadedMedia = uploadResults.map((result, index) => ({
+        url: result.secureUrl,
+        caption: captions[index] || "",
       }));
-      toast.success("Media updated successfully");
+
+      const updatePayload = {
+        eventId: event._id,
+        senderName: event.author.username,
+        userId: loggedInUserId,
+        socket,
+        newImages: selectedType === "image" ? uploadedMedia : [],
+        newVideos: selectedType === "video" ? uploadedMedia : [],
+        mediaType: selectedType,
+      };
+
+      await updateEventMedia(updatePayload);
+
+      setSelectedFiles([]);
+      setCaptions([]);
+      toast.success("Media uploaded successfully!");
     } catch (error) {
       console.error("Error uploading media:", error);
-      toast.error("Error uploading media");
+      toast.error("Error uploading media.");
     } finally {
       setIsUploading(false);
       setUploadProgress(0);
     }
   };
-
 
 
 
@@ -285,31 +293,54 @@ const getMediaData = (media) => {
 
   {/* Media Upload UI for the Author */}
   {isAuthor && (
-    <div className="flex justify-center mb-6 gap-4">
-      <label className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition">
-        <ImagePlus className="w-5 h-5 mr-2" />
-        <span>Add Image</span>
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          className="hidden"
-          onChange={(e) => handleMediaUpload(e.target.files, "image")}
-        />
-      </label>
-      <label className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition">
-        <Video className="w-5 h-5 mr-2" />
-        <span>Add Video</span>
-        <input
-          type="file"
-          accept="video/*"
-          multiple
-          className="hidden"
-          onChange={(e) => handleMediaUpload(e.target.files, "video")}
-        />
-      </label>
-    </div>
-  )}
+ <div className="flex flex-col items-center mb-6 gap-4">
+ <div className="flex gap-4">
+   <label className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition">
+     <ImagePlus className="w-5 h-5 mr-2" />
+     <span>Add Image</span>
+     <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileChange(e, "image")} multiple />
+   </label>
+
+   <label className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition">
+     <Video className="w-5 h-5 mr-2" />
+     <span>Add Video</span>
+     <input type="file" accept="video/*" className="hidden" onChange={(e) => handleFileChange(e, "video")} multiple />
+   </label>
+ </div>
+
+ {selectedFiles.length > 0 && (
+   <div className="flex flex-col w-full max-w-md mt-4">
+     {selectedFiles.map((file, index) => (
+       <div key={index} className="flex flex-col items-center gap-2 mb-2">
+         {selectedType === "image" ? (
+           <img src={URL.createObjectURL(file)} alt="preview" className="w-full h-32 object-cover rounded-lg" />
+         ) : (
+           <video controls className="w-full h-32 object-cover rounded-lg">
+             <source src={URL.createObjectURL(file)} type={file.type} />
+           </video>
+         )}
+         <span className="truncate w-2/3">{file.name}</span>
+         <input
+           type="text"
+           placeholder="Add a caption (optional)"
+           value={captions[index] || ""}
+           onChange={(e) => handleCaptionChange(e, index)}
+           className="flex-1 px-2 py-1 border border-gray-300 rounded-lg"
+         />
+       </div>
+     ))}
+     <button
+       className="mt-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+       onClick={handleMediaUpload}
+       disabled={isUploading}
+     >
+       {isUploading ? `Uploading... (${uploadProgress}%)` : "Upload Media"}
+     </button>
+   </div>
+ )}
+</div>
+)}
+
 
   {/* Upload Progress Bar */}
   {isUploading && (
