@@ -77,9 +77,9 @@ module.exports = function notificationEvents(io, socket, userSockets) {
         return;
       }
 
-      console.log('followers of the event:', event)
+      //console.log('followers of the event:', event)
   
-      const message = `${senderName} added new ${mediaType} in album ${eventTitle}.`;
+      const message = `${senderName} added new ${mediaType} in album ${event.title}.`;
   
       // Get followers (excluding the sender)
       const recipients = event.followers
