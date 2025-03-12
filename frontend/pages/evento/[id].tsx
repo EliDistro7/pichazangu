@@ -15,7 +15,7 @@ import SearchEvents from "components/SearchEvents";
 import socket from "hooks/socket";
 
 const EventDetails = ({ initialEvent }) => {
-  console.log('initialEvent', initialEvent);
+  //console.log('initialEvent', initialEvent);
   const [event, setEvent] = useState(initialEvent);
   const [activeTab, setActiveTab] = useState("photo");
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -61,7 +61,7 @@ const EventDetails = ({ initialEvent }) => {
     if (viewedEvents[userKey]?.includes(initialEvent._id)) return;
   
     // Send request to add view
-    console.log('initial event: ' + initialEvent._id)
+    //console.log('initial event: ' + initialEvent._id)
     addViewToEvent({ eventId: initialEvent._id,userId:initialEvent.author.userId, senderName: logggedInUsername || "guest", socket:socket })
       .then(() => {
         

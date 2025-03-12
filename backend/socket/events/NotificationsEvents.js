@@ -76,6 +76,8 @@ module.exports = function notificationEvents(io, socket, userSockets) {
         console.error("Event not found:", eventId);
         return;
       }
+
+      console.log('followers of the event:', event)
   
       const message = `${senderName} added new ${mediaType} in album ${eventTitle}.`;
   
