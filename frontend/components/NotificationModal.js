@@ -65,7 +65,8 @@ const NotificationModal = ({ userId, onClose }) => {
                   notification.read ? "bg-gray-800" : "bg-gray-700"
                 }`}
               >
-                <Link href={`/evento/${notification.event}`} className="flex items-center">
+                <Link href={`/evento/${notification.event}`} className="flex items-center"
+                onClick={() => handleMarkAsRead(notification._id)}>
                   <Bell className="text-blue-400 mr-3" size={20} />
                   <div>
                     <p className="text-sm">{notification.message}</p>
