@@ -1,24 +1,55 @@
 
-
 import axios from "axios";
 
 const api = process.env.NEXT_PUBLIC_SERVER;
 
 // Create a new event
 export const createEvent = async (event) => {
-  console.log("event is",event)
+  console.log("Event data:", event);
+
   try {
-    
+    // Validate required fields
+    if (!event.title || !event.description || !event.author || !event.author.username || !event.author.userId) {
+      throw new Error("Title, description, and author details are required.");
+    }
 
-    // Include password only if the event is private
-   
+    // Validate password if the event is private
+    if (event.private) {
+      if (!event.password) {
+        throw new Error("Password is required for private events.");
+      }
+      if (event.password.trim().length < 6) {
+        throw new Error("Password must be at least 6 characters long.");
+      }
+    }
 
-    const response = await axios.post(`${api}/events/create`, event);
+    // Prepare the event data for the API request
+    const eventData = {
+      title: event.title,
+      description: event.description,
+      elaborateDescription: event.elaborateDescription || "", // Optional
+      coverPhoto: event.coverPhoto || "", // Optional
+      imageUrls: event.imageUrls || [], // Default to empty array
+      videoUrls: event.videoUrls || [], // Default to empty array
+      author: {
+        username: event.author.username,
+        userId: event.author.userId,
+      },
+      private: event.private || false, // Default to public
+      password: event.private ? event.password.trim() : undefined, // Include password only if private
+      visibleOnHomepage: event.visibleOnHomepage || false, // Default to false
+      boosted: event.boosted || false, // Default to false
+    };
+
+    // Make the API request
+    const response = await axios.post(`${api}/events/create`, eventData);
     return response.data; // Returns success message or created event data
   } catch (error) {
     console.error("Error creating event:", error.response?.data || error.message);
+
+    // Throw a user-friendly error message
     throw new Error(
-      error.response?.data?.error || "Failed to create event. Please try again."
+      error.response?.data?.error || error.message || "Failed to create event. Please try again."
     );
   }
 };

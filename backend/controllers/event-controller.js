@@ -539,10 +539,29 @@ exports.authenticateEvent = async (req, res) => {
 };
 
 // ✅ Create a New Event
+
 exports.createEvent = async (req, res) => {
   try {
-    const { title, description, coverPhoto, imageUrls, videoUrls, author, private: isPrivate, password } = req.body;
-    console.log('received body:', req.body);
+    const {
+      title,
+      description,
+      elaborateDescription,
+      coverPhoto,
+      imageUrls,
+      videoUrls,
+      author,
+      private: isPrivate,
+      password,
+      visibleOnHomepage,
+      boosted,
+    } = req.body;
+
+    console.log('Received body:', req.body);
+
+    // Validate required fields
+    if (!title || !description || !author || !author.username || !author.userId) {
+      return res.status(400).json({ error: "Title, description, and author details are required" });
+    }
 
     // Validate password if event is private
     let hashedPassword = null;
@@ -550,28 +569,51 @@ exports.createEvent = async (req, res) => {
       if (!password) {
         return res.status(400).json({ error: "Password is required for private events" });
       }
-      let password1 = password.trim();
+      const trimmedPassword = password.trim();
+      if (trimmedPassword.length < 6) {
+        return res.status(400).json({ error: "Password must be at least 6 characters long" });
+      }
       // Hash the password
-            const salt = await bcrypt.genSalt(10);
-      hashedPassword = await bcrypt.hash(password, salt);
+      const salt = await bcrypt.genSalt(10);
+      hashedPassword = await bcrypt.hash(trimmedPassword, salt);
     }
 
+    // Create the new event
     const newEvent = new Event({
       title,
       description,
-      coverPhoto, // Set cover photo URL
-      imageUrls: imageUrls || [],
-      videoUrls: videoUrls || [],
-      author,
+      elaborateDescription: elaborateDescription || "", // Optional field
+      coverPhoto: coverPhoto || "", // Optional field
+      imageUrls: imageUrls || [], // Default to empty array
+      videoUrls: videoUrls || [], // Default to empty array
+      author: {
+        username: author.username,
+        userId: author.userId,
+      },
       private: isPrivate || false, // Default to public if not provided
       password: hashedPassword, // Set only if private
+      visibleOnHomepage: visibleOnHomepage || false, // Default to false
+      boosted: boosted || false, // Default to false
+      followers: [], // Default to empty array
+      views: [], // Default to empty array
+      messages: [], // Default to empty array
     });
 
+    // Save the event to the database
     await newEvent.save();
-    console.log("event id", newEvent._id);
+    console.log("Event created with ID:", newEvent._id);
+
+    // Respond with success message and the created event
     res.status(201).json({ message: "Event created successfully", event: newEvent });
   } catch (error) {
-    console.log("Error creating event:", error);
+    console.error("Error creating event:", error);
+
+    // Handle specific errors
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ error: error.message });
+    }
+
+    // Generic server error response
     res.status(500).json({ error: "Server error while creating event" });
   }
 };

@@ -15,6 +15,7 @@ import SearchEvents from "components/SearchEvents";
 import socket from "hooks/socket";
 
 const EventDetails = ({ initialEvent }) => {
+  console.log('initialEvent', initialEvent);
   const [event, setEvent] = useState(initialEvent);
   const [activeTab, setActiveTab] = useState("photo");
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -83,6 +84,17 @@ const EventDetails = ({ initialEvent }) => {
       router.events.off("routeChangeError", handleRouteChangeComplete);
     };
   }, [router.events]);
+
+  {/* Helper function to extract URL and caption */}
+const getMediaData = (media) => {
+  if (typeof media === "string") {
+    return { url: media, caption: "" };
+  }
+  if (typeof media === "object" && media.url) {
+    return { url: media.url, caption: media.caption || "" };
+  }
+  return null;
+};
 
   if (!event) {
     return <div>Loading event...</div>;
@@ -246,132 +258,145 @@ const EventDetails = ({ initialEvent }) => {
   
   
         <div className="container mx-auto px-4">
-          <p className="mb-4 text-lg">
-            <span className="font-semibold">Author:</span> {event.author.username}
-          </p>
+  {/* Author Section */}
+  <p className="mb-4 text-lg">
+    <span className="font-semibold">Author:</span> {event.author.username}
+  </p>
 
-          {/* Tabs Section */}
-          <div className="flex justify-center mb-6">
-            <button
-              className={`px-6 py-2 text-lg font-semibold rounded-l-lg transition ${
-                activeTab === "photo" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
-              }`}
-              onClick={() => setActiveTab("photo")}
+  {/* Tabs Section */}
+  <div className="flex justify-center mb-6">
+    <button
+      className={`px-6 py-2 text-lg font-semibold rounded-l-lg transition ${
+        activeTab === "photo" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
+      }`}
+      onClick={() => setActiveTab("photo")}
+    >
+      Images
+    </button>
+    <button
+      className={`px-6 py-2 text-lg font-semibold rounded-r-lg transition ${
+        activeTab === "video" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
+      }`}
+      onClick={() => setActiveTab("video")}
+    >
+      Videos
+    </button>
+  </div>
+
+  {/* Media Upload UI for the Author */}
+  {isAuthor && (
+    <div className="flex justify-center mb-6 gap-4">
+      <label className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition">
+        <ImagePlus className="w-5 h-5 mr-2" />
+        <span>Add Image</span>
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          className="hidden"
+          onChange={(e) => handleMediaUpload(e.target.files, "image")}
+        />
+      </label>
+      <label className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition">
+        <Video className="w-5 h-5 mr-2" />
+        <span>Add Video</span>
+        <input
+          type="file"
+          accept="video/*"
+          multiple
+          className="hidden"
+          onChange={(e) => handleMediaUpload(e.target.files, "video")}
+        />
+      </label>
+    </div>
+  )}
+
+  {/* Upload Progress Bar */}
+  {isUploading && (
+    <div className="w-full h-1 bg-gray-200">
+      <div
+        className="h-full bg-blue-600"
+        style={{ width: `${uploadProgress}%` }}
+      ></div>
+    </div>
+  )}
+
+  {/* Render Content Based on Active Tab */}
+  {activeTab === "photo" && (
+    <div className="columns-1 gap-4 sm:columns-2 xl:columns-3">
+      {event.imageUrls && event.imageUrls.length > 0 ? (
+        event.imageUrls.map((media, index) => {
+          const data = getMediaData(media);
+          if (!data) return null;
+
+          return (
+            <Link
+              key={index}
+              href={{
+                pathname: `/p/${index}`,
+                query: { eventId: event._id, mediaType: "photo", photoId: index },
+              }}
+              shallow
+              ref={index === Number(lastViewedPhoto) ? lastViewedPhotoRef : null}
+              className="group relative mb-5 block w-full cursor-zoom-in after:content after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:shadow-highlight"
             >
-              Images
-            </button>
-            <button
-              className={`px-6 py-2 text-lg font-semibold rounded-r-lg transition ${
-                activeTab === "video" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
-              }`}
-              onClick={() => setActiveTab("video")}
+              <Image
+                src={data.url}
+                alt={data.caption || `${event.title} image ${index + 1}`}
+                width={720}
+                height={480}
+                className="object-cover w-full"
+                style={{ transform: "translate3d(0, 0, 0)" }}
+                placeholder="blur"
+                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQMAAAAl21bKAAAACAAAAEMlCAYAAAACzMAAAAEhUlEQVR4nO3BMQ0AAADCoPVP8fAAAAABJRU5ErkJggg=="
+              />
+              {data.caption && <p className="text-sm text-gray-500 mt-2">{data.caption}</p>}
+            </Link>
+          );
+        })
+      ) : (
+        <p>No images available.</p>
+      )}
+    </div>
+  )}
+
+  {activeTab === "video" && (
+    <div className="columns-1 gap-4 sm:columns-2 xl:columns-3">
+      {event.videoUrls && event.videoUrls.length > 0 ? (
+        event.videoUrls.map((media, index) => {
+          const data = getMediaData(media);
+          if (!data) return null;
+
+          return (
+            <Link
+              key={index}
+              href={{
+                pathname: `/p/${index}`,
+                query: { eventId: event._id, mediaType: "video", photoId: index },
+              }}
+              shallow
+              ref={index === Number(lastViewedPhoto) ? lastViewedPhotoRef : null}
+              className="group relative mb-5 block w-full cursor-zoom-in after:content after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:shadow-highlight"
             >
-              Videos
-            </button>
-          </div>
-  
-          {/* Media Upload UI for the Author */}
-          {isAuthor && (
-            <div className="flex justify-center mb-6 gap-4">
-              <label className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition">
-                <ImagePlus className="w-5 h-5 mr-2" />
-                <span>Add Image</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  className="hidden"
-                  onChange={(e) => handleMediaUpload(e.target.files, "image")}
-                />
-              </label>
-              <label className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition">
-                <Video className="w-5 h-5 mr-2" />
-                <span>Add Video</span>
-                <input
-                  type="file"
-                  accept="video/*"
-                  multiple
-                  className="hidden"
-                  onChange={(e) => handleMediaUpload(e.target.files, "video")}
-                />
-              </label>
-            </div>
-          )}
-  
-          {/* Upload Progress Bar */}
-          {isUploading && (
-            <div className="w-full h-1 bg-gray-200">
-              <div
-                className="h-full bg-blue-600"
-                style={{ width: `${uploadProgress}%` }}
-              ></div>
-            </div>
-          )}
-  
-          {/* Render Content Based on Active Tab */}
-          {activeTab === "photo" && (
-            <div className="columns-1 gap-4 sm:columns-2 xl:columns-3">
-              {event.imageUrls && event.imageUrls.length > 0 ? (
-                event.imageUrls.map((url, index) => (
-                  <Link
-                    key={index}
-                    href={{
-                      pathname: `/p/${index}`,
-                      query: { eventId: event._id, mediaType: "photo", photoId: index },
-                    }}
-                    shallow
-                    ref={index === Number(lastViewedPhoto) ? lastViewedPhotoRef : null}
-                    className="group relative mb-5 block w-full cursor-zoom-in after:content after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:shadow-highlight"
-                  >
-                    <Image
-                      src={url}
-                      alt={`${event.title} image ${index + 1}`}
-                      width={720}
-                      height={480}
-                      className="object-cover w-full"
-                      style={{ transform: "translate3d(0, 0, 0)" }}
-                      placeholder="blur"
-                      blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQMAAAAl21bKAAAACAAAAEMlCAYAAAACzMAAAAEhUlEQVR4nO3BMQ0AAADCoPVP8fAAAAABJRU5ErkJggg=="
-                    />
-                  </Link>
-                ))
-              ) : (
-                <p>No images available.</p>
-              )}
-            </div>
-          )}
-  
-          {activeTab === "video" && (
-            <div className="columns-1 gap-4 sm:columns-2 xl:columns-3">
-              {event.videoUrls && event.videoUrls.length > 0 ? (
-                event.videoUrls.map((url, index) => (
-                  <Link
-                    key={index}
-                    href={{
-                      pathname: `/p/${index}`,
-                      query: { eventId: event._id, mediaType: "video", photoId: index },
-                    }}
-                    shallow
-                    ref={index === Number(lastViewedPhoto) ? lastViewedPhotoRef : null}
-                    className="group relative mb-5 block w-full cursor-zoom-in after:content after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:shadow-highlight"
-                  >
-                    <video
-                      src={url}
-                      className="object-cover w-full"
-                      style={{ transform: "translate3d(0, 0, 0)" }}
-                      controls={false}
-                      muted
-                      loop
-                      autoPlay
-                    />
-                  </Link>
-                ))
-              ) : (
-                <p>No videos available.</p>
-              )}
-            </div>
-          )}
-        </div>
+              <video
+                src={data.url}
+                className="object-cover w-full"
+                style={{ transform: "translate3d(0, 0, 0)" }}
+                controls={false}
+                muted
+                loop
+                autoPlay
+              />
+              {data.caption && <p className="text-sm text-gray-500 mt-2">{data.caption}</p>}
+            </Link>
+          );
+        })
+      ) : (
+        <p>No videos available.</p>
+      )}
+    </div>
+  )}
+</div>
 
           {/* Message Modal */}
           {isMessageModalOpen && (

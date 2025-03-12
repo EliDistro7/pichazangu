@@ -4,14 +4,16 @@ import { useRouter } from "next/router";
 import Modal from "../../components/Modal"; // Use the Modal component
 import getResults from "../../utils/cachedImages"; // Fetches from your DB by eventId and mediaType
 
+interface MediaItem {
+  id: number;
+  url: string;
+  caption?: string;
+  blurDataUrl?: string;
+}
 
 interface MediaPageProps {
-  currentMedia: {
-    id: number;
-    url: string;
-    blurDataUrl?: string;
-  };
-  mediaUrls: string[];
+  currentMedia: MediaItem;
+  mediaUrls: MediaItem[];
   eventId: string;
   mediaType: "photo" | "video";
 }
@@ -23,8 +25,6 @@ const MediaPage: NextPage<MediaPageProps> = ({
   mediaUrls,
 }) => {
   const router = useRouter();
-  // photoId is the dynamic segment but here we always show the first media item.
-  // You could use router.query.photoId if you decide to support other indices.
   const index = Number(router.query.photoId) || 0;
   const currentMediaUrl = currentMedia.url;
 
@@ -36,14 +36,13 @@ const MediaPage: NextPage<MediaPageProps> = ({
         <meta name="twitter:image" content={currentMediaUrl} />
       </Head>
       <main className="mx-auto max-w-[1960px] p-4">
-       
-        {/* Replace Carousel with Modal */}
-        <Modal
-          eventId={eventId}
-          mediaUrls={mediaUrls}
-          mediaType={mediaType}
-          onClose={() => router.push("/")} // Close modal and navigate back to home
-        />
+      <Modal
+  eventId={eventId}
+  mediaUrls={mediaUrls.map((media) => media.url)} // Convert to string[]
+  mediaType={mediaType}
+  onClose={() => router.push("/")} // Close modal and navigate back to home
+/>
+
       </main>
     </>
   );
@@ -52,46 +51,27 @@ const MediaPage: NextPage<MediaPageProps> = ({
 export default MediaPage;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  // Retrieve eventId and mediaType from the query string.
   const { eventId, mediaType } = context.query;
 
-  // If required query parameters are missing, return a 404.
   if (!eventId || !mediaType) {
     return { notFound: true };
   }
 
-  // Validate mediaType – default to "photo" if not "video"
   const type: "photo" | "video" = mediaType === "video" ? "video" : "photo";
+  const rawMedia: (string | { url: string; caption?: string })[] = await getResults(eventId as string, type);
 
-  // Fetch the media URLs for the specific event and type from your database.
-  // getResults returns an array of strings (URLs)
-  const mediaUrls: string[] = await getResults(eventId as string, type);
+  const mediaUrls: MediaItem[] = rawMedia.map((media, index) =>
+    typeof media === "string" ? { id: index, url: media } : { id: index, url: media.url, caption: media.caption || "" }
+  );
 
- // console.log("media urls", mediaUrls);
-
-  // Transform the array of strings into objects expected by your component.
-  const reducedResults = mediaUrls.map((url, index) => ({
-    id: index,
-    url,
-  }));
-
-  // For this page, we want only the first media item.
-  const currentMedia = reducedResults[0];
-
-  // If it's a photo, create a blur placeholder.
-  {/*
-  if (type === "photo" && currentMedia) {
-    currentMedia.blurDataUrl = await getBase64ImageUrl(currentMedia);
-  }
-    */
-  }
+  const currentMedia = mediaUrls[0];
 
   return {
     props: {
       currentMedia,
       eventId: eventId as string,
       mediaType: type,
-      mediaUrls: mediaUrls,
+      mediaUrls,
     },
   };
 };
