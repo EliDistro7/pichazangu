@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Bell, XCircle, CheckCircle } from "lucide-react";
 import { getNotifications, markNotificationAsRead, deleteNotification } from "actions/notifications";
+import Link from "next/link";
 
 const NotificationModal = ({ userId, onClose }) => {
   const [notifications, setNotifications] = useState([]);
@@ -64,7 +65,7 @@ const NotificationModal = ({ userId, onClose }) => {
                   notification.read ? "bg-gray-800" : "bg-gray-700"
                 }`}
               >
-                <div className="flex items-center">
+                <Link href={`/evento/${notification.event}`} className="flex items-center">
                   <Bell className="text-blue-400 mr-3" size={20} />
                   <div>
                     <p className="text-sm">{notification.message}</p>
@@ -72,7 +73,7 @@ const NotificationModal = ({ userId, onClose }) => {
                       {new Date(notification.createdAt).toLocaleString()}
                     </span>
                   </div>
-                </div>
+                </Link>
 
                 <div className="flex items-center space-x-2">
                   {!notification.read && (
