@@ -70,7 +70,7 @@ const CollaborationRequests = ({ event, user, socket, activeTab }) => {
               <button
                 onClick={() => handleReject(event._id, invite.invitedId, true)}
                 className="px-2 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded-md"
-                disabled={loadingId === invite.invitedId}
+                disabled={loadingId === invite?.invitedId}
               >
                 {loadingId === invite.invitedId ? "Removing..." : "Remove"}
               </button>
@@ -103,11 +103,11 @@ const CollaborationRequests = ({ event, user, socket, activeTab }) => {
                   {loadingId === request.userId ? "Accepting..." : "Accept"}
                 </button>
                 <button
-  onClick={() => handleReject(event._id, invite.invitedId)}
+  onClick={() => handleReject(event._id, request.userId)}
   className="px-2 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded-md"
-  disabled={loadingId === invite.invitedId}
+  disabled={loadingId === request.userId}
 >
-  {loadingId === invite.invitedId ? "Removing..." : "Remove"}
+  {loadingId === request.userId ? "Removing..." : "Remove"}
 </button>
 
               </div>
