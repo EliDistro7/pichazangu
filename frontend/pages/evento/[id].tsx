@@ -108,6 +108,12 @@ const getMediaData = (media) => {
   // Check if the logged-in user is the event author
   const isAuthor = event.author.userId === loggedInUserId;
 
+  // Check if the logged-in user is an invited collaborator
+const isInvited = event.invited?.some(invite => invite.invitedId === loggedInUserId);
+
+// Allow media upload for both the author and invited users
+const canUploadMedia = isAuthor || isInvited;
+
   // Handle cover photo upload
   const handleCoverPhotoUpload = async (file) => {
     if (!file) return;
@@ -292,7 +298,7 @@ const getMediaData = (media) => {
   </div>
 
   {/* Media Upload UI for the Author */}
-  {isAuthor && (
+  {canUploadMedia && (
  <div className="flex flex-col items-center mb-6 gap-4">
  <div className="flex gap-4">
    <label className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition">
