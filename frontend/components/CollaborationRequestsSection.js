@@ -38,7 +38,7 @@ const CollaborationRequestsSection = ({ events, user, socket }) => {
               : "text-gray-400 hover:text-gray-200"
           }`}
         >
-          Pending Requests ({totalPendingRequests})
+        Requests ({totalPendingRequests})
         </button>
       </div>
   

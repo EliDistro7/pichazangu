@@ -76,7 +76,7 @@ const CollaborationRequests = ({ event, user, socket, activeTab }) => {
       {/* Pending Requests Tab */}
       {activeTab === "pending" && (
         <div className="w-full">
-          <h4 className="text-sm font-semibold mb-2">Pending Requests</h4>
+          <h4 className="text-sm font-semibold mb-2">Requests</h4>
           {event.pendingRequests.map((request) => (
             <div
               key={request.userId}

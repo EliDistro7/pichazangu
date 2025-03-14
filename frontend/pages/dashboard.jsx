@@ -97,14 +97,15 @@ const Dashboard = () => {
 
           const totalStorage = await calculateTotalStorage(data);
 
+      
+        setTotalFollowers(data.reduce((acc, event) => acc + event.followers.length, 0));
+        setTotalViews(data.reduce((acc, event) => acc + (event.views?.length || 0), 0));
         const stats = [
-          { icon: Users, label: "Followers", value: totalFollowers, iconColor: "text-blue-500" },
-          { icon: BarChart2, label: "Views", value: totalViews, iconColor: "text-green-500" },
+          { icon: Users, label: "Followers", value: data.reduce((acc, event) => acc + event.followers.length, 0), iconColor: "text-blue-500" },
+          { icon: BarChart2, label: "Views", value: data.reduce((acc, event) => acc + (event.views?.length || 0), 0), iconColor: "text-green-500" },
           { icon: HardDrive, label: "Storage", value: totalStorage, iconColor: "text-purple-500" }
         ];
         setStats(stats);
-        setTotalFollowers(data.reduce((acc, event) => acc + event.followers.length, 0));
-        setTotalViews(data.reduce((acc, event) => acc + (event.views?.length || 0), 0));
       } catch (err) {
         toast.error("Failed to fetch events.");
       } finally {
