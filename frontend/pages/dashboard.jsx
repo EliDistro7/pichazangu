@@ -250,7 +250,7 @@ const Dashboard = () => {
             <HardDrive size={24} className="text-purple-500" />
             <div>
               <p className="text-gray-400 text-sm">Storage Used</p>
-              <p className="text-xl font-semibold">{totalStorageUsed} GB</p>
+              <p className="text-xl font-semibold">{totalStorageUsed}</p>
             </div>
           </div>
         </div>
