@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Trash2, Edit, Eye, Plus, Users, BarChart2, ArrowLeft, User } from "lucide-react";
+import { Trash2, Edit, Eye, Plus,HardDrive, Users, BarChart2, ArrowLeft, User } from "lucide-react";
 import { useRouter } from "next/router";
 import { getLoggedInUserId } from "../hooks/useUser";
 import { getAllEventsByUser, deleteEvent, getEventFollowers } from "../actions/event";
@@ -10,6 +10,57 @@ import SearchEvents from "components/SearchEvents";
 import SidebarModal from "../components/SidebarModal";
 import { getUserById } from "../actions/users";
 import axios from "axios";
+
+
+const fetchFileSize = async (url) => {
+  try {
+    const response = await fetch(url, { method: "HEAD" });
+    const size = response.headers.get("Content-Length");
+    return size ? parseInt(size, 10) : 0;
+  } catch (error) {
+    console.error("Error fetching file size:", error);
+    return 0;
+  }
+};
+
+const formatStorageSize = (sizeInBytes) => {
+  if (sizeInBytes < 1024) {
+    return `${sizeInBytes} B`; // Bytes
+  } else if (sizeInBytes < 1024 * 1024) {
+    return `${(sizeInBytes / 1024).toFixed(2)} KB`; // Kilobytes
+  } else if (sizeInBytes < 1024 * 1024 * 1024) {
+    return `${(sizeInBytes / (1024 * 1024)).toFixed(2)} MB`; // Megabytes
+  } else if (sizeInBytes < 1024 * 1024 * 1024 * 1024) {
+    return `${(sizeInBytes / (1024 * 1024 * 1024)).toFixed(2)} GB`; // Gigabytes
+  } else {
+    return `${(sizeInBytes / (1024 * 1024 * 1024 * 1024)).toFixed(2)} TB`; // Terabytes
+  }
+};
+
+const calculateTotalStorage = async (events) => {
+  const fileUrls = [];
+
+  // Extract all media URLs from events
+  events.forEach(event => {
+    if (event.coverPhoto) fileUrls.push(event.coverPhoto);
+
+    if (Array.isArray(event.imageUrls)) {
+      fileUrls.push(...event.imageUrls.map(img => (typeof img === "string" ? img : img.url)));
+    }
+
+    if (Array.isArray(event.videoUrls)) {
+      fileUrls.push(...event.videoUrls.map(vid => (typeof vid === "string" ? vid : vid.url)));
+    }
+  });
+
+  // Fetch file sizes for all URLs
+  const fileSizes = await Promise.all(fileUrls.map(fetchFileSize));
+
+  // Calculate total storage used and convert it into human-readable format
+  const totalStorageBytes = fileSizes.reduce((total, size) => total + size, 0);
+  
+  return formatStorageSize(totalStorageBytes);
+};
 
 const Dashboard = () => {
   const router = useRouter();
@@ -20,34 +71,39 @@ const Dashboard = () => {
   const [totalFollowers, setTotalFollowers] = useState(0);
   const [totalViews, setTotalViews] = useState(0);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State to toggle sidebar
+  const [totalStorageUsed, setTotalStorageUsed] = useState('0');
+
 
   useEffect(() => {
     const userId = getLoggedInUserId();
-    if (userId) {
-      setUser(userId);
-      console.log("userid ", userId);
-
-      const fetchUserEvents = async () => {
-        try {
-          const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/events`); // Example API
-          const events = await res.data;
-          //console.log("events", events);
-          const userD = await getUserById(userId);
-          setUserdata(userD);
-          const data = await getAllEventsByUser(userId);
-          setEvents(data);
-          setTotalFollowers(data.reduce((acc, event) => acc + event.followers.length, 0));
-          setTotalViews(data.reduce((acc, event) => acc + event.views?.length || 0, 0));
-        } catch (err) {
-          toast.error("Failed to fetch events.");
-        } finally {
-          setLoading(false);
-          
-        }
-      };
-      fetchUserEvents();
-    }
+    if (!userId) return;
+    
+    setUser(userId);
+    const fetchUserEvents = async () => {
+      try {
+        const [userD, data] = await Promise.all([
+          getUserById(userId),
+          getAllEventsByUser(userId),
+        ]);
+  
+        const totalStorage = await calculateTotalStorage(data);
+  
+        setUserdata(userD);
+        setEvents(data);
+        setTotalStorageUsed(totalStorage);
+        //console.log(totalStorage)
+        setTotalFollowers(data.reduce((acc, event) => acc + event.followers.length, 0));
+        setTotalViews(data.reduce((acc, event) => acc + (event.views?.length || 0), 0));
+      } catch (err) {
+        toast.error("Failed to fetch events.");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchUserEvents();
   }, []);
+  
 
   const handleDeleteEvent = async (eventId) => {
     try {
@@ -123,7 +179,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-6">
+    <div className="min-h-screen bg-gray-900 text-white p-6">
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -138,9 +194,8 @@ const Dashboard = () => {
       />
 
       {/* Top Navigation Bar */}
-      <div className="bg-black p-4 border-b border-gray-800">
-        <SearchEvents />
-        <div className="max-w-7xl mx-auto flex justify-between items-center mt-0">
+      <div className="bg-gray-800 p-4 border-b border-gray-700 fixed w-full top-0 z-50">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
           {/* Back Button */}
           <button
             onClick={() => router.back()}
@@ -149,6 +204,9 @@ const Dashboard = () => {
             <ArrowLeft size={20} />
             <span>Back</span>
           </button>
+
+          {/* Search Events */}
+          <SearchEvents />
 
           {/* My Profile Button */}
           <button
@@ -174,19 +232,26 @@ const Dashboard = () => {
         <h1 className="text-3xl font-thin mb-6">Your Albums</h1>
 
         {/* Overall Stats */}
-        <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-gray-800 p-4 rounded-lg flex items-center space-x-4">
+        <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-gray-800 p-4 rounded-lg flex items-center space-x-4 hover:bg-gray-700 transition-colors">
             <Users size={24} className="text-blue-500" />
             <div>
               <p className="text-gray-400 text-sm">Total Followers</p>
               <p className="text-xl font-semibold">{totalFollowers}</p>
             </div>
           </div>
-          <div className="bg-gray-800 p-4 rounded-lg flex items-center space-x-4">
+          <div className="bg-gray-800 p-4 rounded-lg flex items-center space-x-4 hover:bg-gray-700 transition-colors">
             <BarChart2 size={24} className="text-green-500" />
             <div>
               <p className="text-gray-400 text-sm">Total Views</p>
               <p className="text-xl font-semibold">{totalViews}</p>
+            </div>
+          </div>
+          <div className="bg-gray-800 p-4 rounded-lg flex items-center space-x-4 hover:bg-gray-700 transition-colors">
+            <HardDrive size={24} className="text-purple-500" />
+            <div>
+              <p className="text-gray-400 text-sm">Storage Used</p>
+              <p className="text-xl font-semibold">{totalStorageUsed}</p>
             </div>
           </div>
         </div>
@@ -194,7 +259,7 @@ const Dashboard = () => {
         {/* Create Event Button */}
         <button
           onClick={() => router.push("/events?tab=create")}
-          className="mb-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md flex items-center space-x-2"
+          className="mb-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md flex items-center space-x-2 transition-colors"
         >
           <Plus size={20} />
           <span>Create New Album</span>
@@ -202,9 +267,9 @@ const Dashboard = () => {
 
         {/* Event Cards */}
         {loading ? (
-          <p>Loading events...</p>
+          <p className="text-gray-400">Loading events...</p>
         ) : events.length === 0 ? (
-          <p>No events found. Create one to get started!</p>
+          <p className="text-gray-400">No events found. Create one to get started!</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {events.map((event) => (
