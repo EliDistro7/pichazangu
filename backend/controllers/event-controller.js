@@ -221,7 +221,7 @@ exports.deleteMessage = async (req, res) => {
 
 
 
-// ✅ Update Event Media (Add New Images and Videos)// Controller for updating event media (add new images and videos)
+// ✅ Update Event Media (Add New Images and Videos)
 exports.updateEventMedia = async (req, res) => {
   try {
     const { eventId, newImages, newVideos, userId } = req.body;
@@ -233,8 +233,11 @@ exports.updateEventMedia = async (req, res) => {
       return res.status(404).json({ error: "Event not found" });
     }
 
-    // Compare provided userId with the event's author userId
-    if (event.author.userId.toString() !== userId) {
+    // Check if the user is either the author or an invited contributor
+    const isAuthor = event.author.userId.toString() === userId;
+    const isInvited = event.invited.some(invite => invite.invitedId.toString() === userId);
+
+    if (!isAuthor && !isInvited) {
       return res.status(403).json({ error: "Not authorized to update this event." });
     }
 
@@ -258,6 +261,153 @@ exports.updateEventMedia = async (req, res) => {
     res.status(500).json({ error: "Server error while updating event media" });
   }
 };
+
+
+// ✅ Add a user to the invited list of an event
+exports.addInvitedUser = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const { username, invitedId, userId } = req.body;
+
+    console.log("Received invite request:", req.body);
+
+    // Find the event by ID
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    // Check if the requesting user is the event author
+    if (event.author.userId.toString() !== userId) {
+      return res.status(403).json({ error: "Not authorized to invite users to this event." });
+    }
+
+    // Check if the user is already invited
+    const alreadyInvited = event.invited.some(invite => invite.invitedId.toString() === invitedId);
+    if (alreadyInvited) {
+      return res.status(400).json({ error: "User is already invited to this event." });
+    }
+
+    // Add the new invited user
+    event.invited.push({ username, invitedId });
+
+    await event.save();
+    console.log("User invited successfully:", event);
+    res.status(200).json({ message: "User invited successfully", event });
+  } catch (error) {
+    console.error("Error inviting user:", error);
+    res.status(500).json({ error: "Server error while inviting user" });
+  }
+};
+
+// ✅ Accept user request to be added as an invited user
+exports.acceptUserToEvent = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const { userId, username, authorId } = req.body; // userId = the one requesting to be invited
+
+    console.log("Accepting user request for event:", eventId);
+
+    // Find the event by ID
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    // Only the event author can accept invitations
+    if (event.author.userId.toString() !== authorId) {
+      return res.status(403).json({ error: "Not authorized to accept invitations for this event." });
+    }
+
+    // Check if the user is already invited
+    const alreadyInvited = event.invited.some((inv) => inv.invitedId.toString() === userId);
+    if (alreadyInvited) {
+      return res.status(400).json({ error: "User is already invited." });
+    }
+
+    // Remove user from pendingRequests
+    event.pendingRequests = event.pendingRequests.filter(
+      (req) => req.userId.toString() !== userId
+    );
+
+    // Add user to invited list
+    event.invited.push({ username, invitedId: userId });
+    await event.save();
+
+    console.log("User successfully added to invited list:", username);
+    res.status(200).json({ message: "User added to event successfully", event });
+  } catch (error) {
+    console.error("Error adding user to event:", error);
+    res.status(500).json({ error: "Server error while adding user to event" });
+  }
+};
+
+
+// ✅ Request to collaborate on an event
+exports.requestToCollaborate = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const { userId, username } = req.body; // User requesting to collaborate
+
+    console.log("Collaboration request received for event:", eventId);
+
+    // Find the event
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    // Check if user is already in the invited list
+    const alreadyInvited = event.invited.some((inv) => inv.invitedId.toString() === userId);
+    if (alreadyInvited) {
+      return res.status(400).json({ error: "You are already invited to this event." });
+    }
+
+    // Check if the user already sent a request (to prevent duplicates)
+    const alreadyRequested = event.pendingRequests.some((req) => req.userId.toString() === userId);
+    if (alreadyRequested) {
+      return res.status(400).json({ error: "You have already requested to collaborate on this event." });
+    }
+
+    // Add request to pendingRequests list
+    event.pendingRequests.push({ username, userId, requestedAt: Date.now() });
+    await event.save();
+
+    console.log("Collaboration request added:", username);
+    res.status(200).json({ message: "Collaboration request sent successfully", event });
+  } catch (error) {
+    console.error("Error requesting collaboration:", error);
+    res.status(500).json({ error: "Server error while requesting collaboration" });
+  }
+};
+
+exports.rejectCollaborationRequest = async (req, res) => {
+  try {
+    const { eventId, requestId } = req.params;
+
+    console.log("Rejecting collaboration request for event:", eventId);
+
+    // Find the event by ID
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    // Remove the request from pendingRequests
+    event.pendingRequests = event.pendingRequests.filter(
+      (req) => req._id.toString() !== requestId
+    );
+
+    await event.save();
+
+    console.log("Collaboration request rejected:", requestId);
+    res.status(200).json({ message: "Collaboration request rejected successfully", event });
+  } catch (error) {
+    console.error("Error rejecting collaboration request:", error);
+    res.status(500).json({ error: "Server error while rejecting collaboration request" });
+  }
+};
+
 
 exports.getEventMedia = async (req, res) => {
   try {
@@ -352,13 +502,26 @@ exports.getEventById = async (req, res) => {
 };
 
 // ✅ Update an Event (Add New Images/Videos)
+// ✅ Update an Event (Add New Images/Videos)
 exports.updateEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
-    const { imageUrls, videoUrls, title, description } = req.body;
+    const { imageUrls, videoUrls, title, description, userId } = req.body; // userId must be sent in request
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
 
     const event = await Event.findById(eventId);
     if (!event) return res.status(404).json({ error: "Event not found" });
+
+    // Check if the user is the event author or an invited contributor
+    const isAuthor = event.author.userId.toString() === userId;
+    const isInvited = event.invited.some(invite => invite.invitedId.toString() === userId);
+
+    if (!isAuthor && !isInvited) {
+      return res.status(403).json({ error: "You are not authorized to update this event" });
+    }
 
     // Append new images and videos to existing arrays
     if (imageUrls) event.imageUrls.push(...imageUrls);
@@ -369,9 +532,11 @@ exports.updateEvent = async (req, res) => {
     await event.save();
     res.status(200).json({ message: "Event updated successfully", event });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Failed to update event" });
   }
 };
+
 
 // ✅ Delete an Event
 exports.deleteEvent = async (req, res) => {

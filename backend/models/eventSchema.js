@@ -1,5 +1,3 @@
-
-
 const mongoose = require('mongoose');
 
 const EventSchema = new mongoose.Schema(
@@ -37,6 +35,33 @@ const EventSchema = new mongoose.Schema(
         required: true,
         ref: 'User', // Reference to the User model
       },
+    },
+    invited: {
+      type: [
+        {
+          username: { type: String, required: true }, // Store invited user's username
+          invitedId: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            ref: 'User', // Reference to the User model
+          },
+        },
+      ],
+      default: [], // No invited users by default
+    },
+    pendingRequests: {
+      type: [
+        {
+          username: { type: String, required: true }, // Username of the user requesting collaboration
+          userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            ref: 'User', // Reference to the User model
+          },
+          requestedAt: { type: Date, default: Date.now }, // Timestamp of the request
+        },
+      ],
+      default: [], // No pending requests by default
     },
     private: {
       type: Boolean,

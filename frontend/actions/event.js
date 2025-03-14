@@ -103,26 +103,36 @@ export const searchEvents = async (query) => {
 };
 
 // Update event media (add new images and videos)
-export const updateEventMedia = async ({ eventId, newImages, newVideos, userId,mediaType,
-  socket=null,
-  senderName, }) => {
+
+export const updateEventMedia = async ({
+  eventId,
+  newImages,
+  newVideos,
+  userId,
+  mediaType,
+  socket = null,
+  senderName,
+}) => {
   try {
     console.log("Updating event media for eventId:", eventId);
+
     const response = await axios.patch(`${api}/events/updateMedia`, {
       eventId,
       newImages,
       newVideos,
-      
-      userId,
+      userId, // Ensuring userId is sent for authorization
     });
-    if(socket){
-      socket.emit('media_added', {
+
+    // Emit socket event if socket is available
+    if (socket) {
+      socket.emit("media_added", {
         senderName,
         mediaType,
         eventId,
         userId,
       });
     }
+
     console.log("Media update response:", response.data);
     return response.data; // Returns success message or updated event data
   } catch (error) {
@@ -132,6 +142,101 @@ export const updateEventMedia = async ({ eventId, newImages, newVideos, userId,m
     );
   }
 };
+
+// Request to collaborate on an event
+export const requestCollaboration = async ({
+  eventId,
+  userId,
+  username,
+  socket = null,
+}) => {
+  try {
+    console.log("Sending collaboration request for event:", eventId);
+
+    const response = await axios.post(`${api}/events/${eventId}/requestCollaboration`, {
+      userId,
+      username,
+    });
+
+    // Emit socket event if socket is available
+    if (socket) {
+      socket.emit("collaboration_requested", {
+        eventId,
+        userId,
+        username,
+      });
+    }
+
+    console.log("Collaboration request response:", response.data);
+    return response.data; // Returns success message or updated event data
+  } catch (error) {
+    console.error("Error requesting collaboration:", error.response?.data || error.message);
+    throw new Error(
+      error.response?.data?.error || "Failed to send collaboration request. Please try again."
+    );
+  }
+};
+
+
+// Accept user request to join event
+export const acceptUserToEvent = async ({
+  eventId,
+  userId,
+  username,
+  authorId, // The event owner's ID (to verify authorization)
+  socket = null,
+  senderName,
+}) => {
+  try {
+    console.log("Accepting user request for event:", eventId);
+
+    const response = await axios.post(`${api}/events/${eventId}/acceptUser`, {
+      userId,
+      username,
+      authorId, // Ensure only the event owner can accept
+    });
+
+    // Emit socket event if socket is available
+    if (socket) {
+      socket.emit("user_accepted", {
+        senderName,
+        eventId,
+        userId,
+      });
+    }
+
+    console.log("User accepted response:", response.data);
+    return response.data; // Returns success message or updated event data
+  } catch (error) {
+    console.error("Error accepting user request:", error.response?.data || error.message);
+    throw new Error(
+      error.response?.data?.error || "Failed to accept user request. Please try again."
+    );
+  }
+};
+
+// Reject a collaboration request
+export const rejectCollaborationRequest = async ({ eventId, requestId, socket = null }) => {
+  try {
+    const response = await axios.delete(`${api}/events/${eventId}/pendingRequests/${requestId}`);
+
+    // Emit socket event if socket is available
+    if (socket) {
+      socket.emit("collaboration_request_rejected", {
+        eventId,
+        requestId,
+      });
+    }
+
+    return response.data; // Returns success message or updated event data
+  } catch (error) {
+    console.error("Error rejecting collaboration request:", error.response?.data || error.message);
+    throw new Error(
+      error.response?.data?.error || "Failed to reject collaboration request. Please try again."
+    );
+  }
+};
+
 
 // Update event cover photo
 export const updateEventCoverPhoto = async ({ eventId, newCoverPhoto, userId }) => {

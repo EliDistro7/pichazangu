@@ -39,6 +39,14 @@ router.patch("/:eventId/update-password", eventController.updateEventPassword);
 
 router.patch("/events/updateMedia", eventController.updateEventMedia);
 
+
+router.post("/events/:eventId/requestCollaboration", eventController.requestToCollaborate);
+
+router.post("/events/:eventId/acceptUser", eventController.acceptUserToEvent);
+
+router.delete("/events/:eventId/pendingRequests/:requestId", eventController.rejectCollaborationRequest);
+
+
 router.patch("/events/updateCoverPhoto", eventController.updateEventCoverPhoto);
 
 // 🔍 New Route: Get  by Author Name (Supports Fuzzy Search)
