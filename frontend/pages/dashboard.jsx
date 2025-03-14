@@ -15,6 +15,57 @@ import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
 import socket from "../hooks/socket";
 import OverallStats from "../components/OverallStats";
 
+const fetchFileSize = async (url) => {
+  try {
+    const response = await fetch(url, { method: "HEAD" });
+    const size = response.headers.get("Content-Length");
+    return size ? parseInt(size, 10) : 0;
+  } catch (error) {
+    console.error("Error fetching file size:", error);
+    return 0;
+  }
+};
+
+const formatStorageSize = (sizeInBytes) => {
+  if (sizeInBytes < 1024) {
+    return `${sizeInBytes} B`; // Bytes
+  } else if (sizeInBytes < 1024 * 1024) {
+    return `${(sizeInBytes / 1024).toFixed(2)} KB`; // Kilobytes
+  } else if (sizeInBytes < 1024 * 1024 * 1024) {
+    return `${(sizeInBytes / (1024 * 1024)).toFixed(2)} MB`; // Megabytes
+  } else if (sizeInBytes < 1024 * 1024 * 1024 * 1024) {
+    return `${(sizeInBytes / (1024 * 1024 * 1024)).toFixed(2)} GB`; // Gigabytes
+  } else {
+    return `${(sizeInBytes / (1024 * 1024 * 1024 * 1024)).toFixed(2)} TB`; // Terabytes
+  }
+};
+
+const calculateTotalStorage = async (events) => {
+  const fileUrls = [];
+
+  // Extract all media URLs from events
+  events.forEach(event => {
+    if (event.coverPhoto) fileUrls.push(event.coverPhoto);
+
+    if (Array.isArray(event.imageUrls)) {
+      fileUrls.push(...event.imageUrls.map(img => (typeof img === "string" ? img : img.url)));
+    }
+
+    if (Array.isArray(event.videoUrls)) {
+      fileUrls.push(...event.videoUrls.map(vid => (typeof vid === "string" ? vid : vid.url)));
+    }
+  });
+
+  // Fetch file sizes for all URLs
+  const fileSizes = await Promise.all(fileUrls.map(fetchFileSize));
+
+  // Calculate total storage used and convert it into human-readable format
+  const totalStorageBytes = fileSizes.reduce((total, size) => total + size, 0);
+  
+  return formatStorageSize(totalStorageBytes);
+};
+
+
 const Dashboard = () => {
   const router = useRouter();
   const [events, setEvents] = useState([]);
@@ -25,6 +76,7 @@ const Dashboard = () => {
   const [totalViews, setTotalViews] = useState(0);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [totalStorageUsed, setTotalStorageUsed] = useState("0");
+  const [stats, setStats] = useState([])
 
   useEffect(() => {
     const userId = getLoggedInUserId();
@@ -40,6 +92,17 @@ const Dashboard = () => {
 
         setUserdata(userD);
         setEvents(data);
+       
+          
+
+          const totalStorage = await calculateTotalStorage(data);
+
+        const stats = [
+          { icon: Users, label: "Followers", value: totalFollowers, iconColor: "text-blue-500" },
+          { icon: BarChart2, label: "Views", value: totalViews, iconColor: "text-green-500" },
+          { icon: HardDrive, label: "Storage", value: totalStorage, iconColor: "text-purple-500" }
+        ];
+        setStats(stats);
         setTotalFollowers(data.reduce((acc, event) => acc + event.followers.length, 0));
         setTotalViews(data.reduce((acc, event) => acc + (event.views?.length || 0), 0));
       } catch (err) {
@@ -52,11 +115,7 @@ const Dashboard = () => {
     fetchUserEvents();
   }, []);
 
-  const stats = [
-    { icon: Users, label: "Followers", value: totalFollowers, iconColor: "text-blue-500" },
-    { icon: BarChart2, label: "Views", value: totalViews, iconColor: "text-green-500" },
-    { icon: HardDrive, label: "Storage", value: totalStorageUsed, iconColor: "text-purple-500" }
-  ];
+
 
   const handleDeleteEvent = async (eventId) => {
     try {
