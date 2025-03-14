@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Trash2, Edit, Eye, Plus,HardDrive, Users, BarChart2, ArrowLeft, User } from "lucide-react";
+import { Trash2, Edit, Eye, Plus, Users, BarChart2, ArrowLeft, User, HardDrive } from "lucide-react";
 import { useRouter } from "next/router";
 import { getLoggedInUserId } from "../hooks/useUser";
 import { getAllEventsByUser, deleteEvent, getEventFollowers } from "../actions/event";
@@ -179,7 +179,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
+    <div className="min-h-screen bg-black text-white p-6">
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -194,8 +194,9 @@ const Dashboard = () => {
       />
 
       {/* Top Navigation Bar */}
-      <div className="bg-gray-800 p-4 border-b border-gray-700 fixed w-full top-0 z-50">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
+      <div className="bg-black p-4 border-b border-gray-800">
+        <SearchEvents />
+        <div className="max-w-7xl mx-auto flex justify-between items-center mt-0">
           {/* Back Button */}
           <button
             onClick={() => router.back()}
@@ -204,9 +205,6 @@ const Dashboard = () => {
             <ArrowLeft size={20} />
             <span>Back</span>
           </button>
-
-          {/* Search Events */}
-          <SearchEvents />
 
           {/* My Profile Button */}
           <button
@@ -232,7 +230,8 @@ const Dashboard = () => {
         <h1 className="text-3xl font-thin mb-6">Your Albums</h1>
 
         {/* Overall Stats */}
-        <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+     {/* Overall Stats */}
+     <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-gray-800 p-4 rounded-lg flex items-center space-x-4 hover:bg-gray-700 transition-colors">
             <Users size={24} className="text-blue-500" />
             <div>
@@ -251,15 +250,16 @@ const Dashboard = () => {
             <HardDrive size={24} className="text-purple-500" />
             <div>
               <p className="text-gray-400 text-sm">Storage Used</p>
-              <p className="text-xl font-semibold">{totalStorageUsed}</p>
+              <p className="text-xl font-semibold">{totalStorageUsed} GB</p>
             </div>
           </div>
         </div>
 
+
         {/* Create Event Button */}
         <button
           onClick={() => router.push("/events?tab=create")}
-          className="mb-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md flex items-center space-x-2 transition-colors"
+          className="mb-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md flex items-center space-x-2"
         >
           <Plus size={20} />
           <span>Create New Album</span>
@@ -267,9 +267,9 @@ const Dashboard = () => {
 
         {/* Event Cards */}
         {loading ? (
-          <p className="text-gray-400">Loading events...</p>
+          <p>Loading events...</p>
         ) : events.length === 0 ? (
-          <p className="text-gray-400">No events found. Create one to get started!</p>
+          <p>No events found. Create one to get started!</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {events.map((event) => (
