@@ -15,11 +15,11 @@ const CollaborationRequestsSection = ({ events, user, socket }) => {
   );
 
   return (
-    <div className="mb-6">
+    <div className="mb-6 w-full">
       <h2 className="text-xl font-thin mb-4">Collaboration Requests</h2>
-
+  
       {/* Tabs */}
-      <div className="flex space-x-4 mb-4 border-b border-gray-700">
+      <div className="flex space-x-4 mb-4 border-b border-gray-700 w-full">
         <button
           onClick={() => setActiveTab("collaborators")}
           className={`pb-2 text-sm font-semibold ${
@@ -41,19 +41,23 @@ const CollaborationRequestsSection = ({ events, user, socket }) => {
           Pending Requests ({totalPendingRequests})
         </button>
       </div>
-
+  
       {/* Tab Content */}
-      {events.map((event) => (
-        <CollaborationRequests
-          key={event._id}
-          event={event}
-          user={user}
-          socket={socket}
-          activeTab={activeTab}
-        />
-      ))}
+      <div className="w-full">
+        {events.map((event) => (
+          <div key={event._id} className="w-full">
+            <CollaborationRequests
+              event={event}
+              user={user}
+              socket={socket}
+              activeTab={activeTab}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
+  
 };
 
 export default CollaborationRequestsSection;

@@ -47,20 +47,20 @@ const CollaborationRequests = ({ event, user, socket, activeTab }) => {
   }
 
   return (
-    <div className="mb-4">
+    <div className="mb-4 w-full">
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar theme="dark" />
       <h3 className="text-lg font-semibold mb-2">{event.title}</h3>
-
+  
       {/* Collaborators Tab */}
       {activeTab === "collaborators" && (
-        <div>
+        <div className="w-full">
           <h4 className="text-sm font-semibold mb-2">Invited Users</h4>
           {event.invited.map((invite) => (
             <div
               key={invite.invitedId}
-              className="flex items-center justify-between mb-2 p-2 bg-gray-800 rounded-lg"
+              className="flex items-center justify-between mb-2 p-2 bg-gray-800 rounded-lg w-full"
             >
-              <p className="text-sm">{invite.username}</p>
+              <p className="text-sm truncate">{invite.username}</p>
               <button
                 onClick={() => handleReject(event._id, invite.invitedId)}
                 className="px-2 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded-md"
@@ -72,19 +72,19 @@ const CollaborationRequests = ({ event, user, socket, activeTab }) => {
           ))}
         </div>
       )}
-
+  
       {/* Pending Requests Tab */}
       {activeTab === "pending" && (
-        <div>
+        <div className="w-full">
           <h4 className="text-sm font-semibold mb-2">Pending Requests</h4>
           {event.pendingRequests.map((request) => (
             <div
               key={request.userId}
-              className="flex items-center justify-between mb-2 p-2 bg-gray-800 rounded-lg"
+              className="flex items-center justify-between mb-2 p-2 bg-gray-800 rounded-lg w-full"
             >
-              <div>
-                <p className="text-sm">{request.username}</p>
-                <p className="text-xs text-gray-400">
+              <div className="flex-1 overflow-hidden">
+                <p className="text-sm truncate">{request.username}</p>
+                <p className="text-xs text-gray-400 truncate">
                   {new Date(request.requestedAt).toLocaleString()}
                 </p>
               </div>
@@ -110,6 +110,7 @@ const CollaborationRequests = ({ event, user, socket, activeTab }) => {
       )}
     </div>
   );
+  
 };
 
 export default CollaborationRequests;
