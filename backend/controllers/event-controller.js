@@ -408,6 +408,39 @@ exports.rejectCollaborationRequest = async (req, res) => {
   }
 };
 
+// ✅ Remove a user from the invited list
+exports.removeInvitedUser = async (req, res) => {
+  try {
+    const { eventId, userId } = req.params;
+
+    console.log(`Removing invited user: ${userId} from event: ${eventId}`);
+
+    // Find the event
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    // Check if the user is actually in the invited list
+    const isInvited = event.invited.some((inv) => inv.invitedId.toString() === userId);
+    if (!isInvited) {
+      return res.status(400).json({ error: "User is not in the invited list." });
+    }
+
+    // Remove the user from the invited list
+    event.invited = event.invited.filter((inv) => inv.invitedId.toString() !== userId);
+
+    await event.save();
+
+    console.log(`User ${userId} removed from invited list.`);
+    res.status(200).json({ message: "User removed from invited list successfully", event });
+  } catch (error) {
+    console.error("Error removing invited user:", error);
+    res.status(500).json({ error: "Server error while removing invited user" });
+  }
+};
+
+
 
 exports.getEventMedia = async (req, res) => {
   try {

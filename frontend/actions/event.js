@@ -215,6 +215,21 @@ export const acceptUserToEvent = async ({
   }
 };
 
+export const removeInvitedUser = async ({eventId, userId, socket}) => {
+  try {
+    const response = await axios.delete(`${api}/events/${eventId}/invited/${userId}`);
+   
+     // Emit event to update real-time UI (if using socket.io)
+     if (socket) {
+      socket.emit("invitedUserRemoved", { eventId, userId });
+    }
+    return response.data;
+  } catch (error) {
+    console.error("Error removing invited user:", error);
+    throw error.response?.data || { error: "Failed to remove invited user" };
+  }
+};
+
 // Reject a collaboration request
 export const rejectCollaborationRequest = async ({ eventId, requestId, socket = null }) => {
   try {

@@ -39,6 +39,8 @@ router.patch("/:eventId/update-password", eventController.updateEventPassword);
 
 router.patch("/events/updateMedia", eventController.updateEventMedia);
 
+// ✅ Route to remove a user from the invited list
+router.delete("/events/:eventId/invited/:userId", eventController.removeInvitedUser);
 
 router.post("/events/:eventId/requestCollaboration", eventController.requestToCollaborate);
 

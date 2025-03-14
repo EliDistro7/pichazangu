@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { acceptUserToEvent, rejectCollaborationRequest } from "../actions/event";
+import { acceptUserToEvent, rejectCollaborationRequest, removeInvitedUser } from "../actions/event";
+import socket from 'hooks/socket';
 
 const CollaborationRequests = ({ event, user, socket, activeTab }) => {
   const [loadingId, setLoadingId] = useState(null);
@@ -26,18 +27,23 @@ const CollaborationRequests = ({ event, user, socket, activeTab }) => {
     }
   };
 
-  const handleReject = async (eventId, requestId) => {
-    setLoadingId(requestId);
+  const handleReject = async (eventId, userId, isInvitedUser) => {
+    setLoadingId(userId);
     try {
-      await rejectCollaborationRequest({ eventId, requestId, socket });
-
-      toast.success("Request rejected successfully", { theme: "dark" });
+      if (isInvitedUser) {
+        await removeInvitedUser({ eventId, userId, socket });
+        toast.success("User removed successfully", { theme: "dark" });
+      } else {
+        await rejectCollaborationRequest({ eventId, requestId: userId, socket });
+        toast.success("Request rejected successfully", { theme: "dark" });
+      }
     } catch (error) {
-      toast.error(error.message || "Failed to reject request", { theme: "dark" });
+      toast.error(error.message || "Failed to remove user", { theme: "dark" });
     } finally {
       setLoadingId(null);
     }
   };
+  
 
   if (
     (activeTab === "collaborators" && (!event.invited || event.invited.length === 0)) ||
@@ -62,7 +68,7 @@ const CollaborationRequests = ({ event, user, socket, activeTab }) => {
             >
               <p className="text-sm truncate">{invite.username}</p>
               <button
-                onClick={() => handleReject(event._id, invite.invitedId)}
+                onClick={() => handleReject(event._id, invite.invitedId, true)}
                 className="px-2 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded-md"
                 disabled={loadingId === invite.invitedId}
               >
@@ -97,12 +103,13 @@ const CollaborationRequests = ({ event, user, socket, activeTab }) => {
                   {loadingId === request.userId ? "Accepting..." : "Accept"}
                 </button>
                 <button
-                  onClick={() => handleReject(event._id, request.userId)}
-                  className="px-2 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded-md"
-                  disabled={loadingId === request.userId}
-                >
-                  {loadingId === request.userId ? "Rejecting..." : "Reject"}
-                </button>
+  onClick={() => handleReject(event._id, invite.invitedId)}
+  className="px-2 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded-md"
+  disabled={loadingId === invite.invitedId}
+>
+  {loadingId === invite.invitedId ? "Removing..." : "Remove"}
+</button>
+
               </div>
             </div>
           ))}
