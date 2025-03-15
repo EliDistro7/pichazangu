@@ -47,15 +47,14 @@ exports.generateEventQRCode2 = async (req, res) => {
     
     event.save();
 
-    console.log("event id", event._id)
-    console.log('event access token', event.accessToken);
+    
 
 
     // Generate a secure event access URL
     const eventURL = `https://pichazangu.store/evento/${event._id}/?token=${event.accessToken}`;
 
     
-    console.log('it reached here for creating QRCode')
+
 
         // Generate QR Code as a Buffer (image)
         QRCode.toBuffer(eventURL, async (err, buffer) => {
