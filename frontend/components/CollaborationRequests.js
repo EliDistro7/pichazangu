@@ -38,6 +38,7 @@ const CollaborationRequests = ({ event, user, socket, activeTab }) => {
         toast.success("Request rejected successfully", { theme: "dark" });
       }
     } catch (error) {
+      
       toast.error(error.message || "Failed to remove user", { theme: "dark" });
     } finally {
       setLoadingId(null);
@@ -54,7 +55,7 @@ const CollaborationRequests = ({ event, user, socket, activeTab }) => {
 
   return (
     <div className="mb-4 w-full">
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar theme="dark" />
+      <ToastContainer position="top-right" autoClose={3000} theme="dark" />
       <h3 className="text-lg font-semibold mb-2">{event.title}</h3>
   
       {/* Collaborators Tab */}

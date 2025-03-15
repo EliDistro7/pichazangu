@@ -13,6 +13,8 @@ import { useLastViewedPhoto } from "../../utils/useLastViewedPhoto";
 import MessageForm from 'components/MessageForm';
 import SearchEvents from "components/SearchEvents";
 import socket from "hooks/socket";
+import axios from "axios";
+
 
 const EventDetails = ({ initialEvent }) => {
   //console.log('initialEvent', initialEvent);
@@ -26,6 +28,8 @@ const EventDetails = ({ initialEvent }) => {
   const [loggedInUserId, setLoggedUserId] = useState(null);
   const [logggedInUsername, setLogggedInUsername] = useState(null);
   const router = useRouter();
+  
+  
   const { photoId } = router.query;
   const [lastViewedPhoto, setLastViewedPhoto] = useLastViewedPhoto();
   const lastViewedPhotoRef = useRef(null);
@@ -34,6 +38,35 @@ const EventDetails = ({ initialEvent }) => {
   const [captions, setCaptions] = useState([]);
  
   const [selectedType, setSelectedType] = useState("");
+  
+
+
+const [isTokenValid, setIsTokenValid] = useState(false);
+
+useEffect(() => {
+  const searchParams = new URLSearchParams(window.location.search);
+  const token = searchParams.get("token");
+
+  if (token) {
+    // Validate the token with the backend
+    axios
+      .post(`${process.env.NEXT_PUBLIC_SERVER}/validate-token`, { eventId: event._id, token })
+      .then((res) => {
+        if (res.data.valid) {
+          setIsTokenValid(true);
+          toast.success("Token verified! You have upload access.");
+        } else {
+          toast.error("Invalid token! Upload access denied.");
+        }
+      })
+      .catch((err) => {
+        console.error("Token validation failed:", err);
+        toast.warn("Invalid Token provided.");
+      });
+  }
+}, []);
+
+
 
   // Scroll to last viewed photo if available
   useEffect(() => {
@@ -45,6 +78,8 @@ const EventDetails = ({ initialEvent }) => {
       setLastViewedPhoto(null);
     }
   }, [photoId, lastViewedPhoto, setLastViewedPhoto]);
+
+ 
 
 
   useEffect(() => {
@@ -112,7 +147,7 @@ const getMediaData = (media) => {
 const isInvited = event.invited?.some(invite => invite.invitedId === loggedInUserId);
 
 // Allow media upload for both the author and invited users
-const canUploadMedia = isAuthor || isInvited;
+const canUploadMedia = isAuthor || isInvited || isTokenValid;
 
   // Handle cover photo upload
   const handleCoverPhotoUpload = async (file) => {
@@ -458,7 +493,7 @@ const canUploadMedia = isAuthor || isInvited;
         </div>
       )}
   
-      <ToastContainer />
+      <ToastContainer theme="dark"/>
     </>
   );
   

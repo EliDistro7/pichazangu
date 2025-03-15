@@ -1,7 +1,8 @@
 const Event = require("../models/eventSchema"); // Import the Event model
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
-
+const QRCode = require("qrcode");
+const crypto = require("crypto");
 
 
 
@@ -28,6 +29,69 @@ exports.getAllEventsByUser = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch events." });
   }
 };
+
+exports.generateEventQRCode2 = async (req, res) => {
+  try {
+    console.log('it opened generateEventQRCode2');
+    const { eventId } = req.params;
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    // Ensure the event has a token for authentication
+    if (!event.accessToken) {
+      event.accessToken = crypto.randomBytes(16).toString("hex");
+    }
+
+    // Generate a secure event access URL
+    const eventURL = `https://pichazangu.store/evento/${event._id}/?token=${event.accessToken}`;
+
+    
+    console.log('it reached here for creating QRCode')
+
+        // Generate QR Code as a Buffer (image)
+        QRCode.toBuffer(eventURL, async (err, buffer) => {
+          if (err) {
+            return res.status(500).json({ error: "Failed to generate QR Code" });
+          }
+    
+          res.setHeader("Content-Type", "image/png");
+          res.send(buffer);
+        });
+
+
+  
+  } catch (error) {
+    console.error(error);
+    console.error("QR Code Generation Error:", error);
+    res.status(500).json({ error: "Failed to generate QR Code" });
+  }
+};
+
+exports.validateToken = async (req, res) => {
+  try {
+    const { eventId, token } = req.body;
+
+    // Find the event
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ valid: false, error: "Event not found" });
+    }
+
+    // Check if the token matches
+    if (event.accessToken !== token) {
+      return res.status(401).json({ valid: false, error: "Invalid token" });
+    }
+
+    return res.status(200).json({ valid: true });
+  } catch (error) {
+    console.error("Token validation error:", error);
+    res.status(500).json({ valid: false, error: "Server error" });
+  }
+};
+
 
 // Get events by author name with fuzzy matching
 exports.getEventsByAuthor = async (req, res) => {
@@ -437,6 +501,28 @@ exports.removeInvitedUser = async (req, res) => {
   } catch (error) {
     console.error("Error removing invited user:", error);
     res.status(500).json({ error: "Server error while removing invited user" });
+  }
+};
+
+
+
+
+
+exports.validateQRCode = async (req, res) => {
+  try {
+    const { qrData } = req.body; // Scanned QR code data
+
+    const { eventId, token } = JSON.parse(qrData);
+
+    const event = await Event.findById(eventId);
+    if (!event || event.accessToken !== token) {
+      return res.status(400).json({ error: "Invalid QR code or event not found" });
+    }
+
+    res.status(200).json({ message: "QR Code valid", eventId });
+  } catch (error) {
+    console.error("QR Code validation error:", error);
+    res.status(500).json({ error: "Server error while validating QR Code" });
   }
 };
 

@@ -49,6 +49,10 @@ const EventSchema = new mongoose.Schema(
       ],
       default: [], // No invited users by default
     },
+    accessToken: {
+      type: String,
+      required: false, // Set to false if optional
+    },
     pendingRequests: {
       type: [
         {

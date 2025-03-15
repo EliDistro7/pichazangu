@@ -1,24 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { Users, Eye, Edit, Trash2, User2Icon } from "lucide-react";
+import React, { useState } from "react";
+import { Users, Eye, Edit, Trash2, User2Icon, QrCode, MessageCircle } from "lucide-react";
 import MessagesList from "./MessagesList";
 import { getEventFollowers } from "../actions/event";
+import EventQRCode from "./EventQRCode";
 
 const EventCard = ({ event, handleViewEvent, handleEditEvent, handleDeleteEvent }) => {
-  const [selectedMessage, setSelectedMessage] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [followers, setFollowers] = useState([]);
   const [loadingFollowers, setLoadingFollowers] = useState(false);
   const [showFollowers, setShowFollowers] = useState(false);
+  const [showQR, setShowQR] = useState(false);
+  const [showMessages, setShowMessages] = useState(false); // Toggle messages
 
   // Fetch followers
   const fetchFollowers = async () => {
     setLoadingFollowers(true);
     try {
-      const data = await getEventFollowers(event._id); // Pass event._id
-     // console.log('followers', data.followers);
-      setFollowers(data.followers); // Assuming the API returns an array of followers
+      const data = await getEventFollowers(event._id);
+      setFollowers(data.followers);
     } catch (error) {
-      console.log(error)
       console.error("Error fetching followers:", error);
     } finally {
       setLoadingFollowers(false);
@@ -65,7 +64,7 @@ const EventCard = ({ event, handleViewEvent, handleEditEvent, handleDeleteEvent 
               <ul className="text-gray-300 text-sm space-y-1">
                 {followers.map((follower) => (
                   <li key={follower._id} className="flex items-center space-x-2">
-                   <User2Icon />
+                    <User2Icon />
                     <span>{follower.username}</span>
                   </li>
                 ))}
@@ -76,9 +75,24 @@ const EventCard = ({ event, handleViewEvent, handleEditEvent, handleDeleteEvent 
           </div>
         )}
 
-        {/* Messages */}
+        {/* Toggle Messages Button */}
         {event.messages && event.messages.length > 0 && (
-          <MessagesList messages={event.messages} onMessageClick={setSelectedMessage} />
+          <div className="mt-4">
+            <button
+              onClick={() => setShowMessages(!showMessages)}
+              className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-md transition"
+            >
+              <MessageCircle size={16} />
+              <span>{showMessages ? "Hide Messages" : "Show Messages"}</span>
+            </button>
+
+            {/* Messages (Toggled) */}
+            {showMessages && (
+              <div className="mt-2 bg-gray-700 p-2 rounded-md">
+                <MessagesList messages={event.messages} />
+              </div>
+            )}
+          </div>
         )}
 
         {/* Actions */}
@@ -105,6 +119,33 @@ const EventCard = ({ event, handleViewEvent, handleEditEvent, handleDeleteEvent 
             </button>
           </div>
         </div>
+
+        {/* QR Code Button */}
+        <div className="mt-4 text-center">
+          <button
+            onClick={() => setShowQR(true)}
+            className="flex items-center space-x-2 bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md transition"
+          >
+            <QrCode size={16} />
+            <span>Generate QR Code</span>
+          </button>
+        </div>
+
+        {/* QR Code Modal */}
+        {showQR && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white p-4 rounded-lg shadow-lg text-center">
+              <h3 className="text-lg font-bold mb-2">Event QR Code</h3>
+              <EventQRCode eventId={event._id} />
+              <button
+                onClick={() => setShowQR(false)}
+                className="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
