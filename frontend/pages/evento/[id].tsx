@@ -46,7 +46,7 @@ const [isTokenValid, setIsTokenValid] = useState(false);
 useEffect(() => {
   
 
-  console.log('token', token);
+ 
 
   if (token) {
     // Validate the token with the backend
