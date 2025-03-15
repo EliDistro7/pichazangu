@@ -17,7 +17,7 @@ import axios from "axios";
 
 
 const EventDetails = ({ initialEvent }) => {
-  //console.log('initialEvent', initialEvent);
+  console.log('initialEvent acces token', initialEvent.accessToken);
   const [event, setEvent] = useState(initialEvent);
   const [activeTab, setActiveTab] = useState("photo");
   const [uploadProgress, setUploadProgress] = useState(0);

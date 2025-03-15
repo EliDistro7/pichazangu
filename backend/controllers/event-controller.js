@@ -44,6 +44,12 @@ exports.generateEventQRCode2 = async (req, res) => {
     if (!event.accessToken) {
       event.accessToken = crypto.randomBytes(16).toString("hex");
     }
+    
+    event.save();
+
+    console.log("event id", event._id)
+    console.log('event access token', event.accessToken);
+
 
     // Generate a secure event access URL
     const eventURL = `https://pichazangu.store/evento/${event._id}/?token=${event.accessToken}`;
