@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Users, Eye, Edit, Trash2, User2Icon, QrCode, MessageCircle } from "lucide-react";
+import { Users, Eye, Edit, Trash2, User2Icon, QrCode, MessageCircle, MoreVertical } from "lucide-react";
 import MessagesList from "./MessagesList";
 import { getEventFollowers } from "../actions/event";
 import EventQRCode from "./EventQRCode";
@@ -9,7 +9,8 @@ const EventCard = ({ event, handleViewEvent, handleEditEvent, handleDeleteEvent 
   const [loadingFollowers, setLoadingFollowers] = useState(false);
   const [showFollowers, setShowFollowers] = useState(false);
   const [showQR, setShowQR] = useState(false);
-  const [showMessages, setShowMessages] = useState(false); // Toggle messages
+  const [showMessages, setShowMessages] = useState(false);
+  const [showActionsDropdown, setShowActionsDropdown] = useState(false);
 
   // Fetch followers
   const fetchFollowers = async () => {
@@ -30,6 +31,48 @@ const EventCard = ({ event, handleViewEvent, handleEditEvent, handleDeleteEvent 
       <div className="relative h-48">
         <img src={event.coverPhoto} alt={event.title} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+
+        {/* Actions Dropdown Trigger */}
+        <div className="absolute top-2 right-2">
+          <button
+            onClick={() => setShowActionsDropdown(!showActionsDropdown)}
+            className="p-2 bg-gray-700 hover:bg-gray-600 rounded-md relative"
+          >
+            <MoreVertical size={16} className="text-white" />
+            {showActionsDropdown && (
+              <div className="absolute right-0 mt-2 w-48 bg-gray-700 rounded-md shadow-lg z-10">
+                <button
+                  onClick={() => handleViewEvent(event._id)}
+                  className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
+                >
+                  <Eye size={16} />
+                  <span>View</span>
+                </button>
+                <button
+                  onClick={() => handleEditEvent(event._id)}
+                  className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
+                >
+                  <Edit size={16} />
+                  <span>Edit</span>
+                </button>
+                <button
+                  onClick={() => handleDeleteEvent(event._id)}
+                  className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
+                >
+                  <Trash2 size={16} />
+                  <span>Delete</span>
+                </button>
+                <button
+                  onClick={() => setShowQR(true)}
+                  className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
+                >
+                  <QrCode size={16} />
+                  <span>Generate QR Code</span>
+                </button>
+              </div>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Event Details */}
@@ -94,59 +137,23 @@ const EventCard = ({ event, handleViewEvent, handleEditEvent, handleDeleteEvent 
             )}
           </div>
         )}
-
-        {/* Actions */}
-        <div className="flex items-center justify-between mt-3">
-          <button
-            onClick={() => handleViewEvent(event._id)}
-            className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-md transition"
-          >
-            <Eye size={16} />
-            <span>View</span>
-          </button>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => handleEditEvent(event._id)}
-              className="p-2 bg-blue-600 hover:bg-blue-700 rounded-md"
-            >
-              <Edit size={16} className="text-white" />
-            </button>
-            <button
-              onClick={() => handleDeleteEvent(event._id)}
-              className="p-2 bg-red-600 hover:bg-red-700 rounded-md"
-            >
-              <Trash2 size={16} className="text-white" />
-            </button>
-          </div>
-        </div>
-
-        {/* QR Code Button */}
-        <div className="mt-4 text-center">
-          <button
-            onClick={() => setShowQR(true)}
-            className="flex items-center space-x-2 bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md transition"
-          >
-            <QrCode size={16} />
-            <span>Generate QR Code</span>
-          </button>
-        </div>
-
-        {/* QR Code Modal */}
-        {showQR && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-4 rounded-lg shadow-lg text-center">
-              <h3 className="text-lg font-bold mb-2">Event QR Code</h3>
-              <EventQRCode eventId={event._id} />
-              <button
-                onClick={() => setShowQR(false)}
-                className="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* QR Code Modal */}
+      {showQR && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-4 rounded-lg shadow-lg text-center">
+            <h3 className="text-lg font-bold mb-2">Event QR Code</h3>
+            <EventQRCode eventId={event._id} />
+            <button
+              onClick={() => setShowQR(false)}
+              className="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

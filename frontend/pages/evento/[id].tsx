@@ -28,7 +28,7 @@ const EventDetails = ({ initialEvent }) => {
   const [loggedInUserId, setLoggedUserId] = useState(null);
   const [logggedInUsername, setLogggedInUsername] = useState(null);
   const router = useRouter();
-  
+  const { token } = router.query;
   
   const { photoId } = router.query;
   const [lastViewedPhoto, setLastViewedPhoto] = useLastViewedPhoto();
@@ -44,8 +44,9 @@ const EventDetails = ({ initialEvent }) => {
 const [isTokenValid, setIsTokenValid] = useState(false);
 
 useEffect(() => {
-  const searchParams = new URLSearchParams(window.location.search);
-  const token = searchParams.get("token");
+  
+
+  console.log('token', token);
 
   if (token) {
     // Validate the token with the backend
