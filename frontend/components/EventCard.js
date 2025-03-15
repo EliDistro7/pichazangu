@@ -173,15 +173,17 @@ const EventCard = ({ event }) => {
         pauseOnHover
         theme="dark"
       />
-
+  
       {/* Cover Photo */}
-      <div className="relative h-64 w-full bg-gray-300 flex items-center justify-center">
+      <div className="relative w-full bg-gray-300 flex items-center justify-center">
         {event.coverPhoto ? (
           <Image
             src={event.coverPhoto}
             alt={event.title}
-            layout="fill"
-            objectFit="cover"
+            width={800} // Set a default width
+            height={600} // Set a default height
+            layout="responsive" // Use responsive layout
+            objectFit="contain" // Ensure the image fits within the container without cropping
             className="transition-transform duration-500 group-hover:scale-110"
             onLoad={() => setImageLoaded(true)}
           />
@@ -191,13 +193,13 @@ const EventCard = ({ event }) => {
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-50"></div>
-
+  
         {/* Total Images and Videos */}
         <div className="absolute top-2 left-2 flex items-center space-x-2 bg-black bg-opacity-50 px-2 py-1 rounded-md">
           <span className="text-white text-sm">{totalImages} 📷</span>
           <span className="text-white text-sm">{totalVideos} 🎥</span>
         </div>
-
+  
         {/* Dropdown Toggle Button */}
         <button
           onClick={toggleDropdown}
@@ -206,7 +208,7 @@ const EventCard = ({ event }) => {
           <MoreVertical size={20} className="text-white" />
         </button>
       </div>
-
+  
       {/* Event details overlay */}
       <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-transparent to-transparent">
         <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">
@@ -215,7 +217,7 @@ const EventCard = ({ event }) => {
         <p className="text-white text-sm line-clamp-2">{event.description}</p>
         <p className="text-xs text-gray-300 opacity-75 mb-1">by {event.author.username}</p>
       </div>
-
+  
       {/* Dropdown Menu */}
       {isDropdownOpen && (
         <div
@@ -234,7 +236,7 @@ const EventCard = ({ event }) => {
             >
               {loadingView ? <Loader2 size={16} className="animate-spin" /> : "View"}
             </button>
-
+  
             {/* Follow/Unfollow Button */}
             <button
               onClick={(e) => {
@@ -253,7 +255,7 @@ const EventCard = ({ event }) => {
                 "Follow"
               )}
             </button>
-
+  
             {/* Share Button */}
             <button
               onClick={(e) => {
@@ -265,7 +267,7 @@ const EventCard = ({ event }) => {
             >
               Share
             </button>
-
+  
             {/* Collaborate Button */}
             <button
               onClick={(e) => {
@@ -285,7 +287,7 @@ const EventCard = ({ event }) => {
           </div>
         </div>
       )}
-
+  
       {/* Password Input Modal */}
       {showPasswordInput && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -334,7 +336,7 @@ const EventCard = ({ event }) => {
           </div>
         </div>
       )}
-
+  
       {/* Share Popup */}
       {isSharePopupOpen && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
@@ -360,7 +362,7 @@ const EventCard = ({ event }) => {
           </div>
         </div>
       )}
-
+  
       {/* Login Prompt */}
       {showLoginPrompt && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
