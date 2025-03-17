@@ -16,10 +16,10 @@ const RandomAd = () => {
       <div className="flex items-center space-x-3 bg-white/10 p-3 rounded-lg hover:bg-white/20 transition-all duration-300">
         <Phone className="w-6 h-6 text-yellow-400 animate-bounce" />
         <a
-          href="tel:+255617833806"
+          href="tel:+255793151051"
           className="text-lg font-semibold text-white hover:text-yellow-400 transition-colors duration-300"
         >
-          +255 617 833 806
+          +255 793 151 051
         </a>
       </div>
     </div>
