@@ -71,8 +71,8 @@ const DropdownMenu = ({
           setHasLiked(true);
 
           // Show success toast
-          toast.success("Liked");
-          console.log("Event liked successfully! Total likes:", totalLikes);
+          //toast.success("Liked");
+          //console.log("Event liked successfully! Total likes:", totalLikes);
         }
       }
     } catch (error) {
