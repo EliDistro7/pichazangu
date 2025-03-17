@@ -30,7 +30,7 @@ const PasswordModal = ({ eventId, onClose, onAuthenticate }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm bg-black/80">
       <div className="bg-gray-900/95 backdrop-blur-sm rounded-lg shadow-xl border border-gray-700/50 p-6 w-full max-w-md">
         <h2 className="text-xl font-semibold text-gray-200 mb-4">
           Enter Password
