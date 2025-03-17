@@ -105,6 +105,7 @@ const EventSchema = new mongoose.Schema(
       ],
       default: [],
     },
+    likes: { type: Number, default: 0 }, // Add this line
   },
   { timestamps: true } // Automatically handles `createdAt` and `updatedAt`
 );

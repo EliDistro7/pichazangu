@@ -75,6 +75,24 @@ exports.generateEventQRCode2 = async (req, res) => {
   }
 };
 
+exports.likeEvent = async (req, res) => {
+
+ try{
+  const event = await Event.findById(id);
+  if (!event) {
+    return res.json({ message: "Event not found" }, { status: 404 });
+  }
+
+  event.likes += 1; // Increment like count
+  await event.save();
+
+  return res.json({ message: "Event liked successfully" });
+}catch(error){
+  console.error(error);
+  return NextResponse.json({ message: "Failed to like event" }, { status: 500 });
+}
+}
+
 exports.validateToken = async (req, res) => {
   try {
     const { eventId, token } = req.body;

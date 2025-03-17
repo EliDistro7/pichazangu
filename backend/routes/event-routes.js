@@ -41,6 +41,8 @@ router.patch("/events/updateMedia", eventController.updateEventMedia);
 
 router.get("/:eventId/qrcode", eventController.generateEventQRCode2);
 
+router.post("/events/[id]/like", eventController.likeEvent);
+
 router.post("/validate-token", eventController.validateToken);
 // ✅ Route to remove a user from the invited list
 router.delete("/events/:eventId/invited/:userId", eventController.removeInvitedUser);

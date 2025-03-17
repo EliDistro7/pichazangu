@@ -230,6 +230,25 @@ export const removeInvitedUser = async ({eventId, userId, socket}) => {
   }
 };
 
+export async function likeEvent(eventId) {
+  try {
+    const response = await fetch(`/${api}/events/${eventId}/like`, {
+      method: "POST",
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to like event");
+    }
+
+    const data = await response.json();
+    return data.likes; // Return updated like count
+  } catch (error) {
+    console.error("Error liking event:", error);
+    return null;
+  }
+}
+
+
 // Reject a collaboration request
 export const rejectCollaborationRequest = async ({ eventId, requestId, socket = null }) => {
   try {
