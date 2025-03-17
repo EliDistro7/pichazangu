@@ -9,13 +9,14 @@ import MediaUpload from "components/MediaUpload";
 import MediaGallery from "components/MediaGallery";
 import MessageModal from "components/MessageModal2";
 import LoadingSpinner from "components/LoadingSpinner";
-import { getEventById, updateEventCoverPhoto, updateEventMedia, addViewToEvent } from "actions/event";
+import { getEventById, updateEventCoverPhoto, updateEventMedia, addViewToEvent, authenticateEvent } from "actions/event";
 import { getLoggedInUserId, getLoggedInUsername } from "hooks/useUser";
 import { uploadToCloudinary } from "actions/uploadToCloudinary";
 import { useLastViewedPhoto } from "utils/useLastViewedPhoto";
 import socket from "hooks/socket";
 import SearchEvents from "components/SearchEvents";
 import { ArrowLeft } from "lucide-react";
+import PasswordModal from "components/PasswordModal2"; // Import the PasswordModal component
 
 const EventDetails = ({ initialEvent }) => {
   const [event, setEvent] = useState(initialEvent);
@@ -35,6 +36,8 @@ const EventDetails = ({ initialEvent }) => {
   const { photoId } = router.query;
   const [lastViewedPhoto, setLastViewedPhoto] = useLastViewedPhoto();
   const lastViewedPhotoRef = useRef(null);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(initialEvent.private); // Show modal if event is private
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     if (token) {
@@ -153,6 +156,13 @@ const EventDetails = ({ initialEvent }) => {
     }
   };
 
+  const handleAuthenticate = (eventData) => {
+    // Handle successful authentication
+    setIsAuthenticated(true);
+    setIsPasswordModalOpen(false);
+    console.log("Authenticated event data:", eventData);
+  };
+
   const isAuthor = event.author.userId === loggedInUserId;
   const isInvited = event.invited?.some(invite => invite.invitedId === loggedInUserId);
   const canUploadMedia = isAuthor || isInvited || isTokenValid;
@@ -161,111 +171,123 @@ const EventDetails = ({ initialEvent }) => {
     <>
       <EventHead event={event} />
       <main className="max-w-[1960px] p-4 px-0 mx-0">
-        <SearchEvents />
-        <button onClick={() => router.back()} className="flex items-center space-x-2 text-gray-400 ml-3 hover:text-white mb-5 transition-colors">
-          <ArrowLeft size={20} />
-          <span>Back</span>
-        </button>
-        <CoverPhotoBanner
-          event={event}
-          isAuthor={isAuthor}
-          onCoverPhotoUpload={handleCoverPhotoUpload}
-          onMessageClick={() => setIsMessageModalOpen(true)}
-        />
-        <div className="container mx-auto px-4">
-          <p className="mb-4 text-lg">
-            <span className="font-semibold">Author:</span> {event.author.username}
-          </p>
-          <div className="flex justify-center mb-6">
-            <button
-              className={`px-6 py-2 text-lg font-semibold rounded-l-lg transition ${activeTab === "photo" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"}`}
-              onClick={() => setActiveTab("photo")}
-            >
-              Images
-            </button>
-            <button
-              className={`px-6 py-2 text-lg font-semibold rounded-r-lg transition ${activeTab === "video" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"}`}
-              onClick={() => setActiveTab("video")}
-            >
-              Videos
-            </button>
+        {/* Password Modal */}
+        {isPasswordModalOpen && (
+          <PasswordModal
+            eventId={event._id}
+            onClose={() => setIsPasswordModalOpen(false)}
+            onAuthenticate={handleAuthenticate}
+          />
+        )}
+
+        {/* Main Content */}
+        <div className={`${isPasswordModalOpen ? "blur-sm" : ""}`}>
+          <SearchEvents />
+          <button onClick={() => router.back()} className="flex items-center space-x-2 text-gray-400 ml-3 hover:text-white mb-5 transition-colors">
+            <ArrowLeft size={20} />
+            <span>Back</span>
+          </button>
+          <CoverPhotoBanner
+            event={event}
+            isAuthor={isAuthor}
+            onCoverPhotoUpload={handleCoverPhotoUpload}
+            onMessageClick={() => setIsMessageModalOpen(true)}
+          />
+          <div className="container mx-auto px-4">
+            <p className="mb-4 text-lg">
+              <span className="font-semibold">Author:</span> {event.author.username}
+            </p>
+            <div className="flex justify-center mb-6">
+              <button
+                className={`px-6 py-2 text-lg font-semibold rounded-l-lg transition ${activeTab === "photo" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"}`}
+                onClick={() => setActiveTab("photo")}
+              >
+                Images
+              </button>
+              <button
+                className={`px-6 py-2 text-lg font-semibold rounded-r-lg transition ${activeTab === "video" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"}`}
+                onClick={() => setActiveTab("video")}
+              >
+                Videos
+              </button>
+            </div>
+            {canUploadMedia && (
+              <MediaUpload
+                selectedFiles={selectedFiles}
+                selectedType={selectedType}
+                captions={captions}
+                onFileChange={handleFileChange}
+                onCaptionChange={handleCaptionChange}
+                onMediaUpload={handleMediaUpload}
+                isUploading={isUploading}
+                uploadProgress={uploadProgress}
+              />
+            )}
+
+            {/* Upload Progress Bar */}
+            {isUploading && (
+              <div className="w-full h-1 bg-gray-200">
+                <div
+                  className="h-full bg-blue-600"
+                  style={{ width: `${uploadProgress}%` }}
+                ></div>
+              </div>
+            )}
+
+            {/* Render Content Based on Active Tab */}
+            {activeTab === "photo" && (
+              <MediaGallery
+                media={event.imageUrls}
+                mediaType="photo"
+                eventId={event._id}
+                lastViewedPhoto={lastViewedPhoto}
+                lastViewedPhotoRef={lastViewedPhotoRef}
+              />
+            )}
+
+            {activeTab === "video" && (
+              <MediaGallery
+                media={event.videoUrls}
+                mediaType="video"
+                eventId={event._id}
+                lastViewedPhoto={lastViewedPhoto}
+                lastViewedPhotoRef={lastViewedPhotoRef}
+              />
+            )}
           </div>
-          {canUploadMedia && (
-                       <MediaUpload
-                       selectedFiles={selectedFiles}
-                       selectedType={selectedType}
-                       captions={captions}
-                       onFileChange={handleFileChange}
-                       onCaptionChange={handleCaptionChange}
-                       onMediaUpload={handleMediaUpload}
-                       isUploading={isUploading}
-                       uploadProgress={uploadProgress}
-                     />
-                   )}
-         
-                   {/* Upload Progress Bar */}
-                   {isUploading && (
-                     <div className="w-full h-1 bg-gray-200">
-                       <div
-                         className="h-full bg-blue-600"
-                         style={{ width: `${uploadProgress}%` }}
-                       ></div>
-                     </div>
-                   )}
-         
-                   {/* Render Content Based on Active Tab */}
-                   {activeTab === "photo" && (
-                     <MediaGallery
-                       media={event.imageUrls}
-                       mediaType="photo"
-                       eventId={event._id}
-                       lastViewedPhoto={lastViewedPhoto}
-                       lastViewedPhotoRef={lastViewedPhotoRef}
-                     />
-                   )}
-         
-                   {activeTab === "video" && (
-                     <MediaGallery
-                       media={event.videoUrls}
-                       mediaType="video"
-                       eventId={event._id}
-                       lastViewedPhoto={lastViewedPhoto}
-                       lastViewedPhotoRef={lastViewedPhotoRef}
-                     />
-                   )}
-                 </div>
-         
-                 {/* Message Modal */}
-                 <MessageModal
-                   isOpen={isMessageModalOpen}
-                   onClose={() => setIsMessageModalOpen(false)}
-                   eventId={event._id}
-                   userId={event.author.userId}
-                 />
-               </main>
-         
-               {/* Global Loading UI for media route changes */}
-               <LoadingSpinner isVisible={isMediaLoading} />
-         
-               <ToastContainer theme="dark" />
-             </>
-           );
-         };
-         
-         export async function getServerSideProps({ params }) {
-           try {
-             const event = await getEventById(params.id);
-             return {
-               props: {
-                 initialEvent: JSON.parse(JSON.stringify(event)),
-               },
-             };
-           } catch (error) {
-             console.error("Error fetching event:", error);
-             return {
-               notFound: true,
-             };
-           }
-         }
-         
-         export default EventDetails;
+        </div>
+
+        {/* Message Modal */}
+        <MessageModal
+          isOpen={isMessageModalOpen}
+          onClose={() => setIsMessageModalOpen(false)}
+          eventId={event._id}
+          userId={event.author.userId}
+        />
+      </main>
+
+      {/* Global Loading UI for media route changes */}
+      <LoadingSpinner isVisible={isMediaLoading} />
+
+      <ToastContainer theme="dark" />
+    </>
+  );
+};
+
+export async function getServerSideProps({ params }) {
+  try {
+    const event = await getEventById(params.id);
+    return {
+      props: {
+        initialEvent: JSON.parse(JSON.stringify(event)),
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching event:", error);
+    return {
+      notFound: true,
+    };
+  }
+}
+
+export default EventDetails;
