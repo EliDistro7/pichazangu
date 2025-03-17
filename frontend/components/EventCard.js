@@ -152,18 +152,7 @@ const EventCard = ({ event }) => {
         }
       }}
     >
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
+    
 
       <CoverPhoto
         coverPhoto={event.coverPhoto}
@@ -227,6 +216,7 @@ const EventCard = ({ event }) => {
       )}
 
       {showLoginPrompt && <LoginPrompt onClose={() => setShowLoginPrompt(false)} />}
+      <ToastContainer position="bottom-center" autoClose={3000} theme="dark" />
     </div>
   );
 };
