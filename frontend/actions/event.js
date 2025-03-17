@@ -3,7 +3,7 @@ import axios from "axios";
 
 const api = process.env.NEXT_PUBLIC_SERVER;
 
-// Create a new event
+// Create a new event;
 export const createEvent = async (event) => {
   console.log("Event data:", event);
 
@@ -230,18 +230,24 @@ export const removeInvitedUser = async ({eventId, userId, socket}) => {
   }
 };
 
-export async function likeEvent(eventId) {
+export async function likeEvent({eventId, socket,username}) {
   try {
-    const response = await fetch(`/${api}/events/${eventId}/like`, {
-      method: "POST",
-    });
+    const { data } = await axios.put(`${api}/events/${eventId}/like`);
 
-    if (!response.ok) {
-      throw new Error("Failed to like event");
+
+
+   console.log('response from liking', data);
+
+    
+    if(socket){
+      socket.emit("event_liked", {
+        eventId,
+       
+       // username,
+      });
     }
 
-    const data = await response.json();
-    return data.likes; // Return updated like count
+    return data ?? { totalLikes: 0 }; // Ensure it always returns a valid object
   } catch (error) {
     console.error("Error liking event:", error);
     return null;

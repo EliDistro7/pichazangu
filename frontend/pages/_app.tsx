@@ -4,6 +4,8 @@ import { useRouter } from "next/router";
 import Script from "next/script";
 import Head from "next/head";
 import "../styles/index.css";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Declare gtag on the window object
 declare global {
@@ -79,6 +81,18 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       </Script>
 
       <Component {...pageProps} />
+      <ToastContainer
+        position="bottom-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </>
   );
 }

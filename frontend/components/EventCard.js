@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { authenticateEvent, requestCollaboration } from "../actions/event";
+import { authenticateEvent, requestCollaboration, likeEvent } from "../actions/event"; // Import likeEvent
 import { getLoggedInUserId } from "hooks/useUser";
 import { getUserById } from "actions/users";
 import axios from "axios";
 import socket from "hooks/socket";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
+
 import CoverPhoto from "./CoverPhotoBanner1";
 import EventDetails from "./EventDetails";
 import DropdownMenu from "./DropdownMenu";
@@ -29,10 +29,12 @@ const EventCard = ({ event }) => {
   const [isRequestingCollaboration, setIsRequestingCollaboration] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [collaborationStatus, setCollaborationStatus] = useState("default");
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const userId = getLoggedInUserId();
     setIsLoggedIn(!!userId);
+    setUser(userId);
 
     if (userId && event.followers.includes(userId)) {
       setIsFollowing(true);
@@ -142,6 +144,19 @@ const EventCard = ({ event }) => {
     setIsDropdownOpen((prev) => !prev);
   };
 
+  // Define handleLike function
+  const handleLike = async () => {
+    if (!isLoggedIn) return; // Ensure user is logged in
+    try {
+      const updatedLikes = await likeEvent(event._id); // Use event._id
+      if (updatedLikes !== null) {
+        console.log("Event liked successfully! Total likes:", updatedLikes);
+      }
+    } catch (error) {
+      console.error("Error liking event:", error);
+    }
+  };
+
   return (
     <div
       id={event._id}
@@ -152,48 +167,51 @@ const EventCard = ({ event }) => {
         }
       }}
     >
-    
-
       <CoverPhoto
         coverPhoto={event.coverPhoto}
         title={event.title}
         totalImages={event.imageUrls.length}
         totalVideos={event.videoUrls.length}
         onDropdownToggle={toggleDropdown}
+        author={event.author}
       />
 
       <EventDetails
         title={event.title}
         description={event.description}
-        author={event.author}
+        
       />
 
-      {isDropdownOpen && (
-        <DropdownMenu
-          onViewClick={() => {
-            handleViewClick();
-            setIsDropdownOpen(false);
-          }}
-          onFollowClick={() => {
-            handleFollowClick();
-            setIsDropdownOpen(false);
-          }}
-          onShareClick={() => {
-            toggleSharePopup();
-            setIsDropdownOpen(false);
-          }}
-          onCollaborateClick={(e) => {
-            handleRequestCollaboration(e);
-            setIsDropdownOpen(false);
-          }}
-          loadingView={loadingView}
-          loadingFollow={loadingFollow}
-          isFollowing={isFollowing}
-          isLoggedIn={isLoggedIn}
-          collaborationStatus={collaborationStatus}
-          isRequestingCollaboration={isRequestingCollaboration}
-        />
-      )}
+      {/* Always render DropdownMenu, but control visibility with isDropdownOpen */}
+      <DropdownMenu
+        isDropdownOpen={isDropdownOpen}
+        onViewClick={() => {
+          handleViewClick();
+          setIsDropdownOpen(false);
+        }}
+        onFollowClick={() => {
+          handleFollowClick();
+          setIsDropdownOpen(false);
+        }}
+        onShareClick={() => {
+          toggleSharePopup();
+          setIsDropdownOpen(false);
+        }}
+        onCollaborateClick={(e) => {
+          handleRequestCollaboration(e);
+          setIsDropdownOpen(false);
+        }}
+        onLikeClick={handleLike} // Pass handleLike as a prop
+        loadingView={loadingView}
+        loadingFollow={loadingFollow}
+        isFollowing={isFollowing}
+        isLoggedIn={isLoggedIn}
+        collaborationStatus={collaborationStatus}
+        isRequestingCollaboration={isRequestingCollaboration}
+        eventId={event._id}
+        socket={socket}
+        user={user}
+      />
 
       {showPasswordInput && (
         <PasswordModal
@@ -216,7 +234,7 @@ const EventCard = ({ event }) => {
       )}
 
       {showLoginPrompt && <LoginPrompt onClose={() => setShowLoginPrompt(false)} />}
-      <ToastContainer position="bottom-center" autoClose={3000} theme="dark" />
+     
     </div>
   );
 };

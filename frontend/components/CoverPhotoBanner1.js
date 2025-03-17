@@ -1,10 +1,8 @@
-
-
 // components/CoverPhoto.js
 import Image from "next/image";
-import { MoreVertical } from "lucide-react";
+import { Camera, Video, MoreVertical } from "lucide-react";
 
-const CoverPhoto = ({ coverPhoto, title, totalImages, totalVideos, onDropdownToggle }) => {
+const CoverPhoto = ({ coverPhoto, title, totalImages, totalVideos, onDropdownToggle,author }) => {
   return (
     <div className="relative w-full bg-gray-300 flex items-center justify-center">
       {coverPhoto ? (
@@ -25,18 +23,26 @@ const CoverPhoto = ({ coverPhoto, title, totalImages, totalVideos, onDropdownTog
       <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-50"></div>
 
       {/* Total Images and Videos */}
-      <div className="absolute top-2 left-2 flex items-center space-x-2 bg-black bg-opacity-50 px-2 py-1 rounded-md">
-        <span className="text-white text-sm">{totalImages} 📷</span>
-        <span className="text-white text-sm">{totalVideos} 🎥</span>
-      </div>
+      <div className="absolute top-2 right-2 flex items-center space-x-2 bg-gradient-to-r from-black/30 to-blue-500/30 px-2 py-1 rounded-md">
+        {/* Images Count */}
+        <div className="flex items-center space-x-1">
+          <Camera size={16} className="text-white" />
+          <span className="text-white text-sm">{totalImages}</span>
+        </div>
 
-      {/* Dropdown Toggle Button */}
-      <button
-        onClick={onDropdownToggle}
-        className="absolute top-2 right-2 bg-black bg-opacity-50 p-1 rounded-md hover:bg-opacity-70 transition-all duration-300"
-      >
-        <MoreVertical size={20} className="text-white" />
-      </button>
+        
+
+        {/* Videos Count */}
+        <div className="flex items-center space-x-1">
+          <Video size={16} className="text-white" />
+          <span className="text-white text-sm">{totalVideos}</span>
+        </div>
+      </div>
+      <div className="absolute top-2 left-2 flex items-center space-x-2  bg-gradient-to-r from-black/30 to-blue-500/30  px-2 py-1 rounded-md">
+      
+
+        <p className="text-sm text-white mb-1">{author.username}</p>
+        </div>
     </div>
   );
 };
