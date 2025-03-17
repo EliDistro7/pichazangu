@@ -1,7 +1,7 @@
 import React from "react";
 import EventCard from "./EventCard";
 import RandomAd from "./RandomAd";
-import PricingBanner from "./PricingBanner";
+//import PricingBanner from "./PricingBanner";
 import SearchEvents from "components/SearchEvents";
 
 const EventList = ({ events, loading, onDelete }) => {
@@ -33,7 +33,7 @@ const EventList = ({ events, loading, onDelete }) => {
 
   // Function to pick a random component
   const getRandomComponent = () => {
-    const components = [RandomAd, PricingBanner];
+    const components = [RandomAd];
     const randomIndex = getRandomNumber(0, components.length - 1);
     const RandomComponent = components[randomIndex];
     return <RandomComponent />;
