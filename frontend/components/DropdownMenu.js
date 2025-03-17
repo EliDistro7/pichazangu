@@ -91,7 +91,7 @@ const DropdownMenu = ({
         autoClose={3000}
         theme="dark"
       />
-
+  
       {/* Dropdown Menu */}
       <div className="absolute inset-x-0 bottom-[-10px] z-50 rounded-md shadow-lg p-2 flex flex-wrap items-center gap-2 bg-gradient-to-t from-black/80 to-transparent w-full">
         {/* Like Button */}
@@ -104,10 +104,10 @@ const DropdownMenu = ({
             isLiking ? "animate-pulse" : ""
           }`}
         >
-          <Heart size={12} className="sm:size-14" fill={hasLiked ? "red" : "none"} />
+          <Heart size={16} className="w-4 h-4 sm:w-5 sm:h-5" fill={hasLiked ? "red" : "none"} />
           <span>{hasLiked ? "Liked" : "Like"}</span>
         </button>
-
+  
         {/* Follow Button */}
         <button
           onClick={onFollowClick}
@@ -116,10 +116,10 @@ const DropdownMenu = ({
             isFollowing ? "text-green-500" : "text-gray-200"
           } hover:bg-gray-700/50 rounded-md transition-all duration-300`}
         >
-          <UserPlus size={12} className="sm:size-14" />
+          <UserPlus size={16} className="w-4 h-4 sm:w-5 sm:h-5" />
           <span>
             {loadingFollow ? (
-              <Loader2 size={12} className="animate-spin sm:size-14" />
+              <Loader2 size={16} className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
             ) : isFollowing ? (
               "Unfollow"
             ) : (
@@ -127,25 +127,25 @@ const DropdownMenu = ({
             )}
           </span>
         </button>
-
+  
         {/* Share Button */}
         <button
           onClick={onShareClick}
           className="flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm text-gray-200 hover:bg-gray-700/50 rounded-md transition-all duration-300"
         >
-          <Share size={12} className="sm:size-14" />
+          <Share size={16} className="w-4 h-4 sm:w-5 sm:h-5" />
           <span>Share</span>
         </button>
-
+  
         {/* More Button (Dropdown Toggle) */}
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           className="flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm text-gray-200 hover:bg-gray-700/50 rounded-md transition-all duration-300"
         >
-          <MoreVertical size={12} className="sm:size-14" />
+          <MoreVertical size={16} className="w-4 h-4 sm:w-5 sm:h-5" />
           <span>More</span>
         </button>
-
+  
         {/* Dropdown Menu for Additional Options (Modal-Like Overlay) */}
         {isDropdownOpen && (
           <>
@@ -154,7 +154,7 @@ const DropdownMenu = ({
               className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
               onClick={() => setIsDropdownOpen(false)}
             ></div>
-
+  
             {/* Dropdown Content */}
             <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-900/95 backdrop-blur-sm rounded-lg shadow-xl border border-gray-700/50 p-3 flex flex-col gap-1.5 z-50 w-[90%] max-w-[200px] sm:w-auto sm:max-w-none">
               {/* View Button */}
@@ -165,16 +165,16 @@ const DropdownMenu = ({
                 }}
                 className="flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm text-gray-200 hover:bg-gray-800/70 rounded-md transition-colors duration-200"
               >
-                <Eye size={12} className="sm:size-14 text-gray-300" />
+                <Eye size={16} className="w-4 h-4 sm:w-5 sm:h-5 text-gray-300" />
                 <span>
                   {loadingView ? (
-                    <Loader2 size={12} className="animate-spin sm:size-14 text-gray-300" />
+                    <Loader2 size={16} className="w-4 h-4 sm:w-5 sm:h-5 animate-spin text-gray-300" />
                   ) : (
                     "View"
                   )}
                 </span>
               </button>
-
+  
               {/* Collaborate Button */}
               <button
                 onClick={(e) => {

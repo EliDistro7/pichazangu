@@ -42,7 +42,7 @@ const EventList = ({ events, loading, onDelete }) => {
   return (
     <div className="space-y-4 p-4">
       <SearchEvents />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {shuffledEvents.map((event, index) => {
           // Render a random component at random intervals
           if (shouldRenderRandomComponent()) {
