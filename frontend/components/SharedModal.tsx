@@ -118,7 +118,7 @@ export default function SharedModal({
                 <>
                   {index > 0 && (
                     <button
-                      className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-3 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white focus:outline-none"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/20 p-3 text-white/75 backdrop-blur-lg transition hover:bg-black/40 hover:text-white focus:outline-none"
                       style={{ transform: "translate3d(0, -50%, 0)" }}
                       onClick={() => changePhotoId(index - 1)}
                     >
@@ -127,7 +127,7 @@ export default function SharedModal({
                   )}
                   {index + 1 < mediaUrls.length && (
                     <button
-                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-3 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white focus:outline-none"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/20 p-3 text-white/75 backdrop-blur-lg transition hover:bg-black/40 hover:text-white focus:outline-none"
                       style={{ transform: "translate3d(0, -50%, 0)" }}
                       onClick={() => changePhotoId(index + 1)}
                     >
@@ -140,7 +140,7 @@ export default function SharedModal({
                 {navigation ? (
                   <a
                     href={currentMedia.url}
-                    className="rounded-full bg-black/50 p-2 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white"
+                    className="rounded-full bg-black/20 p-2 text-white/75 backdrop-blur-lg transition hover:bg-black/40 hover:text-white"
                     target="_blank"
                     title="Open fullsize version"
                     rel="noreferrer"
@@ -152,7 +152,7 @@ export default function SharedModal({
                     href={`https://twitter.com/intent/tweet?text=Check%20out%20this%20media!%0A%0A${encodeURIComponent(
                       currentMedia.url
                     )}`}
-                    className="rounded-full bg-black/50 p-2 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white"
+                    className="rounded-full bg-black/20 p-2 text-white/75 backdrop-blur-lg transition hover:bg-black/40 hover:text-white"
                     target="_blank"
                     title="Share on Twitter"
                     rel="noreferrer"
@@ -164,7 +164,7 @@ export default function SharedModal({
                   onClick={() =>
                     downloadPhoto(currentMedia.url, `${currentMedia.id}.jpg`)
                   }
-                  className="rounded-full bg-black/50 p-2 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white"
+                  className="rounded-full bg-black/20 p-2 text-white/75 backdrop-blur-lg transition hover:bg-black/40 hover:text-white"
                   title="Download fullsize version"
                 >
                   <ArrowDownTrayIcon className="h-5 w-5" />
@@ -173,7 +173,7 @@ export default function SharedModal({
               <div className="absolute top-0 left-0 flex items-center gap-2 p-3 text-white">
                 <button
                   onClick={closeModal}
-                  className="rounded-full bg-black/50 p-2 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white"
+                  className="rounded-full bg-black/20 p-2 text-white/75 backdrop-blur-lg transition hover:bg-black/40 hover:text-white"
                 >
                   {navigation ? (
                     <XMarkIcon className="h-5 w-5" />
