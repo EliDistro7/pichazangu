@@ -37,7 +37,7 @@ const MediaPage: NextPage<MediaPageProps> = ({
         <meta property="og:image" content={currentMediaUrl} />
         <meta name="twitter:image" content={currentMediaUrl} />
       </Head>
-      <main className="mx-auto max-w-[1960px] p-4">
+      <main className="mx-0 max-w-[1960px] p-4 px-0">
       <Modal
   eventId={eventId}
   mediaUrls={mediaUrls.map((media) => media.url)} // Convert to string[]

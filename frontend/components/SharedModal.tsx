@@ -64,11 +64,11 @@ export default function SharedModal({
       }}
     >
       <div
-        className="relative z-[1000] flex w-full max-w-7xl items-center aspect-[3/2] md:mt-40 md:mb-16 lg:mt-48 lg:mb-20 xl:mt-60 xl:mb-24 wide:h-full xl:taller-than-854:h-auto"
+        className="relative z-[1000] mx-0 flex w-full max-w-7xl items-center aspect-[3/2]  lg:mt-48 lg:mb-20 xl:mt-60 xl:mb-24 wide:h-full xl:taller-than-854:h-auto"
         {...handlers}
       >
         {/* Main Media Display */}
-        <div className="w-full h-full overflow-hidden">
+        <div className="w-full h-full overflow-hidden mx-0">
           <div className="relative w-full h-full flex items-center justify-center">
             <AnimatePresence initial={false} custom={direction}>
               <motion.div
