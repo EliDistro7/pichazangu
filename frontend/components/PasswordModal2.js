@@ -4,8 +4,10 @@ import { useState } from "react";
 import { authenticateEvent } from "actions/event"; // Import the authenticateEvent function
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useRouter} from "next/router";
 
 const PasswordModal = ({ eventId, onClose, onAuthenticate }) => {
+  const router = useRouter();
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -50,7 +52,9 @@ const PasswordModal = ({ eventId, onClose, onAuthenticate }) => {
           <div className="flex justify-end gap-2">
             <button
               type="button"
-              onClick={onClose}
+              onClick={()=>{
+                 router.push('/')
+              }}
               className="px-4 py-2 text-sm text-gray-200 bg-gray-700/50 hover:bg-gray-700/70 rounded-md transition-colors duration-200"
             >
               Cancel
