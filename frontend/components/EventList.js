@@ -3,9 +3,10 @@ import EventCard from "./EventCard";
 import RandomAd from "./RandomAd";
 //import PricingBanner from "./PricingBanner";
 import SearchEvents from "components/SearchEvents";
+import LoadingSpinner from "./LoadingSpinner";
 
 const EventList = ({ events, loading, onDelete }) => {
-  if (loading) return <p>Loading events...</p>;
+  if (loading) return <LoadingSpinner isVisible={loading} />;
   if (events.length === 0) return <p>No events available.</p>;
 
   // Function to shuffle the events array using the Fisher-Yates algorithm
