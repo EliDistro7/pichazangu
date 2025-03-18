@@ -13,6 +13,7 @@ import DropdownMenu from "./DropdownMenu";
 import PasswordModal from "./PasswordModal";
 import SharePopup from "./SharePopup";
 import LoginPrompt from "./LoginPrompt";
+import LoadingSpinner from "./LoadingSpinner";
 
 const EventCard = ({ event }) => {
   const router = useRouter();
@@ -232,6 +233,8 @@ const EventCard = ({ event }) => {
           onClose={toggleSharePopup}
         />
       )}
+
+      {loadingView && <LoadingSpinner isVisible={loadingView} />}
 
       {showLoginPrompt && <LoginPrompt onClose={() => setShowLoginPrompt(false)} />}
      
