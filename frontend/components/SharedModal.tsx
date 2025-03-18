@@ -64,7 +64,7 @@ export default function SharedModal({
       }}
     >
       <div
-        className="relative z-[1000] mx-0 flex w-full max-w-7xl items-center aspect-[3/2]  lg:mt-48 lg:mb-20 xl:mt-60 xl:mb-24 wide:h-full xl:taller-than-854:h-auto"
+        className="relative z-[1000] mx-0 flex w-full max-w-7xl aspect-[3/2]  lg:mt-48 lg:mb-20 xl:mt-60 xl:mb-24 wide:h-full xl:taller-than-854:h-auto"
         {...handlers}
       >
         {/* Main Media Display */}
