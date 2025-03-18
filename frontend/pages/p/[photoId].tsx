@@ -42,7 +42,7 @@ const MediaPage: NextPage<MediaPageProps> = ({
   eventId={eventId}
   mediaUrls={mediaUrls.map((media) => media.url)} // Convert to string[]
   mediaType={mediaType}
-  onClose={() => router.back()} // Close modal and navigate back to home
+  onClose={() => router.push(`/evento/${eventId}`)} // Close modal and navigate back to home
 />
 
       </main>

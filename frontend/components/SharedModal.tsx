@@ -91,7 +91,7 @@ export default function SharedModal({
                     blurDataURL={currentMedia.url}
                     onLoad={() => setLoaded(true)}
                     className="w-full h-full object-contain" // Ensure the image fits within the container
-                    style={{ maxWidth: "100%", maxHeight: "100%" }} // Ensure the image scales properly
+                    style={{ maxWidth: "100%", minHeight:"100%", minWidth:"100%", maxHeight: "100%" }} // Ensure the image scales properly
                   />
                 ) : (
                   <video
