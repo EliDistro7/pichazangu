@@ -7,7 +7,7 @@ import LoadingSpinner from "./LoadingSpinner";
 
 const EventList = ({ events, loading, onDelete }) => {
   if (loading) return <LoadingSpinner isVisible={loading} />;
-  if (events.length === 0) return <p>No events available.</p>;
+  if (events.length === 0) return <LoadingSpinner isVisible={loading} />;
 
   // Function to shuffle the events array using the Fisher-Yates algorithm
   const shuffleArray = (array) => {
