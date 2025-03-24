@@ -735,7 +735,7 @@ exports.getAllEvents = async (req, res) => {
 // ✅ Get a Single Event by ID
 exports.getEventById = async (req, res) => {
   try {
-    console.log('it reaches here, skipping')
+    //console.log('it reaches here, skipping')
     const { eventId } = req.params;
     const event = await Event.findById(eventId);
 
