@@ -11,7 +11,7 @@ import { getUserById } from "../actions/users";
 import StatsCard from "../components/StatsCard";
 import CollaborationRequestsSection from "../components/CollaborationRequestsSection";
 import EventList from "../components/EventList2";
-import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
+
 import socket from "../hooks/socket";
 import OverallStats from "../components/OverallStats";
 
@@ -118,14 +118,23 @@ const Dashboard = () => {
 
 
 
-  const handleDeleteEvent = async (eventId) => {
-    try {
-      await deleteEvent(eventId);
-      setEvents((prevEvents) => prevEvents.filter((event) => event._id !== eventId));
-      toast.success("Event deleted successfully!");
-    } catch (err) {
-      toast.error("Failed to delete event.");
-    }
+  const handleEventDeleted = (deletedEventId) => {
+    setEvents(prevEvents => prevEvents.filter(event => event._id !== deletedEventId));
+    // Update stats if needed
+    setStats(prevStats => {
+      const updatedEvents = events.filter(event => event._id !== deletedEventId);
+      return [
+        { 
+          ...prevStats[0], 
+          value: updatedEvents.reduce((acc, event) => acc + event.followers.length, 0) 
+        },
+        { 
+          ...prevStats[1], 
+          value: updatedEvents.reduce((acc, event) => acc + (event.views?.length || 0), 0) 
+        },
+        prevStats[2] // Keep storage as is (would need recalculation if you want it accurate)
+      ];
+    });
   };
 
   const handleEditEvent = (eventId) => {
@@ -167,8 +176,7 @@ const Dashboard = () => {
       {isSidebarOpen && <SidebarModal user={userdata} onClose={() => setIsSidebarOpen(false)} />}
       <div className="h-4" />
       <div className="max-w-7xl mx-auto">
-      
-      <div className="flex gap-4 mb-6 w-full">
+        <div className="flex gap-4 mb-6 w-full">
           <OverallStats stats={stats} />
           <CollaborationRequestsSection events={events} user={user} socket={socket} />
         </div>
@@ -177,21 +185,17 @@ const Dashboard = () => {
           <Plus size={20} />
           <span>Create New Album</span>
         </button>
-        {loading ? (
-          <p>Loading events...</p>
-        ) : (
-          <EventList
-            events={events}
-            handleViewEvent={handleViewEvent}
-            handleEditEvent={handleEditEvent}
-            handleDeleteEvent={(eventId) => (
-              <DeleteConfirmationModal eventId={eventId} handleDeleteEvent={handleDeleteEvent} />
-            )}
-          />
-        )}
+        
+        <EventList
+          events={events}
+          loading={loading}
+          onEventDeleted={handleEventDeleted}
+          onEventClick={handleViewEvent} // Reuse view handler for edit/click
+        />
       </div>
     </div>
   );
 };
 
 export default Dashboard;
+

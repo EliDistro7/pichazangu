@@ -6,7 +6,7 @@ import MessagesList from "components/dashboard/eventcard/MessagesList";
 import { getEventFollowers, setEventPrivate, setVisibleOnHomepage, toggleFeaturedStatus } from "../actions/event";
 import EventQRCode from "components/dashboard/eventcard/QRCodeModal";
 
-const EventCard = ({ event, handleViewEvent, handleEditEvent, handleDeleteEvent }) => {
+const EventCard = ({ event, onView, onEdit, onDelete }) => {
   const [followers, setFollowers] = useState([]);
   const [loadingFollowers, setLoadingFollowers] = useState(false);
   const [showFollowers, setShowFollowers] = useState(false);
@@ -15,7 +15,7 @@ const EventCard = ({ event, handleViewEvent, handleEditEvent, handleDeleteEvent 
   const [showActionsDropdown, setShowActionsDropdown] = useState(false);
   const [password, setPassword] = useState("");
   const [visibility, setVisibility] = useState(event.visibleOnHomepage);
-  const [isFeatured, setIsFeatured] = useState(event.featured); // State for featured status
+  const [isFeatured, setIsFeatured] = useState(event.featured);
 
   // Fetch followers
   const fetchFollowers = async () => {
@@ -63,7 +63,7 @@ const EventCard = ({ event, handleViewEvent, handleEditEvent, handleDeleteEvent 
   const handleToggleFeatured = async () => {
     try {
       const updatedEvent = await toggleFeaturedStatus(event._id);
-      setIsFeatured(updatedEvent.featured); // Update the state with the new featured status
+      setIsFeatured(updatedEvent.featured);
       toast.success(`Event ${updatedEvent.featured ? "marked as featured" : "unmarked as featured"}`);
     } catch (error) {
       toast.error("Error toggling featured status");
@@ -100,21 +100,21 @@ const EventCard = ({ event, handleViewEvent, handleEditEvent, handleDeleteEvent 
               {showActionsDropdown && (
                 <div className="absolute right-0 mt-2 w-56 bg-gray-700 rounded-md shadow-lg z-10">
                   <button
-                    onClick={() => handleViewEvent(event._id)}
+                    onClick={() => onView()}
                     className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
                   >
                     <Eye size={16} />
                     <span>View</span>
                   </button>
                   <button
-                    onClick={() => handleEditEvent(event._id)}
+                    onClick={() => onEdit()}
                     className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
                   >
                     <Edit size={16} />
                     <span>Edit</span>
                   </button>
                   <button
-                    onClick={() => handleDeleteEvent(event._id)}
+                    onClick={() => onDelete()}
                     className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
                   >
                     <Trash2 size={16} />
