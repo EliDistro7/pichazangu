@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
 
 const getMediaData = (media) => {
@@ -13,6 +13,15 @@ const getMediaData = (media) => {
   return null;
 };
 
+const shuffleArray = (array) => {
+  const newArray = [...array];
+  for (let i = newArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+  }
+  return newArray;
+};
+
 const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPhotoRef }) => {
   const [visibleItems, setVisibleItems] = useState(10);
   const [loading, setLoading] = useState(false);
@@ -21,6 +30,11 @@ const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPh
     triggerOnce: false,
   });
 
+  // Create a shuffled version of the media array
+  const shuffledMedia = useMemo(() => {
+    return media ? shuffleArray(media) : [];
+  }, [media]);
+
   // Reset visible items when media changes
   useEffect(() => {
     setVisibleItems(10);
@@ -28,40 +42,42 @@ const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPh
 
   // Load more items when scroll reaches the trigger point
   useEffect(() => {
-    if (inView && !loading && visibleItems < media?.length) {
+    if (inView && !loading && visibleItems < shuffledMedia?.length) {
       setLoading(true);
-      // Simulate network request delay
       setTimeout(() => {
-        setVisibleItems(prev => Math.min(prev + 10, media.length));
+        setVisibleItems(prev => Math.min(prev + 10, shuffledMedia.length));
         setLoading(false);
       }, 500);
     }
-  }, [inView, loading, media?.length, visibleItems]);
+  }, [inView, loading, shuffledMedia, visibleItems]);
 
   return (
     <div className="pb-8">
       <div className="columns-1 gap-6 sm:columns-2 xl:columns-3 2xl:columns-4">
-        {media && media.length > 0 ? (
-          media.slice(0, visibleItems).map((item, index) => {
+        {shuffledMedia && shuffledMedia.length > 0 ? (
+          shuffledMedia.slice(0, visibleItems).map((item, index) => {
             const data = getMediaData(item);
             if (!data) return null;
 
+            // Get original index for linking purposes
+            const originalIndex = media.indexOf(item);
+
             return (
               <Link
-                key={index}
+                key={`${originalIndex}-${index}`} // Combine original and shuffled index for unique key
                 href={{
-                  pathname: `/p/${index}`,
-                  query: { eventId, mediaType, photoId: index },
+                  pathname: `/p/${originalIndex}`,
+                  query: { eventId, mediaType, photoId: originalIndex },
                 }}
                 shallow
-                ref={index === Number(lastViewedPhoto) ? lastViewedPhotoRef : null}
+                ref={originalIndex === Number(lastViewedPhoto) ? lastViewedPhotoRef : null}
                 className="group relative mb-6 block w-full cursor-zoom-in transform transition-transform duration-300 hover:scale-105"
               >
                 <div className="relative overflow-hidden rounded-lg shadow-2xl">
                   {mediaType === "photo" ? (
                     <Image
                       src={data.url}
-                      alt={data.caption || `${mediaType} ${index + 1}`}
+                      alt={data.caption || `${mediaType} ${originalIndex + 1}`}
                       width={720}
                       height={480}
                       className="object-cover w-full h-full transition-opacity duration-300 group-hover:opacity-90"
@@ -95,10 +111,10 @@ const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPh
       </div>
 
       {/* Loading trigger and indicator */}
-      {media && visibleItems < media.length && (
+      {shuffledMedia && visibleItems < shuffledMedia.length && (
         <div ref={loadMoreRef} className="w-full flex justify-center py-4">
           <button 
-            onClick={() => setVisibleItems(prev => Math.min(prev + 10, media.length))}
+            onClick={() => setVisibleItems(prev => Math.min(prev + 10, shuffledMedia.length))}
             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
             disabled={loading}
           >
