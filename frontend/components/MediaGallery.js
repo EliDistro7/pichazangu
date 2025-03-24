@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
+import ElaborateDescription from "components/ElaborateDescription";
 
 const getMediaData = (media) => {
   if (typeof media === "string") {
@@ -22,7 +23,7 @@ const shuffleArray = (array) => {
   return newArray;
 };
 
-const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPhotoRef }) => {
+const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPhotoRef, event }) => {
   const [visibleItems, setVisibleItems] = useState(10);
   const [loading, setLoading] = useState(false);
   const { ref: loadMoreRef, inView } = useInView({
@@ -53,6 +54,14 @@ const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPh
 
   return (
     <div className="pb-8">
+      {/* Elaborate Description Section */}
+      {event.elaborateDescription && (
+        <div className="mb-8">
+          <ElaborateDescription content={event.elaborateDescription} />
+        </div>
+      )}
+
+      {/* Media Gallery Grid */}
       <div className="columns-1 gap-6 sm:columns-2 xl:columns-3 2xl:columns-4">
         {shuffledMedia && shuffledMedia.length > 0 ? (
           shuffledMedia.slice(0, visibleItems).map((item, index) => {
@@ -63,50 +72,53 @@ const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPh
             const originalIndex = media.indexOf(item);
 
             return (
-              <Link
-                key={`${originalIndex}-${index}`} // Combine original and shuffled index for unique key
-                href={{
-                  pathname: `/p/${originalIndex}`,
-                  query: { eventId, mediaType, photoId: originalIndex },
-                }}
-                shallow
-                ref={originalIndex === Number(lastViewedPhoto) ? lastViewedPhotoRef : null}
-                className="group relative mb-6 block w-full cursor-zoom-in transform transition-transform duration-300 hover:scale-105"
-              >
-                <div className="relative overflow-hidden rounded-lg shadow-2xl">
-                  {mediaType === "photo" ? (
-                    <Image
-                      src={data.url}
-                      alt={data.caption || `${mediaType} ${originalIndex + 1}`}
-                      width={720}
-                      height={480}
-                      className="object-cover w-full h-full transition-opacity duration-300 group-hover:opacity-90"
-                      style={{ transform: "translate3d(0, 0, 0)" }}
-                      placeholder="blur"
-                      blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQMAAAAl21bKAAAACAAAAEMlCAYAAAACzMAAAAEhUlEQVR4nO3BMQ0AAADCoPVP8fAAAAABJRU5ErkJggg=="
-                    />
-                  ) : (
-                    <video
-                      src={data.url}
-                      className="object-cover w-full h-full transition-opacity duration-300 group-hover:opacity-90"
-                      style={{ transform: "translate3d(0, 0, 0)" }}
-                      controls={false}
-                      muted
-                      loop
-                      autoPlay
-                    />
-                  )}
-                  {data.caption && (
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/75 to-transparent p-4">
-                      <p className="text-sm text-white font-medium">{data.caption}</p>
-                    </div>
-                  )}
-                </div>
-              </Link>
+              <div key={`${originalIndex}-${index}`} className="mb-6 break-inside-avoid">
+                <Link
+                  href={{
+                    pathname: `/p/${originalIndex}`,
+                    query: { eventId, mediaType, photoId: originalIndex },
+                  }}
+                  shallow
+                  ref={originalIndex === Number(lastViewedPhoto) ? lastViewedPhotoRef : null}
+                  className="group relative block w-full cursor-zoom-in transform transition-transform duration-300 hover:scale-105"
+                >
+                  <div className="relative overflow-hidden rounded-lg shadow-2xl">
+                    {mediaType === "photo" ? (
+                      <Image
+                        src={data.url}
+                        alt={data.caption || `${mediaType} ${originalIndex + 1}`}
+                        width={720}
+                        height={480}
+                        className="object-cover w-full h-full transition-opacity duration-300 group-hover:opacity-90"
+                        style={{ transform: "translate3d(0, 0, 0)" }}
+                        placeholder="blur"
+                        blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQMAAAAl21bKAAAACAAAAEMlCAYAAAACzMAAAAEhUlEQVR4nO3BMQ0AAADCoPVP8fAAAAABJRU5ErkJggg=="
+                      />
+                    ) : (
+                      <video
+                        src={data.url}
+                        className="object-cover w-full h-full transition-opacity duration-300 group-hover:opacity-90"
+                        style={{ transform: "translate3d(0, 0, 0)" }}
+                        controls={false}
+                        muted
+                        loop
+                        autoPlay
+                      />
+                    )}
+                    {data.caption && (
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/75 to-transparent p-4">
+                        <p className="text-sm text-white font-medium">{data.caption}</p>
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              </div>
             );
           })
         ) : (
-          <p className="text-center text-gray-600 text-lg">No {mediaType === "photo" ? "images" : "videos"} available.</p>
+          <div className="col-span-full text-center">
+            <p className="text-gray-600 text-lg">No {mediaType === "photo" ? "images" : "videos"} available.</p>
+          </div>
         )}
       </div>
 

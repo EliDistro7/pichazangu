@@ -242,6 +242,7 @@ const EventDetails = ({ initialEvent }) => {
                 eventId={event._id}
                 lastViewedPhoto={lastViewedPhoto}
                 lastViewedPhotoRef={lastViewedPhotoRef}
+                event={event}
               />
             )}
 
@@ -252,6 +253,7 @@ const EventDetails = ({ initialEvent }) => {
                 eventId={event._id}
                 lastViewedPhoto={lastViewedPhoto}
                 lastViewedPhotoRef={lastViewedPhotoRef}
+                event={event}
               />
             )}
           </div>
