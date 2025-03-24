@@ -7,6 +7,7 @@ import axios from "axios";
 import socket from "hooks/socket";
 import { toast } from "react-toastify";
 
+
 import CoverPhoto from "./CoverPhotoBanner1";
 import EventDetails from "./EventDetails";
 import DropdownMenu from "./DropdownMenu";
@@ -175,6 +176,7 @@ const EventCard = ({ event }) => {
         totalVideos={event.videoUrls.length}
         onDropdownToggle={toggleDropdown}
         author={event.author}
+        event={event}
       />
 
       <EventDetails

@@ -30,6 +30,33 @@ exports.getAllEventsByUser = async (req, res) => {
   }
 };
 
+// Toggle the featured status of an event
+exports.toggleFeatured = async (req, res) => {
+  const { eventId } = req.params;
+
+  try {
+    // Find the event by ID
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+    
+
+    if(!event.featured){
+      event.featured= false;
+    }
+    // Toggle the featured status
+    event.featured = !event.featured;
+    await event.save();
+
+    res.status(200).json({ message: 'Featured status updated', event });
+  } catch (error) {
+    console.log(error)
+    console.error('Error toggling featured status:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 exports.generateEventQRCode2 = async (req, res) => {
   try {
     console.log('it opened generateEventQRCode2');
@@ -50,9 +77,10 @@ exports.generateEventQRCode2 = async (req, res) => {
     
 
 
-    // Generate a secure event access URL
-    const eventURL = `https://pichazangu.store/evento/${event._id}/?token=${event.accessToken}`;
+   
 
+    // Generate a secure event access URL;
+    const eventURL = `https://pichazangu.store/evento/${event._id}/?token=${event.accessToken}`;
     
 
 
@@ -100,6 +128,74 @@ exports.likeEvent = async (req, res) => {
   return res.json({ message: "Failed to like event" }, { status: 500 });
 }
 }
+
+
+
+
+// Set event as private and update password
+exports.setEventPrivate = async (req, res) => {
+    try {
+        const { eventId } = req.params;
+        const { password } = req.body;
+
+        if (!password) {
+            return res.status(400).json({ message: 'Password is required for private events' });
+        }
+
+        const event = await Event.findById(eventId);
+        if (!event) return res.status(404).json({ message: 'Event not found' });
+
+        event.private = true;
+        event.password = password; // Ensure hashing if needed
+        await event.save();
+
+        res.json({ message: 'Event set to private', event });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+};
+
+// Change event password
+exports.changeEventPassword = async (req, res) => {
+    try {
+        const { eventId } = req.params;
+        const { newPassword } = req.body;
+
+        if (!newPassword) {
+            return res.status(400).json({ message: 'New password is required' });
+        }
+
+        const event = await Event.findById(eventId);
+        if (!event || !event.private) return res.status(404).json({ message: 'Private event not found' });
+
+        event.password = newPassword; // Ensure hashing if needed
+        await event.save();
+
+        res.json({ message: 'Event password updated', event });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+};
+
+// Make event visible on homepage
+exports.setVisibleOnHomepage = async (req, res) => {
+    try {
+        const { eventId } = req.params;
+        const { visible } = req.body; // Boolean value
+
+        const event = await Event.findById(eventId);
+        if (!event) return res.status(404).json({ message: 'Event not found' });
+
+        event.visibleOnHomepage = visible;
+        await event.save();
+
+        res.json({ message: `Event ${visible ? 'added to' : 'removed from'} homepage`, event });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+};
+
+
 
 exports.validateToken = async (req, res) => {
   try {

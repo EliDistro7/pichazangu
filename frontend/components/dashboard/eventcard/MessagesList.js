@@ -1,5 +1,6 @@
+
 import React, { useState } from "react";
-import MessageModal from "./MessageModal";
+import MessageModal from "../../MessageModal";
 
 const MessagesList = ({ messages }) => {
   const [selectedMessage, setSelectedMessage] = useState(null);

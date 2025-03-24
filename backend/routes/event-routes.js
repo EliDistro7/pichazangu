@@ -10,6 +10,9 @@ router.put("/:eventId", eventController.updateEvent);
 router.delete("/events/:eventId", eventController.deleteEvent);
 router.get("/events", eventController.getAllEvents);
 
+// PATCH /api/events/:eventId/toggle-featured
+router.patch('/:eventId/toggle-featured', eventController.toggleFeatured);
+
 
 // Route to get followers of an event
 router.get("/event/:eventId/followers", eventController.getEventFollowers);
@@ -42,6 +45,15 @@ router.patch("/events/updateMedia", eventController.updateEventMedia);
 router.get("/:eventId/qrcode", eventController.generateEventQRCode2);
 
 router.put("/events/:eventId/like", eventController.likeEvent);
+
+// Set an event as private with a password
+router.put('/:eventId/private', eventController.setEventPrivate);
+
+// Change the password of a private event
+router.put('/:eventId/password', eventController.changeEventPassword);
+
+// Toggle visibility on homepage
+router.put('/:eventId/visibility', eventController.setVisibleOnHomepage);
 
 router.post("/validate-token", eventController.validateToken);
 // ✅ Route to remove a user from the invited list

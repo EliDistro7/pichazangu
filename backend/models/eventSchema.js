@@ -21,6 +21,7 @@ const EventSchema = new mongoose.Schema(
       type: [mongoose.Schema.Types.Mixed], // Accepts both old strings and new objects
       default: [],
     },
+    featured: { type: Boolean, default: false }, // New field
     videoUrls: {
       type: [mongoose.Schema.Types.Mixed], // Accepts both old strings and new objects
       default: [],

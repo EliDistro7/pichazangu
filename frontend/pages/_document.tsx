@@ -18,12 +18,7 @@ class MyDocument extends Document {
             crossOrigin="anonymous"
           ></script>
 
-          {/* AMP ads */}
-          <script
-            async
-            custom-element="amp-auto-ads"
-            src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js"
-          ></script>
+         
         </Head>
         <body className="font-sans bg-black antialiased">
           {/* AMP Auto Ads */}

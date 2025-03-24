@@ -3,6 +3,27 @@ import axios from "axios";
 
 const api = process.env.NEXT_PUBLIC_SERVER;
 
+export const toggleFeaturedStatus = async (eventId) => {
+  try {
+    const response = await fetch(`${api}/${eventId}/toggle-featured`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to toggle featured status');
+    }
+
+    const data = await response.json();
+    return data.event; // Return the updated event
+  } catch (error) {
+    console.error('Error toggling featured status:', error);
+    throw error;
+  }
+};
+
 // Create a new event;
 export const createEvent = async (event) => {
   console.log("Event data:", event);
@@ -71,6 +92,41 @@ export const getEventMedia = async ({eventId, mediaType}) => {
     );
   }
 };
+
+
+// Set event as private
+export const setEventPrivate = async (eventId, password) => {
+  try {
+      const response = await axios.put(`${api}/${eventId}/private`, { password });
+      return response.data;
+  } catch (error) {
+      console.error('Error setting event as private:', error);
+      throw error;
+  }
+};
+
+// Change event password
+export const changeEventPassword = async (eventId, newPassword) => {
+  try {
+      const response = await axios.put(`${api}/${eventId}/password`, { newPassword });
+      return response.data;
+  } catch (error) {
+      console.error('Error changing event password:', error);
+      throw error;
+  }
+};
+
+// Toggle visibility on homepage
+export const setVisibleOnHomepage = async (eventId, visible) => {
+  try {
+      const response = await axios.put(`${api}/${eventId}/visibility`, { visible });
+      return response.data;
+  } catch (error) {
+      console.error('Error updating event visibility:', error);
+      throw error;
+  }
+};
+
 
 // 🔍 Get Events by Author Name (Supports Fuzzy Search)
 export const getEventsByAuthor = async (authorName) => {
@@ -316,7 +372,7 @@ export const getEventById = async (eventId) => {
     console.log("eventId of event:", eventId);
     const response = await axios.post(`${api}/event/${eventId}`);
 
-    console.log("response:", response.data);
+    //console.log("response:", response.data);
     return response.data; // Returns the specific event
   } catch (error) {
     console.log("error fetching event:", error.response?.data || error.message);
@@ -341,20 +397,7 @@ export const getEventByPassword = async ({ eventId, password }) => {
 
 
 
-// Change event password
-export const changeEventPassword = async ({ eventId, oldPassword, newPassword }) => {
-  try {
-    const response = await axios.patch(`${api}/events/changePassword`, {
-      eventId,
-      oldPassword,
-      newPassword,
-    });
-    return response.data; // Returns success message
-  } catch (error) {
-    console.error("Error changing event password:", error.response?.data || error.message);
-    throw new Error(error.response?.data?.message || "Failed to change password.");
-  }
-};
+
 
 // Delete an event
 export const deleteEvent = async (eventId) => {
