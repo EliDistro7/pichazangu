@@ -24,6 +24,16 @@ export const toggleFeaturedStatus = async (eventId) => {
   }
 };
 
+export const toggleEventActivation = async (eventId) => {
+  try {
+    const response = await axios.patch(`${api}/${eventId}/toggle-activate`);
+    return response.data;
+  } catch (error) {
+    console.error('Error toggling event activation:', error);
+    throw error;
+  }
+};
+
 // Create a new event;
 export const createEvent = async (event) => {
   console.log("Event data:", event);
@@ -189,7 +199,7 @@ export const updateEventMedia = async ({
       });
     }
 
-    console.log("Media update response:", response.data);
+    //console.log("Media update response:", response.data);
     return response.data; // Returns success message or updated event data
   } catch (error) {
     console.error("Error updating event media:", error.response?.data || error.message);

@@ -1,3 +1,5 @@
+
+
 import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -190,6 +192,8 @@ const Dashboard = () => {
           events={events}
           loading={loading}
           onEventDeleted={handleEventDeleted}
+          handleViewEvent={handleViewEvent}
+          handleEditEvent={handleEditEvent}
           onEventClick={handleViewEvent} // Reuse view handler for edit/click
         />
       </div>

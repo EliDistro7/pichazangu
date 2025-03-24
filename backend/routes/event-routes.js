@@ -13,6 +13,9 @@ router.get("/events", eventController.getAllEvents);
 // PATCH /api/events/:eventId/toggle-featured
 router.patch('/:eventId/toggle-featured', eventController.toggleFeatured);
 
+// Add this new route
+router.patch('/:eventId/toggle-activate', eventController.toggleActivation);
+
 
 // Route to get followers of an event
 router.get("/event/:eventId/followers", eventController.getEventFollowers);

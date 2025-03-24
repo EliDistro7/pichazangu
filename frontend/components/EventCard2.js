@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { Users, Eye, Edit, Trash2, User2Icon, QrCode, MessageCircle, MoreVertical, Lock, Globe, Star } from "lucide-react";
+import { Users, Eye, Edit, Trash2, User2Icon, QrCode, MessageCircle, MoreVertical, Lock, Globe, Star, Power } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MessagesList from "components/dashboard/eventcard/MessagesList";
-import { getEventFollowers, setEventPrivate, setVisibleOnHomepage, toggleFeaturedStatus } from "../actions/event";
+import { getEventFollowers, setEventPrivate, setVisibleOnHomepage, toggleFeaturedStatus, toggleEventActivation } from "../actions/event";
 import EventQRCode from "components/dashboard/eventcard/QRCodeModal";
 
 const EventCard = ({ event, onView, onEdit, onDelete }) => {
@@ -16,6 +16,7 @@ const EventCard = ({ event, onView, onEdit, onDelete }) => {
   const [password, setPassword] = useState("");
   const [visibility, setVisibility] = useState(event.visibleOnHomepage);
   const [isFeatured, setIsFeatured] = useState(event.featured);
+  const [isActive, setIsActive] = useState(event.activate);
 
   // Fetch followers
   const fetchFollowers = async () => {
@@ -71,6 +72,19 @@ const EventCard = ({ event, onView, onEdit, onDelete }) => {
     }
   };
 
+  // Toggle event activation
+  const handleToggleActivation = async () => {
+    try {
+      const updatedEvent = await toggleEventActivation(event._id);
+      setIsActive(updatedEvent.activate);
+      toast.success(`Event ${updatedEvent.activate ? "activated" : "deactivated"}`);
+      setShowActionsDropdown(false);
+    } catch (error) {
+      toast.error("Error toggling event activation");
+      console.error("Error toggling activation:", error);
+    }
+  };
+
   return (
     <>
       <ToastContainer
@@ -84,90 +98,114 @@ const EventCard = ({ event, onView, onEdit, onDelete }) => {
         draggable
         pauseOnHover
       />
-      <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-        {/* Cover Photo */}
-        <div className="relative h-48">
-          <img src={event.coverPhoto} alt={event.title} className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-
-          {/* Actions Dropdown Trigger */}
-          <div className="absolute top-2 right-2">
-            <div
-              onClick={() => setShowActionsDropdown(!showActionsDropdown)}
-              className="p-2 bg-gray-700 hover:bg-gray-600 rounded-md relative cursor-pointer"
-            >
-              <MoreVertical size={16} className="text-white" />
-              {showActionsDropdown && (
-                <div className="absolute right-0 mt-2 w-56 bg-gray-700 rounded-md shadow-lg z-10">
-                  <button
-                    onClick={() => onView()}
-                    className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
-                  >
-                    <Eye size={16} />
-                    <span>View</span>
-                  </button>
-                  <button
-                    onClick={() => onEdit()}
-                    className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
-                  >
-                    <Edit size={16} />
-                    <span>Edit</span>
-                  </button>
-                  <button
-                    onClick={() => onDelete()}
-                    className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
-                  >
-                    <Trash2 size={16} />
-                    <span>Delete</span>
-                  </button>
-                  <button
-                    onClick={() => setShowQR(true)}
-                    className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
-                  >
-                    <QrCode size={16} />
-                    <span>Generate QR Code</span>
-                  </button>
-
-                  {/* Set Event as Private */}
-                  <div className="p-2">
-                    <input
-                      type="password"
-                      placeholder="Enter password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full text-sm bg-gray-600 text-white px-2 py-1 rounded-md mb-2"
-                    />
-                    <button
-                      onClick={handleSetPrivate}
-                      className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-md"
-                    >
-                      <Lock size={16} />
-                      <span>Set Private</span>
-                    </button>
-                  </div>
-
-                  {/* Toggle Visibility */}
-                  <button
-                    onClick={handleToggleVisibility}
-                    className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
-                  >
-                    <Globe size={16} />
-                    <span>{visibility ? "Remove from Homepage" : "Show on Homepage"}</span>
-                  </button>
-
-                  {/* Toggle Featured Status */}
-                  <button
-                    onClick={handleToggleFeatured}
-                    className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
-                  >
-                    <Star size={16} />
-                    <span>{isFeatured ? "Unmark as Featured" : "Mark as Featured"}</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
+      <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 relative">
+        {/* Status indicator */}
+        <div className={`absolute top-2 left-2 z-10 px-2 py-1 rounded-md text-xs font-medium ${
+          isActive ? 'bg-green-900/80 text-green-300' : 'bg-gray-900/80 text-gray-300'
+        }`}>
+          {isActive ? 'Active' : 'Inactive'}
         </div>
+
+    {/* Cover Photo */}
+<div className="relative h-48">
+  <img src={event.coverPhoto} alt={event.title} className="w-full h-full object-cover" />
+  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+
+  {/* Actions Dropdown Trigger */}
+  <div className="absolute top-2 right-2">
+    <div
+      onClick={() => setShowActionsDropdown(!showActionsDropdown)}
+      className="p-2 bg-gray-700 hover:bg-gray-600 rounded-md relative cursor-pointer z-40"
+    >
+      <MoreVertical size={16} className="text-white" />
+    </div>
+    
+    {/* Dropdown Menu - Positioned outside normal flow */}
+    {showActionsDropdown && (
+      <div className="fixed inset-0 z-30" onClick={() => setShowActionsDropdown(false)}></div>
+    )}
+    
+    {showActionsDropdown && (
+      <div className="fixed top-56 right-4 w-56 bg-gray-700 rounded-md shadow-xl z-40 max-h-[80vh] overflow-y-auto">
+        <div className="py-1">
+          <button
+            onClick={(e) => { e.stopPropagation(); onView(); }}
+            className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600 text-left"
+          >
+            <Eye size={16} />
+            <span>View</span>
+          </button>
+          {/* Other buttons with same e.stopPropagation() */}
+          <button
+            onClick={(e) => { e.stopPropagation(); onEdit(); }}
+            className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600 text-left"
+          >
+            <Edit size={16} />
+            <span>Edit</span>
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); onDelete(); }}
+            className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600 text-left"
+          >
+            <Trash2 size={16} />
+            <span>Delete</span>
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowQR(true); }}
+            className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600 text-left"
+          >
+            <QrCode size={16} />
+            <span>Generate QR Code</span>
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); handleToggleActivation(); }}
+            className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600 text-left"
+          >
+            <Power size={16} className={isActive ? 'text-green-400' : 'text-gray-400'} />
+            <span>{isActive ? 'Deactivate' : 'Activate'} Event</span>
+          </button>
+
+          {/* Set Event as Private */}
+          <div className="p-2 border-t border-gray-600">
+            <input
+              type="password"
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full text-sm bg-gray-600 text-white px-2 py-1 rounded-md mb-2"
+            />
+            <button
+              onClick={(e) => { e.stopPropagation(); handleSetPrivate(); }}
+              className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-md"
+            >
+              <Lock size={16} />
+              <span>Set Private</span>
+            </button>
+          </div>
+
+          {/* Toggle Visibility */}
+          <button
+            onClick={(e) => { e.stopPropagation(); handleToggleVisibility(); }}
+            className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600 border-t border-gray-600"
+          >
+            <Globe size={16} />
+            <span>{visibility ? "Remove from Homepage" : "Show on Homepage"}</span>
+          </button>
+
+          {/* Toggle Featured Status */}
+          <button
+            onClick={(e) => { e.stopPropagation(); handleToggleFeatured(); }}
+            className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-600 border-t border-gray-600"
+          >
+            <Star size={16} />
+            <span>{isFeatured ? "Unmark as Featured" : "Mark as Featured"}</span>
+          </button>
+        </div>
+      </div>
+    )}
+  </div>
+</div>
 
         {/* Event Details */}
         <div className="p-4">

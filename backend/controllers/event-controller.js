@@ -747,6 +747,30 @@ exports.getEventById = async (req, res) => {
   }
 };
 
+exports.toggleActivation = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      return res.status(404).json({ success: false, message: 'Event not found' });
+    }
+
+    // Toggle the activate status
+    event.activate = !event.activate;
+    await event.save();
+
+    res.status(200).json({ 
+      success: true, 
+      activate: event.activate,
+      message: `Event ${event.activate ? 'activated' : 'deactivated'} successfully`
+    });
+  } catch (error) {
+    console.error('Error toggling activation:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
 // ✅ Update an Event (Add New Images/Videos)
 // ✅ Update an Event (Add New Images/Videos)
 exports.updateEvent = async (req, res) => {

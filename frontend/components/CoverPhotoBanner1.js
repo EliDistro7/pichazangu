@@ -1,10 +1,22 @@
 // components/CoverPhoto.js
 import Image from "next/image";
-import { Camera, Video } from "lucide-react";
+import { Camera, Video, Lock } from "lucide-react"; // Added Lock to imports
 import ImageCarousel from 'components/ImageCarousel';
+import { useEffect, useState } from "react";
 
 const CoverPhoto = ({ coverPhoto, title, totalImages, totalVideos, author, event }) => {
   const isFeaturedWithImages = event.featured && event.imageUrls && event.imageUrls.length > 0;
+  const [isBlinking, setIsBlinking] = useState(false);
+
+  // Blinking animation effect
+  useEffect(() => {
+    if (event.activate) {
+      const interval = setInterval(() => {
+        setIsBlinking(prev => !prev);
+      }, 1000); // Blink every second
+      return () => clearInterval(interval);
+    }
+  }, [event.activate]);
 
   return (
     <div className="relative w-full h-[400px] bg-gray-300 flex items-center justify-center overflow-hidden">
@@ -47,6 +59,23 @@ const CoverPhoto = ({ coverPhoto, title, totalImages, totalVideos, author, event
             <Video size={16} className="text-white" />
             <span className="text-white text-sm">{totalVideos}</span>
           </div>
+          
+          {/* Padlock icon for inactive events */}
+          {!event.activate && (
+            <div className="ml-2">
+              <Lock size={16} className="text-gray-300" />
+            </div>
+          )}
+            
+          {/* Active Status Indicator */}
+          {event.activate && (
+            <div className="ml-2 flex items-center">
+              <span className={`relative flex h-3 w-3 ${isBlinking ? 'opacity-70' : 'opacity-100'}`}>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-300 "></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 "></span>
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>
