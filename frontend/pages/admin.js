@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { getUsersWithStats } from '../actions/event';
 
 const AdminDashboard = () => {
@@ -6,6 +6,11 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [storageData, setStorageData] = useState({});
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortConfig, setSortConfig] = useState({
+    key: 'username',
+    direction: 'ascending'
+  });
 
   // Function to fetch file size
   const fetchFileSize = async (url) => {
@@ -22,15 +27,15 @@ const AdminDashboard = () => {
   // Format storage size
   const formatStorageSize = (sizeInBytes) => {
     if (sizeInBytes < 1024) {
-      return `${sizeInBytes} B`; // Bytes
+      return `${sizeInBytes} B`;
     } else if (sizeInBytes < 1024 * 1024) {
-      return `${(sizeInBytes / 1024).toFixed(0)} KB`; // Kilobytes
+      return `${(sizeInBytes / 1024).toFixed(0)} KB`;
     } else if (sizeInBytes < 1024 * 1024 * 1024) {
-      return `${(sizeInBytes / (1024 * 1024)).toFixed(0)} MB`; // Megabytes
+      return `${(sizeInBytes / (1024 * 1024)).toFixed(0)} MB`;
     } else if (sizeInBytes < 1024 * 1024 * 1024 * 1024) {
-      return `${(sizeInBytes / (1024 * 1024 * 1024)).toFixed(2)} GB`; // Gigabytes
+      return `${(sizeInBytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
     } else {
-      return `${(sizeInBytes / (1024 * 1024 * 1024 * 1024)).toFixed(2)} TB`; // Terabytes
+      return `${(sizeInBytes / (1024 * 1024 * 1024 * 1024)).toFixed(2)} TB`;
     }
   };
 
@@ -45,13 +50,49 @@ const AdminDashboard = () => {
     return formatStorageSize(totalBytes);
   };
 
+  // Request sort
+  const requestSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  // Get sorted and filtered users
+  const sortedAndFilteredUsers = useMemo(() => {
+    let filteredUsers = [...users];
+    
+    // Apply search filter
+    if (searchTerm) {
+      filteredUsers = filteredUsers.filter(user => 
+        user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Apply sorting
+    if (sortConfig.key) {
+      filteredUsers.sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    
+    return filteredUsers;
+  }, [users, searchTerm, sortConfig]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getUsersWithStats();
         setUsers(data);
         
-        // Calculate storage for each user
         const storageResults = {};
         for (const user of data) {
           storageResults[user._id] = await calculateUserStorage(user._id, user.mediaUrls);
@@ -89,9 +130,27 @@ const AdminDashboard = () => {
       <div className="max-w-7xl mx-auto">
         <h1 className="text-2xl md:text-3xl font-bold mb-6 text-blue-400">User Statistics Dashboard</h1>
         
+        {/* Search Bar */}
+        <div className="mb-6">
+          <div className="relative max-w-md">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-700 rounded-md leading-5 bg-gray-800 placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              placeholder="Search users..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+        
         {/* Mobile View - Card Layout */}
         <div className="md:hidden space-y-4">
-          {users.map((user) => (
+          {sortedAndFilteredUsers.map((user) => (
             <div key={user._id} className="bg-gray-800 rounded-lg shadow-lg p-4">
               <div className="flex items-center mb-3">
                 <div className="flex-shrink-0 h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center mr-3">
@@ -144,7 +203,19 @@ const AdminDashboard = () => {
             <table className="min-w-full divide-y divide-gray-700">
               <thead className="bg-gray-700">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">User</th>
+                  <th 
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider cursor-pointer"
+                    onClick={() => requestSort('username')}
+                  >
+                    <div className="flex items-center">
+                      User
+                      {sortConfig.key === 'username' && (
+                        <span className="ml-1">
+                          {sortConfig.direction === 'ascending' ? '↑' : '↓'}
+                        </span>
+                      )}
+                    </div>
+                  </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Email</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Events</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Followers</th>
@@ -154,7 +225,7 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody className="bg-gray-800 divide-y divide-gray-700">
-                {users.map((user) => (
+                {sortedAndFilteredUsers.map((user) => (
                   <tr key={user._id} className="hover:bg-gray-700/50 transition-colors">
                     <td className="px-4 py-4 whitespace-nowrap">
                       <div className="flex items-center">
@@ -214,20 +285,20 @@ const AdminDashboard = () => {
               </p>
             </div>
             <div className="bg-gray-700 p-3 md:p-4 rounded-lg">
-  <h3 className="text-xs md:text-sm font-medium text-gray-400">Total Storage Used</h3>
-  <p className="text-xl md:text-2xl font-bold text-white">
-    {formatStorageSize(
-      Object.values(storageData).reduce((sum, size) => {
-        const bytes = parseFloat(size) * 
-          (size.includes('KB') ? 1024 : 
-           size.includes('MB') ? 1024 * 1024 : 
-           size.includes('GB') ? 1024 * 1024 * 1024 : 
-           size.includes('TB') ? 1024 * 1024 * 1024 * 1024 : 1);
-        return sum + bytes;
-      }, 0)
-    )}
-  </p>
-</div>
+              <h3 className="text-xs md:text-sm font-medium text-gray-400">Total Storage Used</h3>
+              <p className="text-xl md:text-2xl font-bold text-white">
+                {formatStorageSize(
+                  Object.values(storageData).reduce((sum, size) => {
+                    const bytes = parseFloat(size) * 
+                      (size.includes('KB') ? 1024 : 
+                       size.includes('MB') ? 1024 * 1024 : 
+                       size.includes('GB') ? 1024 * 1024 * 1024 : 
+                       size.includes('TB') ? 1024 * 1024 * 1024 * 1024 : 1);
+                    return sum + bytes;
+                  }, 0)
+                )}
+              </p>
+            </div>
           </div>
         </div>
       </div>
