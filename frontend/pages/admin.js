@@ -214,20 +214,20 @@ const AdminDashboard = () => {
               </p>
             </div>
             <div className="bg-gray-700 p-3 md:p-4 rounded-lg">
-              <h3 className="text-xs md:text-sm font-medium text-gray-400">Avg Storage</h3>
-              <p className="text-xl md:text-2xl font-bold text-white">
-                {formatStorageSize(
-                  Object.values(storageData).reduce((sum, size) => {
-                    const bytes = parseFloat(size) * 
-                      (size.includes('KB') ? 1024 : 
-                       size.includes('MB') ? 1024 * 1024 : 
-                       size.includes('GB') ? 1024 * 1024 * 1024 : 
-                       size.includes('TB') ? 1024 * 1024 * 1024 * 1024 : 1);
-                    return sum + bytes;
-                  }, 0) / users.length
-                )}
-              </p>
-            </div>
+  <h3 className="text-xs md:text-sm font-medium text-gray-400">Total Storage Used</h3>
+  <p className="text-xl md:text-2xl font-bold text-white">
+    {formatStorageSize(
+      Object.values(storageData).reduce((sum, size) => {
+        const bytes = parseFloat(size) * 
+          (size.includes('KB') ? 1024 : 
+           size.includes('MB') ? 1024 * 1024 : 
+           size.includes('GB') ? 1024 * 1024 * 1024 : 
+           size.includes('TB') ? 1024 * 1024 * 1024 * 1024 : 1);
+        return sum + bytes;
+      }, 0)
+    )}
+  </p>
+</div>
           </div>
         </div>
       </div>
