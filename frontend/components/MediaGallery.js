@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
-import ElaborateDescription from "components/ElaborateDescription";
+import ElaborateDescription from "components/ElaborateDescriptions";
 
 const getMediaData = (media) => {
   if (typeof media === "string") {

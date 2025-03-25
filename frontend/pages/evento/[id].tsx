@@ -61,7 +61,8 @@ const EventDetails = ({ initialEvent }) => {
   useEffect(() => {
     let logged = getLoggedInUserId();
     let userNameLogged = getLoggedInUsername();
-    setLoggedUserId(logged);
+    if(logged) setLoggedUserId(logged);
+    
     if (lastViewedPhoto && !photoId) {
       lastViewedPhotoRef.current?.scrollIntoView({ block: "center" });
       setLastViewedPhoto(null);
