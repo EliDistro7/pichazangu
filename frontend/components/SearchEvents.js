@@ -117,10 +117,11 @@ const SearchEvents = () => {
               />
             </div>
           </div>
-          <span className={`ml-3 text-xl font-medium ${darkMode ? "text-white" : "text-gray-900"} `}>
-            Pichazangu
-            <span className="text-blue-400">.</span>
-          </span>
+          <span className="ml-3 text-xl font-medium bg-gradient-to-r from-purple-500 to-blue-400 bg-clip-text text-transparent">
+  Pichazangu
+  <span className="text-blue-400">.</span>
+</span>
+          
         </a>
       </div>
 
