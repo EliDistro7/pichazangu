@@ -34,6 +34,16 @@ export const toggleEventActivation = async (eventId) => {
   }
 };
 
+export const getUsersWithStats = async () => {
+  try {
+    const response = await axios.get(`${api}/users-with-stats`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching users with stats:', error);
+    throw error;
+  }
+};
+
 // Create a new event;
 export const createEvent = async (event) => {
   console.log("Event data:", event);

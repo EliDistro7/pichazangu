@@ -10,6 +10,9 @@ router.put("/:eventId", eventController.updateEvent);
 router.delete("/events/:eventId", eventController.deleteEvent);
 router.get("/events", eventController.getAllEvents);
 
+// Get all users with their event stats
+router.get('/users-with-stats', eventController.getUsersWithStats);
+
 // PATCH /api/events/:eventId/toggle-featured
 router.patch('/:eventId/toggle-featured', eventController.toggleFeatured);
 

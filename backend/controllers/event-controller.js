@@ -1,8 +1,67 @@
 const Event = require("../models/eventSchema"); // Import the Event model
+const User = require("../models/userSchema"); // Import the User
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const QRCode = require("qrcode");
 const crypto = require("crypto");
+
+
+
+
+exports.getUsersWithStats = async (req, res) => {
+  try {
+    // Get all users
+    const users = await User.find({}).lean();
+    
+    // Get stats for each user
+    const usersWithStats = await Promise.all(
+      users.map(async (user) => {
+        // Count events created by this user
+        const eventCount = await Event.countDocuments({ 'author.userId': user._id });
+        
+        // Find all events created by this user
+        const events = await Event.find(
+          { 'author.userId': user._id },
+          'followers coverPhoto imageUrls videoUrls'
+        );
+        
+        // Sum their followers
+        const totalFollowers = events.reduce((sum, event) => sum + event.followers.length, 0);
+        
+        // Extract all media URLs for storage calculation
+        const mediaUrls = [];
+        events.forEach(event => {
+          if (event.coverPhoto) mediaUrls.push(event.coverPhoto);
+          
+          if (Array.isArray(event.imageUrls)) {
+            mediaUrls.push(...event.imageUrls.map(img => 
+              typeof img === 'string' ? img : img.url
+            ));
+          }
+          
+          if (Array.isArray(event.videoUrls)) {
+            mediaUrls.push(...event.videoUrls.map(vid => 
+              typeof vid === 'string' ? vid : vid.url
+            ));
+          }
+        });
+        
+        return {
+          ...user,
+          eventCount,
+          totalFollowers,
+          mediaUrls, // Send URLs to frontend for size calculation
+          mediaCount: mediaUrls.length // Count of media files
+        };
+      })
+    );
+    
+    res.status(200).json(usersWithStats);
+  } catch (error) {
+    console.error('Error fetching users with stats:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
 
 
@@ -13,7 +72,7 @@ exports.getAllEventsByUser = async (req, res) => {
     const { userId } = req.params;
   
 
-    console.log("User ID:", userId);
+    //console.log("User ID:", userId);
 
     // Find events where author.userId matches userId as a string
     const events = await Event.find({}).lean(); // `.lean()` returns plain JavaScript objects
