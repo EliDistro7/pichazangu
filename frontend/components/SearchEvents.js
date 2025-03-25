@@ -183,7 +183,7 @@ const SearchEvents = () => {
            
             <a
           href="/events?tab=create"
-          className={`px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 ${darkMode ? "hover:bg-gray-800/70 text-gray-300 hover:text-white" : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"}`}
+          className={`px-2 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 ${darkMode ? "hover:bg-gray-800/70 text-gray-300 hover:text-white" : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"}`}
         >
           <CalendarPlus size={18} className="flex-shrink-0" />
          
