@@ -104,7 +104,7 @@ const SearchEvents = () => {
   <div className="container mx-auto px-6">
     <div className="flex items-center justify-between h-16">
       {/* Brand Logo & Name */}
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-2">
         <a href="/" className="flex items-center group">
           <div className="relative h-9 w-9 rounded-lg overflow-hidden border-2 border-transparent group-hover:border-blue-400/30 transition-all duration-300">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 opacity-80 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -117,7 +117,7 @@ const SearchEvents = () => {
               />
             </div>
           </div>
-          <span className="ml-3 text-xl font-medium bg-gradient-to-r from-purple-500 to-blue-400 bg-clip-text text-transparent">
+          <span className="ml-2 text-xl font-medium bg-gradient-to-r from-purple-500 to-blue-400 bg-clip-text text-transparent">
   Pichazangu
   <span className="text-blue-400">.</span>
 </span>
@@ -125,20 +125,10 @@ const SearchEvents = () => {
         </a>
       </div>
 
-      {/* Navigation Center */}
-      <nav className="hidden md:flex items-center space-x-1">
-        <a
-          href="/"
-          className={`px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 ${darkMode ? "hover:bg-gray-800/70 text-gray-300 hover:text-white" : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"}`}
-        >
-          <Home size={18} className="flex-shrink-0" />
-          <span>Home</span>
-        </a>
-      
-      </nav>
+ 
 
       {/* Right Side Controls */}
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-2">
         {/* Dynamic Search Bar */}
         <div className={`relative transition-all duration-300 ${isSearchOpen ? "w-48 md:w-64" : "w-0 opacity-0"}`}>
           {isSearchOpen && (
