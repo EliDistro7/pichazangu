@@ -171,35 +171,35 @@ const SearchEvents = () => {
           aria-label="Search"
         >
           {isSearchOpen ? (
-            <X size={18} className={darkMode ? "text-gray-300" : "text-gray-600"} />
+            <X size={16} className={darkMode ? "text-gray-300" : "text-gray-600"} />
           ) : (
-            <Search size={18} className={darkMode ? "text-gray-300" : "text-gray-600"} />
+            <Search size={16} className={darkMode ? "text-gray-300" : "text-gray-600"} />
           )}
         </button>
 
         {/* User Controls */}
         {user ? (
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 mr-4">
            
             <a
           href="/events?tab=create"
           className={`px-2 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 ${darkMode ? "hover:bg-gray-800/70 text-gray-300 hover:text-white" : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"}`}
         >
-          <CalendarPlus size={18} className="flex-shrink-0" />
+          <CalendarPlus size={16} className="flex-shrink-0" />
          
         </a>
             <a
               href="/dashboard"
               className={`p-2 rounded-full ${darkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"} transition-colors`}
             >
-              <User size={18} className={darkMode ? "text-gray-300" : "text-gray-600"} />
+              <User size={16} className={darkMode ? "text-gray-300" : "text-gray-600"} />
             </a>
 
             <button
               onClick={() => setIsModalOpen(true)}
               className={`p-2 rounded-full relative ${darkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"} transition-colors`}
             >
-              <Bell size={18} className={darkMode ? "text-gray-300" : "text-gray-600"} />
+              <Bell size={16} className={darkMode ? "text-gray-300" : "text-gray-600"} />
               {notificationCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-medium rounded-full w-4 h-4 flex items-center justify-center">
                   {notificationCount}
