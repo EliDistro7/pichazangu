@@ -3,8 +3,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
 import ElaborateDescription from "components/ElaborateDescriptions";
-import { Button } from "react-bootstrap";
-import { Shuffle } from "react-bootstrap-icons";
+import { Shuffle } from "lucide-react";
 
 const getMediaData = (media) => {
   if (typeof media === "string") {
@@ -61,7 +60,7 @@ const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPh
   };
 
   return (
-    <div className="pb-8">
+    <div className="pb-8 dark:bg-gray-900 dark:text-gray-100">
       {/* Elaborate Description Section */}
       {event.elaborateDescription && (
         <div className="mb-8">
@@ -71,14 +70,13 @@ const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPh
 
       {/* Shuffle Controls */}
       <div className="flex justify-end mb-4">
-        <Button 
-          variant="outline-primary"
+        <button
           onClick={toggleShuffle}
-          className="d-flex align-items-center gap-2"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-purple-600 text-purple-600 dark:border-purple-400 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-gray-800 transition-colors duration-200"
         >
-          <Shuffle />
+          <Shuffle className="w-5 h-5" />
           {shuffled ? "Show Original Order" : "Shuffle Media"}
-        </Button>
+        </button>
       </div>
 
       {/* Media Gallery Grid */}
@@ -100,9 +98,9 @@ const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPh
                   }}
                   shallow
                   ref={originalIndex === Number(lastViewedPhoto) ? lastViewedPhotoRef : null}
-                  className="group relative block w-full cursor-zoom-in transform transition-transform duration-300 hover:scale-105"
+                  className="group relative block w-full cursor-zoom-in transform transition-transform duration-300 hover:scale-[1.02]"
                 >
-                  <div className="relative overflow-hidden rounded-lg shadow-2xl">
+                  <div className="relative overflow-hidden rounded-lg shadow-lg dark:shadow-gray-800/50">
                     {mediaType === "photo" ? (
                       <Image
                         src={data.url}
@@ -136,8 +134,10 @@ const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPh
             );
           })
         ) : (
-          <div className="col-span-full text-center">
-            <p className="text-gray-600 text-lg">No {mediaType === "photo" ? "images" : "videos"} available.</p>
+          <div className="col-span-full text-center py-12">
+            <p className="text-gray-600 dark:text-gray-400 text-lg">
+              No {mediaType === "photo" ? "images" : "videos"} available.
+            </p>
           </div>
         )}
       </div>
@@ -145,21 +145,23 @@ const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPh
       {/* Loading trigger and indicator */}
       {displayMedia.length > 0 && visibleItems < displayMedia.length && (
         <div ref={loadMoreRef} className="w-full flex justify-center py-4">
-          <Button 
-            variant="primary"
+          <button
             onClick={() => setVisibleItems(prev => Math.min(prev + 10, displayMedia.length))}
             disabled={loading}
-            className="d-flex align-items-center gap-2"
+            className="flex items-center gap-2 px-6 py-2 rounded-lg bg-purple-600 dark:bg-purple-700 text-white hover:bg-purple-700 dark:hover:bg-purple-600 transition-colors duration-200 disabled:opacity-70"
           >
             {loading ? (
               <>
-                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
                 Loading...
               </>
             ) : (
               'Load More'
             )}
-          </Button>
+          </button>
         </div>
       )}
     </div>
