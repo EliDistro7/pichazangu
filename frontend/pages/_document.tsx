@@ -4,7 +4,7 @@ class MyDocument extends Document {
   render() {
     return (
       <Html lang="en">
-        <Head>
+        <head>
           {/* Favicon */}
           <link rel="icon" href="/favicon.ico" />
 
@@ -19,7 +19,7 @@ class MyDocument extends Document {
           ></script>
 
          
-        </Head>
+        </head>
         <body className="font-sans bg-black antialiased">
           {/* AMP Auto Ads */}
           <div

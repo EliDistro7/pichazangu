@@ -165,6 +165,15 @@ const EventDetails = ({ initialEvent }) => {
     console.log("Authenticated event data:", eventData);
   };
 
+  const handleBack = () => {
+    const referrer = document.referrer;
+    if (referrer && referrer.includes(window.location.origin)) {
+      router.back();
+    } else {
+      router.push('/'); // Default route when no history
+    }
+  };
+
   const isAuthor = event.author.userId === loggedInUserId;
   const isInvited = event.invited?.some(invite => invite.invitedId === loggedInUserId);
   const canUploadMedia = isAuthor || isInvited || isTokenValid;
@@ -185,7 +194,13 @@ const EventDetails = ({ initialEvent }) => {
         {/* Main Content */}
         <div className={`${isPasswordModalOpen ? "blur-sm" : ""}`}>
           <SearchEvents />
-          <button onClick={() => router.back()} className="flex items-center space-x-2 text-gray-400 ml-3 hover:text-white mb-5 transition-colors">
+          <button onClick={() => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push('/'); // e.g. homepage or previous logical page
+    }
+  }} className="flex items-center space-x-2 text-gray-400 ml-3 hover:text-white mb-5 transition-colors">
             <ArrowLeft size={20} />
             <span>Back</span>
           </button>
