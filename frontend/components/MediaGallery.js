@@ -3,6 +3,8 @@ import Link from "next/link";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
 import ElaborateDescription from "components/ElaborateDescriptions";
+import { Button } from "react-bootstrap";
+import { Shuffle } from "react-bootstrap-icons";
 
 const getMediaData = (media) => {
   if (typeof media === "string") {
@@ -26,15 +28,16 @@ const shuffleArray = (array) => {
 const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPhotoRef, event }) => {
   const [visibleItems, setVisibleItems] = useState(10);
   const [loading, setLoading] = useState(false);
+  const [shuffled, setShuffled] = useState(false);
   const { ref: loadMoreRef, inView } = useInView({
     threshold: 0.1,
     triggerOnce: false,
   });
 
-  // Create a shuffled version of the media array
-  const shuffledMedia = useMemo(() => {
-    return media ? shuffleArray(media) : [];
-  }, [media]);
+  // Create both original and shuffled versions of the media array
+  const displayMedia = useMemo(() => {
+    return shuffled && media ? shuffleArray(media) : media || [];
+  }, [media, shuffled]);
 
   // Reset visible items when media changes
   useEffect(() => {
@@ -43,14 +46,19 @@ const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPh
 
   // Load more items when scroll reaches the trigger point
   useEffect(() => {
-    if (inView && !loading && visibleItems < shuffledMedia?.length) {
+    if (inView && !loading && visibleItems < displayMedia.length) {
       setLoading(true);
       setTimeout(() => {
-        setVisibleItems(prev => Math.min(prev + 10, shuffledMedia.length));
+        setVisibleItems(prev => Math.min(prev + 10, displayMedia.length));
         setLoading(false);
       }, 500);
     }
-  }, [inView, loading, shuffledMedia, visibleItems]);
+  }, [inView, loading, displayMedia, visibleItems]);
+
+  const toggleShuffle = () => {
+    setShuffled(!shuffled);
+    setVisibleItems(10); // Reset visible items when shuffling
+  };
 
   return (
     <div className="pb-8">
@@ -61,10 +69,22 @@ const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPh
         </div>
       )}
 
+      {/* Shuffle Controls */}
+      <div className="flex justify-end mb-4">
+        <Button 
+          variant="outline-primary"
+          onClick={toggleShuffle}
+          className="d-flex align-items-center gap-2"
+        >
+          <Shuffle />
+          {shuffled ? "Show Original Order" : "Shuffle Media"}
+        </Button>
+      </div>
+
       {/* Media Gallery Grid */}
       <div className="columns-1 gap-6 sm:columns-2 xl:columns-3 2xl:columns-4">
-        {shuffledMedia && shuffledMedia.length > 0 ? (
-          shuffledMedia.slice(0, visibleItems).map((item, index) => {
+        {displayMedia.length > 0 ? (
+          displayMedia.slice(0, visibleItems).map((item, index) => {
             const data = getMediaData(item);
             if (!data) return null;
 
@@ -123,15 +143,23 @@ const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPh
       </div>
 
       {/* Loading trigger and indicator */}
-      {shuffledMedia && visibleItems < shuffledMedia.length && (
+      {displayMedia.length > 0 && visibleItems < displayMedia.length && (
         <div ref={loadMoreRef} className="w-full flex justify-center py-4">
-          <button 
-            onClick={() => setVisibleItems(prev => Math.min(prev + 10, shuffledMedia.length))}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          <Button 
+            variant="primary"
+            onClick={() => setVisibleItems(prev => Math.min(prev + 10, displayMedia.length))}
             disabled={loading}
+            className="d-flex align-items-center gap-2"
           >
-            {loading ? 'Loading...' : 'Load More'}
-          </button>
+            {loading ? (
+              <>
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Loading...
+              </>
+            ) : (
+              'Load More'
+            )}
+          </Button>
         </div>
       )}
     </div>

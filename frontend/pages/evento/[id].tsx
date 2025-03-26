@@ -92,6 +92,7 @@ const EventDetails = ({ initialEvent }) => {
     router.events.on("routeChangeError", handleRouteChangeComplete);
     return () => {
       router.events.off("routeChangeStart", handleRouteChangeStart);
+      
       router.events.off("routeChangeComplete", handleRouteChangeComplete);
       router.events.off("routeChangeError", handleRouteChangeComplete);
     };
