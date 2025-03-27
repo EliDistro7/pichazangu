@@ -200,7 +200,7 @@ const EventDetails = ({ initialEvent }) => {
     } else {
       router.push('/'); // e.g. homepage or previous logical page
     }
-  }} className="flex items-center space-x-2 text-gray-400 ml-3 hover:text-white mb-5 transition-colors">
+  }} className="flex items-center space-x-2 ml-3 hover:text-white mb-5 transition-colors">
             <ArrowLeft size={20} />
             <span>Back</span>
           </button>
