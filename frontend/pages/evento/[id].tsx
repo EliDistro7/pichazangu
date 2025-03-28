@@ -210,7 +210,7 @@ const EventDetails = ({ initialEvent }) => {
       router.push('/');
     }
   }} 
-  className="flex text-lg items-center space-x-2 ml-5 mb-5 pt-5 transition-colors
+  className="flex text-lg items-center space-x-2 ml-5 mb-5 transition-colors
              bg-transparent group"
 >
   <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent

@@ -145,7 +145,7 @@ const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPh
 
    {/* Tag Filter Section - Black Theme */}
 <div className="mb-6 p-4 bg-black bg-opacity-80 rounded-lg border border-gray-800 shadow-lg">
-  <h3 className="text-lg font-medium mb-3 text-white">Filter by Tags</h3>
+
   <div className="flex flex-wrap gap-2">
     <button
       onClick={() => setActiveTag(null)}
@@ -211,22 +211,7 @@ const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPh
         ) : 'Add Tags'}
       </button>
     </div>
-    {Object.keys(currentTags).length > 0 && (
-      <div className="mt-4">
-        <h4 className="font-medium mb-2 text-gray-300">Current Tags Preview:</h4>
-        <div className="flex flex-wrap gap-2">
-          {Object.entries(currentTags).map(([tagName, numbers]) => (
-            <div 
-              key={tagName} 
-              className="bg-gray-800 text-blue-400 px-3 py-1 rounded-full text-sm flex items-center border border-gray-700"
-            >
-              <span className="font-medium">{tagName}:</span>
-              <span className="ml-1 text-gray-300">[{numbers.join(', ')}]</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    )}
+  
   </div>
 )}
 
