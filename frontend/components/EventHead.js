@@ -1,7 +1,7 @@
 import Head from "next/head";
 
 const EventHead = ({ event }) => (
-    <Head>
+    <head>
       <title>{event.title}</title>
       <meta name="description" content={event.description} />
       <meta property="og:title" content={event.title} />
@@ -13,7 +13,7 @@ const EventHead = ({ event }) => (
       <meta name="twitter:title" content={event.title} />
       <meta name="twitter:description" content={event.description} />
       <meta name="twitter:image" content={event.coverPhoto} />
-    </Head>
+    </head>
 );
 
 export default EventHead;
