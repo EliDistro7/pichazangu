@@ -7,6 +7,65 @@ const crypto = require("crypto");
 
 
 
+// Add or update tags for an event
+exports.updateEventTags = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const { tagName, integers } = req.body;
+
+    if (!tagName || !Array.isArray(integers)) {
+      return res.status(400).json({ message: 'Tag name and integers array are required' });
+    }
+
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+
+    // Initialize tags if not exists
+    if (!event.tags) {
+      event.tags = new Map();
+    }
+
+    // Get current integers for the tag or empty array if tag doesn't exist
+    const currentIntegers = event.tags.get(tagName) || [];
+    
+    // Merge and deduplicate integers
+    const updatedIntegers = [...new Set([...currentIntegers, ...integers])];
+    
+    // Update the tag
+    event.tags.set(tagName, updatedIntegers);
+    
+    await event.save();
+
+    res.status(200).json({
+      message: 'Tags updated successfully',
+      tags: Object.fromEntries(event.tags)
+    });
+  } catch (error) {
+    console.error('Error updating tags:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Get all tags for an event
+exports.getEventTags = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const event = await Event.findById(eventId);
+    
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+
+    res.status(200).json({
+      tags: event.tags ? Object.fromEntries(event.tags) : {}
+    });
+  } catch (error) {
+    console.error('Error fetching tags:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
 
 exports.getUsersWithStats = async (req, res) => {
   try {

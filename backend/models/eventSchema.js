@@ -10,6 +10,11 @@ const EventSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    tags: {
+      type: Map,
+      of: [Number], // This allows { nameofTag: [array of integers] } structure
+      default: {}
+    },
     elaborateDescription: {
       type: String, // Stores long, detailed descriptions
       required: false,

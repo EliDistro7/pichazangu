@@ -10,6 +10,11 @@ router.put("/:eventId", eventController.updateEvent);
 router.delete("/events/:eventId", eventController.deleteEvent);
 router.get("/events", eventController.getAllEvents);
 
+
+// Tag routes
+router.put('/:eventId/tags', eventTagsController.updateEventTags);
+router.get('/:eventId/tags', eventTagsController.getEventTags);
+
 // Get all users with their event stats
 router.get('/users-with-stats', eventController.getUsersWithStats);
 

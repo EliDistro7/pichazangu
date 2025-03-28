@@ -100,7 +100,7 @@ const SearchEvents = () => {
 
   return (
     <>
-  <header className={` w-full top-0 left-0 z-50 transition-all duration-300 ${darkMode ? "bg-gray-900/90 backdrop-blur-md border-b border-gray-800" : "bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm"}`}>
+  <header className={`fixed w-full top-0 left-0 z-50 transition-all duration-300 ${darkMode ? "bg-gray-900/90 backdrop-blur-md border-b border-gray-800" : "bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm"}`}>
   <div className="container mx-auto px-6">
     <div className="flex items-center justify-between h-16">
       {/* Brand Logo & Name */}

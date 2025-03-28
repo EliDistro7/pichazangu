@@ -3,6 +3,30 @@ import axios from "axios";
 
 const api = process.env.NEXT_PUBLIC_SERVER;
 
+
+export const updateEventTags = async (eventId, tagName, integers) => {
+  try {
+    const response = await axios.put(`${API_URL}/${eventId}/tags`, {
+      tagName,
+      integers
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating tags:', error);
+    throw error;
+  }
+};
+
+export const getEventTags = async (eventId) => {
+  try {
+    const response = await axios.get(`${API_URL}/${eventId}/tags`);
+    return response.data.tags;
+  } catch (error) {
+    console.error('Error fetching tags:', error);
+    throw error;
+  }
+};
+
 export const toggleFeaturedStatus = async (eventId) => {
   try {
     const response = await fetch(`${api}/${eventId}/toggle-featured`, {
