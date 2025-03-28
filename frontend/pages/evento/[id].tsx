@@ -194,16 +194,23 @@ const EventDetails = ({ initialEvent }) => {
         {/* Main Content */}
         <div className={`${isPasswordModalOpen ? "blur-sm" : ""}`}>
           <SearchEvents />
-          <button onClick={() => {
+          <button 
+  onClick={() => {
     if (window.history.length > 1) {
       router.back();
     } else {
-      router.push('/'); // e.g. homepage or previous logical page
+      router.push('/');
     }
-  }} className="flex items-center space-x-2 ml-3 hover:text-white mb-5 transition-colors">
-            <ArrowLeft size={20} />
-            <span>Back</span>
-          </button>
+  }} 
+  className="flex text-xl items-center space-x-2 ml-4 mb-5 pt-5 transition-colors
+             bg-transparent group"
+>
+  <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent
+                  group-hover:from-blue-600 group-hover:to-purple-700">
+    <ArrowLeft size={20} className="inline text-blue-500" />
+    <span> Back</span>
+  </span>
+</button>
           <CoverPhotoBanner
             event={event}
             isAuthor={isAuthor}
