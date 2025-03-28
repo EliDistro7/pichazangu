@@ -131,88 +131,101 @@ const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPh
         </div>
       )}
 
-      {/* Media Gallery Grid */}
-      <div className="columns-1 gap-5 sm:columns-2 lg:columns-3 xl:columns-4">
-        {visibleItems.length > 0 ? (
-          visibleItems.map((item, index) => {
-            const data = getMediaData(item);
-            if (!data) return null;
-            const absoluteIndex = (currentPage - 1) * ITEMS_PER_PAGE + index;
+   {/* Media Gallery Grid */}
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+  {visibleItems.length > 0 ? (
+    visibleItems.map((item, index) => {
+      const data = getMediaData(item);
+      if (!data) return null;
+      const absoluteIndex = (currentPage - 1) * ITEMS_PER_PAGE + index;
 
-            return (
-              <div key={`${absoluteIndex}`} className="mb-5 break-inside-avoid group">
-                <div className="relative overflow-hidden rounded-xl shadow-lg aspect-[3/2] bg-gray-100 dark:bg-gray-800">
-                  {/* Position indicator top left */}
-                  <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full z-10">
-                    {absoluteIndex + 1}/{media.length}
-                  </div>
+      return (
+        <div key={`${absoluteIndex}`} className="mb-5 group">
+          <div className="relative overflow-hidden rounded-xl shadow-lg bg-gray-100 dark:bg-gray-800">
+            {/* Position indicator top left */}
+            <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full z-10">
+              {absoluteIndex + 1}/{media.length}
+            </div>
 
-                  {/* Download button top right */}
-                  <button 
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleDownload(data.url, absoluteIndex);
-                    }}
-                    className="absolute top-2 right-2 p-2 bg-black/70 hover:bg-black/80 text-white rounded-full z-10 transition-all"
-                    title="Download"
-                  >
-                    <Download className="w-4 h-4" />
-                  </button>
+            {/* Download button top right */}
+            <button 
+              onClick={(e) => {
+                e.preventDefault();
+                handleDownload(data.url, absoluteIndex);
+              }}
+              className="absolute top-2 right-2 p-2 bg-black/70 hover:bg-black/80 text-white rounded-full z-10 transition-all"
+              title="Download"
+            >
+              <Download className="w-4 h-4" />
+            </button>
 
-                  <Link
-                    href={{
-                      pathname: `/p/${absoluteIndex}`,
-                      query: { eventId, mediaType, photoId: absoluteIndex },
-                    }}
-                    shallow
-                    ref={absoluteIndex === Number(lastViewedPhoto) ? lastViewedPhotoRef : null}
-                    className="block w-full h-full"
-                  >
-                    {!loadedImages[absoluteIndex] && renderSkeleton()}
-                    <div className={`absolute inset-0 transition-opacity duration-300 ${loadedImages[absoluteIndex] ? 'opacity-100' : 'opacity-0'}`}>
-                      {mediaType === "photo" ? (
-                        <Image
-                          src={data.url}
-                          alt={data.caption || `${mediaType} ${absoluteIndex + 1}`}
-                          fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          className="object-cover rounded-xl"
-                          onLoad={() => handleImageLoad(absoluteIndex)}
-                          placeholder="blur"
-                          blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQMAAAAl21bKAAAACAAAAEMlCAYAAAACzMAAAAEhUlEQVR4nO3BMQ0AAADCoPVP8fAAAAABJRU5ErkJggg=="
-                          unoptimized={true}
-                        />
-                      ) : (
-                        <video
-                          src={data.url}
-                          className="w-full h-full object-cover rounded-xl"
-                          controls={false}
-                          muted
-                          loop
-                          autoPlay
-                          onLoadedData={() => handleImageLoad(absoluteIndex)}
-                        />
-                      )}
-                    </div>
-                  </Link>
-
-                  {data.caption && (
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                      <p className="text-sm text-white font-medium line-clamp-2">{data.caption}</p>
-                    </div>
-                  )}
+            <Link
+              href={{
+                pathname: `/p/${absoluteIndex}`,
+                query: { eventId, mediaType, photoId: absoluteIndex },
+              }}
+              shallow
+              ref={absoluteIndex === Number(lastViewedPhoto) ? lastViewedPhotoRef : null}
+              className="block w-full"
+            >
+              {!loadedImages[absoluteIndex] && (
+                <div className="aspect-[4/3]">
+                  <Skeleton 
+                    height="100%"
+                    width="100%"
+                    baseColor="#f3f4f6"
+                    highlightColor="#e5e7eb"
+                    style={{ borderRadius: '0.75rem' }}
+                  />
                 </div>
+              )}
+              <div className={`transition-opacity duration-300 ${loadedImages[absoluteIndex] ? 'opacity-100' : 'opacity-0'}`}>
+                {mediaType === "photo" ? (
+                  <div className="w-full">
+                    <Image
+                      src={data.url}
+                      alt={data.caption || `${mediaType} ${absoluteIndex + 1}`}
+                      width={0}
+                      height={0}
+                      sizes="100vw"
+                      className="w-full h-auto max-h-[80vh] object-contain rounded-xl"
+                      onLoad={() => handleImageLoad(absoluteIndex)}
+                      placeholder="blur"
+                      blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQMAAAAl21bKAAAACAAAAEMlCAYAAAACzMAAAAEhUlEQVR4nO3BMQ0AAADCoPVP8fAAAAABJRU5ErkJggg=="
+                      unoptimized={true}
+                    />
+                  </div>
+                ) : (
+                  <video
+                    src={data.url}
+                    className="w-full h-auto max-h-[80vh] object-contain rounded-xl"
+                    controls={false}
+                    muted
+                    loop
+                    autoPlay
+                    onLoadedData={() => handleImageLoad(absoluteIndex)}
+                  />
+                )}
               </div>
-            );
-          })
-        ) : (
-          <div className="col-span-full text-center py-12">
-            <p className="text-gray-500 dark:text-gray-400 text-lg">
-              No {mediaType === "photo" ? "images" : "videos"} available.
-            </p>
+            </Link>
+
+            {data.caption && (
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                <p className="text-sm text-white font-medium line-clamp-2">{data.caption}</p>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      );
+    })
+  ) : (
+    <div className="col-span-full text-center py-12">
+      <p className="text-gray-500 dark:text-gray-400 text-lg">
+        No {mediaType === "photo" ? "images" : "videos"} available.
+      </p>
+    </div>
+  )}
+</div>
     </div>
   );
 };
