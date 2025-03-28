@@ -194,7 +194,15 @@ const EventDetails = ({ initialEvent }) => {
         {/* Main Content */}
         <div className={`${isPasswordModalOpen ? "blur-sm" : ""}`}>
           <SearchEvents />
-          <button 
+ 
+          <CoverPhotoBanner
+            event={event}
+            isAuthor={isAuthor}
+            onCoverPhotoUpload={handleCoverPhotoUpload}
+            onMessageClick={() => setIsMessageModalOpen(true)}
+          />
+
+<button 
   onClick={() => {
     if (window.history.length > 1) {
       router.back();
@@ -211,16 +219,8 @@ const EventDetails = ({ initialEvent }) => {
     <span> Back</span>
   </span>
 </button>
-          <CoverPhotoBanner
-            event={event}
-            isAuthor={isAuthor}
-            onCoverPhotoUpload={handleCoverPhotoUpload}
-            onMessageClick={() => setIsMessageModalOpen(true)}
-          />
           <div className="container mx-auto px-4">
-            <p className="mb-4 text-lg">
-              <span className="font-semibold">Author:</span> {event.author.username}
-            </p>
+           
             <div className="flex justify-center mb-6">
               <button
                 className={`px-6 py-2 text-lg font-semibold rounded-l-lg transition ${activeTab === "photo" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"}`}
