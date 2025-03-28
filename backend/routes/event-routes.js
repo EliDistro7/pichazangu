@@ -12,8 +12,8 @@ router.get("/events", eventController.getAllEvents);
 
 
 // Tag routes
-router.put('/:eventId/tags', eventTagsController.updateEventTags);
-router.get('/:eventId/tags', eventTagsController.getEventTags);
+router.put('/:eventId/tags', eventController.updateEventTags);
+router.get('/:eventId/tags', eventController.getEventTags);
 
 // Get all users with their event stats
 router.get('/users-with-stats', eventController.getUsersWithStats);
