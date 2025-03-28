@@ -5,6 +5,7 @@ import { useEffect, useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight, Download } from "lucide-react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import ElaborateDescription from 'components/ElaborateDescriptions';
 
 const getMediaData = (media) => {
   if (typeof media === "string") return { url: media, caption: "" };
