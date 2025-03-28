@@ -245,6 +245,7 @@ const EventDetails = ({ initialEvent }) => {
                 onMediaUpload={handleMediaUpload}
                 isUploading={isUploading}
                 uploadProgress={uploadProgress}
+               
               />
             )}
 
@@ -267,6 +268,7 @@ const EventDetails = ({ initialEvent }) => {
                 lastViewedPhoto={lastViewedPhoto}
                 lastViewedPhotoRef={lastViewedPhotoRef}
                 event={event}
+                canUpload={canUploadMedia}
               />
             )}
 
@@ -278,6 +280,7 @@ const EventDetails = ({ initialEvent }) => {
                 lastViewedPhoto={lastViewedPhoto}
                 lastViewedPhotoRef={lastViewedPhotoRef}
                 event={event}
+                canUpload={canUploadMedia}
               />
             )}
           </div>

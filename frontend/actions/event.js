@@ -6,7 +6,7 @@ const api = process.env.NEXT_PUBLIC_SERVER;
 
 export const updateEventTags = async (eventId, tagName, integers) => {
   try {
-    const response = await axios.put(`${API_URL}/${eventId}/tags`, {
+    const response = await axios.put(`${api}/${eventId}/tags`, {
       tagName,
       integers
     });
@@ -19,7 +19,8 @@ export const updateEventTags = async (eventId, tagName, integers) => {
 
 export const getEventTags = async (eventId) => {
   try {
-    const response = await axios.get(`${API_URL}/${eventId}/tags`);
+    const response = await axios.get(`${api}/${eventId}/tags`);
+   // console.log('response received', response)
     return response.data.tags;
   } catch (error) {
     console.error('Error fetching tags:', error);
