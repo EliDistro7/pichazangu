@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Download } from "lucide-react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import downloadPhoto from "utils/downloadPhoto";
 
 
 const MediaItem = ({ 
@@ -23,6 +24,10 @@ const MediaItem = ({
     ? { url: item, caption: "" } 
     : { url: item.url, caption: item.caption || "" };
 
+    const handleDownload = (url, index) => {
+      downloadPhoto(url, `${index}.jpg`);
+    };
+
   return (
     <div className="mb-5 group">
       <div className="relative overflow-hidden rounded-xl shadow-lg bg-gray-100 dark:bg-gray-800">
@@ -35,7 +40,7 @@ const MediaItem = ({
         <button 
           onClick={(e) => {
             e.preventDefault();
-            onDownload(data.url, index);
+            handleDownload(data.url, `${index}.jpg`);
           }}
           className="absolute top-2 right-2 p-2 bg-black/70 hover:bg-black/80 text-white rounded-full z-10 transition-all"
           title="Download"

@@ -6,6 +6,7 @@ import EmptyState from "./EmptyState";
 import ElaborateDescription from 'components/ElaborateDescriptions';
 import { updateEventTags, getEventTags } from 'actions/event'; 
 import { ToastContainer, toast } from 'react-toastify';
+import downloadPhoto from "utils/downloadPhoto";
 import 'react-toastify/dist/ReactToastify.css';
 
 const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPhotoRef, event, canUpload }) => {
@@ -119,14 +120,9 @@ const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPh
     setLoadedImages(prev => ({ ...prev, [index]: true }));
   };
 
-  const handleDownload = (url, index) => {
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${mediaType}-${index + 1}`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+ 
+
+
 
   return (
     <div className="pb-12 dark:bg-gray-900 dark:text-gray-100">
@@ -248,9 +244,9 @@ const MediaGallery = ({ media, mediaType, eventId, lastViewedPhoto, lastViewedPh
                   totalItems={media.length}
                   isLoaded={loadedImages[originalIndex]}
                   onLoad={() => handleImageLoad(originalIndex)}
-                  onDownload={handleDownload}
+                 
                 />
-                {canUpload ==true && (
+                {canUpload && (
                   <button
                     onClick={() => {
                       setSelectedMediaIndex(originalIndex);

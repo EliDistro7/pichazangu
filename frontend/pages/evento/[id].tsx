@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/router";
 import { ToastContainer, toast } from "react-toastify";
@@ -17,6 +18,7 @@ import socket from "hooks/socket";
 import SearchEvents from "components/SearchEvents";
 import { ArrowLeft } from "lucide-react";
 import PasswordModal from "components/PasswordModal2"; // Import the PasswordModal component
+
 
 const EventDetails = ({ initialEvent }) => {
   const [event, setEvent] = useState(initialEvent);
