@@ -22,6 +22,15 @@ module.exports = {
           },
         ],
       },
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: `frame-src https://challenges.cloudflare.com 'self'`
+          }
+        ]
+      },
     ];
   },
   async rewrites() {

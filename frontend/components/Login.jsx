@@ -4,6 +4,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { useRouter } from "next/router";
 import "react-toastify/dist/ReactToastify.css";
 import {setSecureCookie} from "../hooks/useUser";
+import TurnstileIntegration from './turnstile/integration';
 
 
 const Login = () => {
@@ -49,6 +50,8 @@ const Login = () => {
     <div className="font-sans min-h-screen flex items-center justify-center py-6 px-4 bg-gray-900 text-gray-200">
       <div className="grid md:grid-cols-2 items-center gap-10 max-w-6xl max-md:max-w-md w-full">
         {/* Left Section: Welcome Message */}
+
+        <TurnstileIntegration />
         <div>
           <h2 className="lg:text-5xl text-3xl font-extrabold lg:leading-[55px] text-white">
             Welcome Back to{" "}
