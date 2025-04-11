@@ -103,19 +103,51 @@ const SearchEvents = () => {
   <header className={`fixed w-full top-0 left-0 z-50 transition-all duration-300 ${darkMode ? "bg-gray-900/90 backdrop-blur-md border-b border-gray-800" : "bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm"}`}>
   <div className="container mx-auto px-6">
     <div className="flex items-center justify-between h-16">
-      {/* Brand Logo & Name */}
-      <div className="flex items-center space-x-2">
-        <a href="/" className="flex items-center group">
-          <div className="relative h-9 w-9 rounded-lg overflow-hidden border-2 border-transparent group-hover:border-blue-400/30 transition-all duration-300">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 opacity-80 group-hover:opacity-100 transition-opacity duration-300"></div>
-         
-          </div>
-          <span className="ml-2 text-xl font-medium bg-gradient-to-r from-purple-500 to-blue-400 bg-clip-text text-transparent">
-  Pichazangu
-</span>
-          
-        </a>
-      </div>
+    {/* Brand Logo & Name */}
+{/* Brand Logo & Name */}
+{/* Brand Logo & Name */}
+<div className="flex items-center space-x-2">
+  <a href="/" className="flex items-center group">
+    <div className="relative h-9 w-9 border-2 border-transparent group-hover:border-blue-400/30 transition-all duration-300">
+      <svg 
+        className="opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+        viewBox="0 0 100 100" 
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <linearGradient id="pGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#2563EB" /> {/* blue-600 */}
+            <stop offset="70%" stopColor="#9333EA" /> {/* purple-600 */}
+          </linearGradient>
+        </defs>
+        
+        {/* Outer P shape with extended tail */}
+        <path
+          d="M30 15
+          C45 0 55 0 70 15
+          C85 30 85 50 70 65
+          C55 80 45 80 30 65
+          V110
+          H20
+          V10
+          H30
+          V15
+          Z"
+          fill="url(#pGradient)"
+          strokeWidth="0"
+        />
+        
+        {/* Inner cutout for doughnut effect */}
+       
+      </svg>
+    </div>
+    <span className="ml-2 text-xl font-medium bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+      Pichazangu
+    </span>
+  </a>
+</div>
+
 
  
 
