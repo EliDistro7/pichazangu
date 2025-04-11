@@ -4,7 +4,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { useRouter } from "next/router";
 import "react-toastify/dist/ReactToastify.css";
 import {setSecureCookie} from "../hooks/useUser";
-import TurnstileIntegration from './turnstile/integration';
+import TurnstileIntegration from './Integration';
 
 
 const Login = () => {
