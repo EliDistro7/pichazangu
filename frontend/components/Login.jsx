@@ -58,6 +58,7 @@ const Login = () => {
       });
       client.requestAccessToken();
     } catch (error) {
+      console.log(error)
       toast.error("Failed to initialize Google login");
       setLoading(false);
     }
