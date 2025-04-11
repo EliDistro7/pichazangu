@@ -10,8 +10,8 @@ const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [token, setToken] = useState("");
   const [isVerified, setIsVerified] = useState(false);
+  const [showTurnstile, setShowTurnstile] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const router = useRouter();
 
   const verifyToken = async (turnstileToken) => {
@@ -24,14 +24,15 @@ const Login = () => {
 
       if (response.data.success) {
         setIsVerified(true);
-        setError("");
+        setShowTurnstile(false); // Hide Turnstile after verification
+        toast.success("Verification successful!");
         return true;
       } else {
-        setError("Verification failed");
+        toast.error("Verification failed");
         return false;
       }
     } catch (err) {
-      setError("Verification error");
+      toast.error("Verification error");
       return false;
     } finally {
       setLoading(false);
@@ -66,6 +67,12 @@ const Login = () => {
 
       setTimeout(() => router.push("/"), 1500);
     } catch (error) {
+      // Reset verification on login failure
+      if (error.response?.status === 401) {
+        setIsVerified(false);
+        setShowTurnstile(true);
+        setToken("");
+      }
       toast.error(
         error.response?.data?.message || "Login failed. Please try again."
       );
@@ -124,27 +131,31 @@ const Login = () => {
               placeholder="Password"
             />
 
-            <Turnstile
-              sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
-              theme="dark"
-              size="normal"
-              retry="auto"
-              refreshExpired="auto"
-              onVerify={async (token) => {
-                setToken(token);
-                await verifyToken(token);
-              }}
-              onExpire={() => {
-                setToken("");
-                setIsVerified(false);
-                toast.error("Verification expired - please retry");
-              }}
-              onError={() => {
-                setIsVerified(false);
-                toast.error("Verification failed - try again");
-              }}
-              className="w-full"
-            />
+            {showTurnstile && (
+              <Turnstile
+                sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+                theme="dark"
+                size="normal"
+                retry="auto"
+                refreshExpired="auto"
+                onVerify={async (token) => {
+                  setToken(token);
+                  await verifyToken(token);
+                }}
+                onExpire={() => {
+                  setToken("");
+                  setIsVerified(false);
+                  setShowTurnstile(true);
+                  toast.error("Verification expired - please retry");
+                }}
+                onError={() => {
+                  setIsVerified(false);
+                  setShowTurnstile(true);
+                  toast.error("Verification failed - try again");
+                }}
+                className="w-full"
+              />
+            )}
 
             <div className="flex items-center justify-between">
               <label className="flex items-center text-sm">
