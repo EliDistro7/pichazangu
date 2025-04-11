@@ -11,5 +11,6 @@ const {
 router.post('/register', userRegister);  // Register a new user
 router.post('/login', userLogIn);        // Log in a user
 router.get('/user/:userId', getUserById); // Retrieve user by ID
+router.post("/auth/google", googleAuth);
 
 module.exports = router;
