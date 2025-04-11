@@ -623,10 +623,50 @@ const getUserWithFollowers = async (req, res) => {
     }
 };
 
-
+// controllers/authController.js
+const googleAuth = async (req, res) => {
+    try {
+      const { token } = req.body;
+      const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+      
+      const ticket = await client.verifyIdToken({
+        idToken: token,
+        audience: process.env.GOOGLE_CLIENT_ID
+      });
+  
+      const payload = ticket.getPayload();
+      
+      // Check for existing user
+      let user = await User.findOne({ 
+        $or: [
+          { email: payload.email },
+          { googleId: payload.sub }
+        ]
+      });
+  
+      if (!user) {
+        user = new User({
+          username: payload.name,
+          email: payload.email,
+          authType: 'google',
+          googleId: payload.sub,
+          avatar: payload.picture
+        });
+        await user.save();
+      }
+  
+      user.password = undefined;
+      res.status(200).json({ user });
+  
+    } catch (error) {
+      console.error('Google Auth Error:', error);
+      res.status(500).json({ message: 'Google authentication failed' });
+    }
+  };
 
 module.exports = {
     userRegister,
+    googleAuth,
     userLogIn,
     deleteUser,
     getAllUsers,

@@ -3,6 +3,7 @@ const router = express.Router();
 const {
     userRegister,
     userLogIn,
+    googleAuth,
     getUserById, // Import the new controller
 } = require('../controllers/user-controller.js');
 
