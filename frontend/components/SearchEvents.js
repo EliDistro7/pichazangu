@@ -108,18 +108,10 @@ const SearchEvents = () => {
         <a href="/" className="flex items-center group">
           <div className="relative h-9 w-9 rounded-lg overflow-hidden border-2 border-transparent group-hover:border-blue-400/30 transition-all duration-300">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 opacity-80 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="absolute inset-0.5 rounded-[5px] bg-gray-900 overflow-hidden">
-              <Image 
-                src={'/img/picha2.jpeg'} 
-                alt="Pichazangu Logo"
-                fill
-                className="w-full p-1.5 transition-transform duration-300 group-hover:scale-[1.03]"
-              />
-            </div>
+         
           </div>
           <span className="ml-2 text-xl font-medium bg-gradient-to-r from-purple-500 to-blue-400 bg-clip-text text-transparent">
   Pichazangu
-  <span className="text-blue-400">.</span>
 </span>
           
         </a>

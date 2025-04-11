@@ -27,7 +27,7 @@ module.exports = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: `frame-src https://challenges.cloudflare.com 'self'`
+            value: "frame-src 'self' https://challenges.cloudflare.com https://googleads.g.doubleclick.net https://pagead2.googlesyndication.com;"
           }
         ]
       },
