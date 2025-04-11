@@ -37,14 +37,15 @@ const TurnstileIntegration = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
     if (!isVerified) {
       setError('Complete verification first');
       return;
     }
 
+    // Proceed with form submission
     const formData = new FormData(e.currentTarget as HTMLFormElement);
-
+    
     try {
       const response = await axios.post('/your-api-endpoint', {
         ...Object.fromEntries(formData),
@@ -58,18 +59,9 @@ const TurnstileIntegration = () => {
   };
 
   return (
-    <div className="relative max-w-md mx-auto p-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
-      {/* Overlay */}
-      {!isVerified && (
-        <div className="absolute inset-0 bg-black bg-opacity-70 z-20 flex items-center justify-center rounded-lg">
-          <div className="text-white text-center">
-            <div className="animate-pulse mb-2 text-lg font-semibold">Authenticating...</div>
-            <p className="text-sm text-gray-300">Please wait while we validate you</p>
-          </div>
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className={`${!isVerified ? 'pointer-events-none select-none' : ''}`}>
+    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
+      <form onSubmit={handleSubmit}>
+        {/* Example form field with validation */}
         <div className="mb-4">
           <label 
             htmlFor="email" 
@@ -93,7 +85,7 @@ const TurnstileIntegration = () => {
         <div className="mt-4">
           <Turnstile
             sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
-            theme="dark"
+            theme="dark"  // Changed to dark theme
             language="en"
             size="normal"
             retry="auto"
@@ -102,7 +94,7 @@ const TurnstileIntegration = () => {
             fixedSize={true}
             onVerify={async (token) => {
               setToken(token);
-              await verifyToken(token);
+              await verifyToken(token); // Immediate verification
             }}
             onExpire={() => {
               setToken('');
@@ -113,7 +105,7 @@ const TurnstileIntegration = () => {
               setIsVerified(false);
               setError('Verification failed - try again');
             }}
-            className="turnstile-widget dark:filter dark:invert"
+            className="turnstile-widget dark:filter dark:invert" // Additional dark mode styling
           />
         </div>
 
