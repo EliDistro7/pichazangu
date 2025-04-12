@@ -26,7 +26,9 @@ const Login = () => {
   }, []);
 
   const handleGoogleLogin = async () => {
+    console.log('client id', process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID)
     try {
+      
       setLoading(true);
       const client = window.google.accounts.oauth2.initTokenClient({
         client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,

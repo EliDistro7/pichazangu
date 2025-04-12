@@ -1,6 +1,7 @@
 import Document, { Html, Head, Main, NextScript } from "next/document";
 import Script from "next/script";
 
+
 class MyDocument extends Document {
   render() {
     return (
@@ -20,14 +21,7 @@ class MyDocument extends Document {
             crossOrigin="anonymous"
           />
 
-          {/* AMP Auto Ads - Only include if you're actually using AMP */}
-          {process.env.NEXT_PUBLIC_AMP === 'true' && (
-            <Script
-              id="amp-auto-ads"
-              strategy="afterInteractive"
-              src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js"
-            />
-          )}
+       
         </Head>
         <body className="font-sans bg-black antialiased">
           {/* AMP Auto Ads placeholder - only if using AMP */}
