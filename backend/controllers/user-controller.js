@@ -627,6 +627,7 @@ const getUserWithFollowers = async (req, res) => {
 const googleAuth = async (req, res) => {
     try {
       const { token } = req.body;
+      console.log('google client',process.env.GOOGLE_CLIENT_ID)
       const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
       
       const ticket = await client.verifyIdToken({
