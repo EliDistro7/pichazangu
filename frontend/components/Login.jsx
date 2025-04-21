@@ -35,6 +35,7 @@ const Login = () => {
         scope: 'profile email',
         callback: async (response) => {
           try {
+            console.log('token',response.credential)
             const authResponse = await axios.post(
               `${process.env.NEXT_PUBLIC_SERVER}/auth/google`,
               { token: response.credential }
@@ -58,6 +59,7 @@ const Login = () => {
           setLoading(false);
         }
       });
+      console.log('client object', client)
       client.requestAccessToken();
     } catch (error) {
       console.log(error)

@@ -8,6 +8,7 @@ import socket from "hooks/socket";
 import { toast } from "react-toastify";
 
 
+
 import CoverPhoto from "./CoverPhotoBanner1";
 import EventDetails from "./EventDetails";
 import DropdownMenu from "./DropdownMenu";
@@ -150,7 +151,8 @@ const EventCard = ({ event }) => {
   const handleLike = async () => {
     if (!isLoggedIn) return; // Ensure user is logged in
     try {
-      const updatedLikes = await likeEvent(event._id); // Use event._id
+      console.log('event', event);
+   
       if (updatedLikes !== null) {
         console.log("Event liked successfully! Total likes:", updatedLikes);
       }
@@ -188,6 +190,8 @@ const EventCard = ({ event }) => {
       {/* Always render DropdownMenu, but control visibility with isDropdownOpen */}
       <DropdownMenu
         isDropdownOpen={isDropdownOpen}
+        event={event}
+        userId={getLoggedInUserId()}
         onViewClick={() => {
           handleViewClick();
           setIsDropdownOpen(false);

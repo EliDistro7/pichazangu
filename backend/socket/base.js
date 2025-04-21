@@ -60,7 +60,7 @@ console.log('socket connected')
       try { console.log('new user connected', userId)
         const userDetails = await getUserDetails(userId);
 
-        if (userDetails) {
+
           // Notify the old session to log out if the user is already connected
           if (userSockets[userId]) {
             io.to(userSockets[userId]).emit('loggedOut');
@@ -69,6 +69,7 @@ console.log('socket connected')
 
             // Map userId to the new socket.id
   userSockets[userId] = socket.id;
+  //console.log('sockets', userSockets);
 
   // Add the socket ID to the userDetails object
   const userWithSocket = {
@@ -84,10 +85,7 @@ console.log('socket connected')
 
           // Acknowledge the login event
           socket.emit('loginUserAck', { status: 'ok', user: userDetails });
-        } else {
-     
-          socket.emit('loginUserAck', { status: 'error', message: 'User not found' });
-        }
+         
       } catch (error) {
         console.error('Error fetching user details:', error);
         socket.emit('loginUserAck', { status: 'error', message: 'Error retrieving user data' });

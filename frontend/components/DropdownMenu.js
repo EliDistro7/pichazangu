@@ -7,12 +7,14 @@ import "react-toastify/dist/ReactToastify.css";
 const DropdownMenu = ({
   eventId,
   userId,
+  event,
   socket,
   onViewClick,
   onFollowClick,
   onShareClick,
   onCollaborateClick,
   loadingView,
+  onLikeClick,
   loadingFollow,
   isFollowing,
   isLoggedIn,
@@ -42,7 +44,7 @@ const DropdownMenu = ({
     try {
       if (hasLiked) {
         // Unlike the event
-        const { totalLikes } = await unlikeEvent({ eventId, socket });
+        const totalLikes  = true;
 
         if (totalLikes !== null) {
           // Remove the event ID from localStorage
@@ -54,12 +56,16 @@ const DropdownMenu = ({
           setHasLiked(false);
 
           // Show success toast
-          toast.success("Unliked");
-          console.log("Event unliked successfully! Total likes:", totalLikes);
+         // toast.success("Unliked");
+         // console.log("Event unliked successfully! Total likes:", totalLikes);
         }
       } else {
         // Like the event
-        const { totalLikes } = await likeEvent({ eventId, socket });
+        const totalLikes= await likeEvent({
+          eventId:event._id, 
+          eventOwnerId:event.author.userId, 
+          socket:socket,
+          userId}); // Use event._id
 
         if (totalLikes !== null) {
           // Store the event ID in localStorage

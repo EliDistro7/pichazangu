@@ -9,7 +9,7 @@ class MyDocument extends Document {
         <Head>
           {/* Favicon */}
           <link rel="icon" href="/favicon.ico" />
-
+          
           {/* Theme Color for Dark Mode */}
           <meta name="theme-color" content="#000000" />
 

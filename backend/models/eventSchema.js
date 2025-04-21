@@ -96,6 +96,7 @@ const EventSchema = new mongoose.Schema(
       type: [mongoose.Schema.Types.Mixed], // Accepts both ObjectId and string
       default: [],
     },
+  
     visibleOnHomepage: {
       type: Boolean,
       default: false, // Events are hidden from homepage by default

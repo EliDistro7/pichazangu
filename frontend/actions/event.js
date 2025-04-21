@@ -331,24 +331,29 @@ export const removeInvitedUser = async ({eventId, userId, socket}) => {
   }
 };
 
-export async function likeEvent({eventId, socket,username}) {
+export async function likeEvent({eventId, socket,userId, eventOwnerId}) {
   try {
-    const { data } = await axios.put(`${api}/events/${eventId}/like`);
+    //const { data } = await axios.put(`${api}/events/${eventId}/like`);
 
+  console.log('event owner id',eventOwnerId)
 
-
-   console.log('response from liking', data);
+   //console.log('response from liking', data);
 
     
     if(socket){
-      socket.emit("event_liked", {
+      socket.emit("like_event", {
         eventId,
+        userId,
+        eventOwnerId
        
-       // username,
       });
     }
+     
+    socket.on('event_likeAck', (data)=>{
 
-    return data ?? { totalLikes: 0 }; // Ensure it always returns a valid object
+    })
+
+    return true; // Ensure it always returns a valid object
   } catch (error) {
     console.error("Error liking event:", error);
     return null;

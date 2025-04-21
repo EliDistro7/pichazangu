@@ -623,11 +623,14 @@ const getUserWithFollowers = async (req, res) => {
     }
 };
 
+const { OAuth2Client } = require('google-auth-library');
+
 // controllers/authController.js
 const googleAuth = async (req, res) => {
     try {
       const { token } = req.body;
-      console.log('google client',process.env.GOOGLE_CLIENT_ID)
+      console.log('google client',process.env.GOOGLE_CLIENT_ID);
+      console.log('token from frontend',token);
       const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
       
       const ticket = await client.verifyIdToken({
@@ -660,6 +663,7 @@ const googleAuth = async (req, res) => {
       res.status(200).json({ user });
   
     } catch (error) {
+      console.log(error)
       console.error('Google Auth Error:', error);
       res.status(500).json({ message: 'Google authentication failed' });
     }

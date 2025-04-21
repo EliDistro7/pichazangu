@@ -22,6 +22,8 @@ module.exports = function notificationEvents(io, socket, userSockets) {
        // Notify the recipient in real time
       // notifyUser(userId, "new_message", { senderName, messageContent });
     const targetSocketId = userSockets[userId];
+    console.log('target socket', targetSocketId)
+    console.log('user sockets', userSockets)
     if (targetSocketId) {
       console.log('succesful sent message to user')
       io.to(targetSocketId).emit(event, eventData);
@@ -29,11 +31,11 @@ module.exports = function notificationEvents(io, socket, userSockets) {
   };
 
   // Create and store a new notification
-  const createNotification = async ({ senderName,userId, type, message, eventId = null }) => {
+  const createNotification = async ({ senderName,user, type, message, eventId = null }) => {
     try {
-      console.log('Creating notification', senderName, userId, type, message, eventId)
+      console.log('Creating notification', senderName, user, type, message, eventId)
       const notification = new Notification({
-        user: userId,  // Recipient of the notification
+        user: user,  // Recipient of the notification
         event: eventId, // Optional event reference
         type,
         message,
@@ -42,7 +44,7 @@ module.exports = function notificationEvents(io, socket, userSockets) {
       });
 
       await notification.save();
-      notifyUser(userId, "new_notification", notification);
+      notifyUser(user, "new_notification", notification);
     } catch (err) {
       console.error("Error saving notification:", err);
     }
@@ -55,7 +57,7 @@ module.exports = function notificationEvents(io, socket, userSockets) {
       const message = `${followerName} started following you.`;
 
       await createNotification({
-        userId: followedUserId,
+        user: followedUserId,
         type: "new_follower",
         message,
         senderId: followerId,
@@ -90,7 +92,7 @@ module.exports = function notificationEvents(io, socket, userSockets) {
   
       for (const recipientId of recipients) {
         await createNotification({
-          userId: recipientId,
+          user: recipientId,
           type: "media_added",
           message,
           eventId,
@@ -105,19 +107,23 @@ module.exports = function notificationEvents(io, socket, userSockets) {
   });
   
 
-  // Listen for 'like_event' event
+  // Listen for 'like_event' eve
   socket.on("like_event", async ({ userId, eventId, eventOwnerId }) => {
     try {
+      console.log('event owner id', eventOwnerId);
       const username = await getUsernameById(userId);
-      const message = `${username} liked your event.`;
+      const message = `${username} liked your event.`
 
       await createNotification({
-        userId: eventOwnerId,
-        type: "event_like",
+        user: eventOwnerId,
+        type: "like_event",
         message,
         eventId,
         senderId: userId,
+        senderName:username
       });
+       // Notify the recipient in real time
+       notifyUser(eventOwnerId, "view_event", { senderName:username, message });
     } catch (err) {
       console.error("Error handling like_event event:", err);
     }
@@ -133,7 +139,7 @@ module.exports = function notificationEvents(io, socket, userSockets) {
      
 
        await createNotification({
-         userId: userId,
+         user: userId,
          type: "view_event",
          message,
          senderName: senderName,
@@ -155,7 +161,7 @@ module.exports = function notificationEvents(io, socket, userSockets) {
       const message = `${senderName} sent you a message: "${messageContent}"`;
 
       await createNotification({
-        userId: userId,
+        user: userId,
         type: "new_message",
         message,
         senderName: senderName,
