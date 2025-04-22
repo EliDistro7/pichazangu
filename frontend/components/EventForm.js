@@ -127,7 +127,7 @@ const EventForm = ({ onSubmit, loggedInUsername, loggedInUserId }) => {
   
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("new event", newEvent);
+    //console.log("new event", newEvent);
     
     try {
       let coverPhotoUrl = "";

@@ -679,7 +679,9 @@ exports.requestToCollaborate = async (req, res) => {
     }
 
     // Add request to pendingRequests list
+    console.log('userId is ', userId)
     event.pendingRequests.push({ username, userId, requestedAt: Date.now() });
+    console.log('request added as pending requst', event)
     await event.save();
 
     console.log("Collaboration request added:", username);

@@ -1,3 +1,5 @@
+
+
 import React, { useEffect, useState } from "react";
 import { Bell, XCircle, CheckCircle } from "lucide-react";
 import { getNotifications, markNotificationAsRead, deleteNotification } from "actions/notifications";
@@ -11,7 +13,27 @@ const NotificationModal = ({ userId, onClose }) => {
     const fetchNotifications = async () => {
       try {
         const data = await getNotifications(userId);
+        //console.log('notifications',data);
+        const notificationTypes= ["event_follow", "view_event","like_event", "collaboration_requested", "collaboration_accepted", "media_added", "new_message"]
+        const notificationTypesCount={};
+        const counter=notificationTypes.forEach(type=>{
+          console.log('type', type)
+          notificationTypesCount[String(type)]=0
+          console.log('notificationTypeCount', notificationTypesCount )
+        })
+        //console.log('counter', notificationTypesCount);
+
+
+          
         setNotifications(data);
+        data.forEach(item=>{
+          
+          let type =String(item.type)
+          if(notificationTypesCount[type] !== null){
+            notificationTypesCount[type] +=1;
+          }
+        })
+        console.log('nots', notificationTypesCount)
       } catch (error) {
         console.error("Error fetching notifications:", error);
       } finally {
@@ -20,6 +42,7 @@ const NotificationModal = ({ userId, onClose }) => {
     };
 
     fetchNotifications();
+
   }, [userId]);
 
   const handleMarkAsRead = async (notificationId) => {

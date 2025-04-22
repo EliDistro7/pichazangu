@@ -41,15 +41,15 @@ const EventList = ({ events, loading, onDelete }) => {
   };
 
   return (
-    <div className="space-y-4 p-4">
+    <div className="space-y-4 p-4 lg:p-2">
       <SearchEvents />
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-2">
         {shuffledEvents.map((event, index) => {
           // Render a random component at random intervals
           if (shouldRenderRandomComponent()) {
             return (
               <React.Fragment key={`random-${index}`}>
-                <div className="col-span-full"> {/* Full-width for random components */}
+                <div className="w-full"> {/* Full-width for random components */}
                   {getRandomComponent()}
                 </div>
                 <EventCard key={event._id} event={event} onDelete={onDelete} />

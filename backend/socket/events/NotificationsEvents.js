@@ -153,6 +153,54 @@ module.exports = function notificationEvents(io, socket, userSockets) {
     }
   });
 
+  // Listen for 'view_event' event
+  socket.on("collaboration_accepted", async ({ userId, eventId, senderName}) => {
+    try {
+      //const username = await getUsernameById(userId);
+      const message = `${senderName} accepted your request.`;
+
+    
+     
+
+       await createNotification({
+         user: userId,
+         type: "collaboration_accepted",
+         message,
+         senderName: senderName,
+         eventId:eventId,
+       });
+
+       // Notify the recipient in real time
+      notifyUser(userId, "collaboration_accepted", { senderName, message });
+    } catch (err) {
+      console.error("Error handling collaboration requets event:", err);
+    }
+  });
+
+   // Listen for 'view_event' event
+   socket.on("collaboration_requested", async ({ userId, eventId, senderName}) => {
+    try {
+      //const username = await getUsernameById(userId);
+      const message = `${senderName} is requesting to collaborate in your event.`;
+
+    
+     
+
+       await createNotification({
+         user: userId,
+         type: "collaboration_requested",
+         message,
+         senderName: senderName,
+         eventId:eventId,
+       });
+
+       // Notify the recipient in real time
+      notifyUser(userId, "collaboration_requested", { senderName, message });
+    } catch (err) {
+      console.error("Error handling view_event event:", err);
+    }
+  });
+
   // Listen for 'send_message' event
   socket.on("new_message", async ({eventId, senderName, userId, messageContent }) => {
     try {

@@ -14,7 +14,7 @@ const DropdownMenu = ({
   onShareClick,
   onCollaborateClick,
   loadingView,
-  onLikeClick,
+  
   loadingFollow,
   isFollowing,
   isLoggedIn,
@@ -90,7 +90,7 @@ const DropdownMenu = ({
   };
 
   return (
-    <>
+    <div className='w-full mx-0 flex items-center'>
       {/* Toast Container */}
       <ToastContainer
         position="bottom-center"
@@ -99,7 +99,7 @@ const DropdownMenu = ({
       />
   
       {/* Dropdown Menu */}
-      <div className="absolute inset-x-0 bottom-[-10px] z-50 rounded-md shadow-lg p-2 flex flex-wrap items-center gap-2 bg-gradient-to-t from-black/80 to-transparent w-full">
+      <div className="absolute inset-x-0 bottom-[-10px] z-50 rounded-md shadow-lg p-2 flex items-center gap-2 bg-gradient-to-t from-black/90 to-transparent w-full">
         {/* Like Button */}
         <button
           onClick={handleLike}
@@ -202,7 +202,7 @@ const DropdownMenu = ({
           </>
         )}
       </div>
-    </>
+    </div>
   );
 };
 

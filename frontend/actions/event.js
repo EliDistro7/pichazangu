@@ -260,7 +260,7 @@ export const requestCollaboration = async ({
     });
 
     // Emit socket event if socket is available
-    if (socket) {
+    if(socket){
       socket.emit("collaboration_requested", {
         eventId,
         userId,
@@ -299,7 +299,7 @@ export const acceptUserToEvent = async ({
 
     // Emit socket event if socket is available
     if (socket) {
-      socket.emit("user_accepted", {
+      socket.emit("collaboration_accepted", {
         senderName,
         eventId,
         userId,
@@ -335,7 +335,7 @@ export async function likeEvent({eventId, socket,userId, eventOwnerId}) {
   try {
     //const { data } = await axios.put(`${api}/events/${eventId}/like`);
 
-  console.log('event owner id',eventOwnerId)
+  //console.log('event owner id',eventOwnerId)
 
    //console.log('response from liking', data);
 
@@ -507,13 +507,13 @@ export const getEventFollowers = async (eventId) => {
 // Add a view to an event
 export const addViewToEvent = async ({ eventId, userId, socket = null,senderName  }) => {
   try {
-    const response = await axios.post(`${api}/events/add-view`, { eventId, userId});
+   // const response = await axios.post(`${api}/events/add-view`, { eventId, userId});
 
     if (socket) {
       socket.emit("view_event", { userId, eventId,senderName });
     }
 
-    return response.data; // Returns success message or updated event data
+    return true; // Returns success message or updated event data
   } catch (error) {
     console.error("Error adding view to event:", error.response?.data || error.message);
     throw new Error(error.response?.data?.message || "Failed to add view.");

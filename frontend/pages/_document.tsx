@@ -23,7 +23,7 @@ class MyDocument extends Document {
 
        
         </Head>
-        <body className="font-sans bg-black antialiased">
+        <body className="font-sans bg-black antialiased ">
           {/* AMP Auto Ads placeholder - only if using AMP */}
           {process.env.NEXT_PUBLIC_AMP === 'true' && (
             <div

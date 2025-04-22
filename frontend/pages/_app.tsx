@@ -64,9 +64,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         {/* Google AdSense */}
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3024582236485351" crossOrigin="anonymous"></script>
 
-        {/* AMP ads */}
-        <script async custom-element="amp-auto-ads" src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js"></script>
-      </Head>
+          </Head>
 
       {/* Google Analytics */}
       <Script async src="https://www.googletagmanager.com/gtag/js?id=G-93VR2QSX8B" strategy="afterInteractive" />

@@ -164,7 +164,7 @@ const EventCard = ({ event }) => {
   return (
     <div
       id={event._id}
-      className="font-sans relative group overflow-hidden rounded-xl shadow-2xl transform transition-transform duration-300 hover:scale-105 cursor-pointer"
+      className="font-sans relative group w-full rounded-xl shadow-2xl transform transition-transform duration-300 hover:scale-105 cursor-pointer"
       onClick={(e) => {
         if (!e.target.closest("button")) {
           handleViewClick();
