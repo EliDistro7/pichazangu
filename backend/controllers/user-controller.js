@@ -432,42 +432,41 @@ const getUserById = async (req, res) => {
 
 // Controller for user registration (sign-up)
 const userRegister = async (req, res) => {
-    try {
-      const { name, email, password } = req.body;
+  try {
+    const { name, email, password, phoneNumber } = req.body;
 
-      console.log(`req body`, req.body);
-
-      
-  
-      // Check if the email is already in use
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        return res.status(400).json({ message: "Email already exists" });
-      }
-  
-      // Hash the password
-      const salt = await bcrypt.genSalt(10);
-      const hashedPass = await bcrypt.hash(password, salt);
-  
-      // Create a new user object
-      const user = new User({
-        username:name,
-        email,
-        password: hashedPass,
-      });
-  
-      // Save the new user to the database
-      const result = await user.save();
-  
-      // Remove the password field from the result before sending the response
-      result.password = undefined;
-      res.status(201).json(result);
-    } catch (err) {
-        console.log(err);
-      console.error("Registration Error:", err);
-      res.status(500).json({ message: "Server error" });
+    console.log(`req body`, req.body);
+    
+    // Check if the email is already in use
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already exists" });
     }
-  };
+
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPass = await bcrypt.hash(password, salt);
+
+    // Create a new user object
+    const user = new User({
+      username: name,
+      email,
+      phoneNumber, // Added phone number field
+      password: hashedPass,
+    });
+
+    // Save the new user to the database
+    const result = await user.save();
+
+    // Remove the password field from the result before sending the response
+    result.password = undefined;
+    res.status(201).json(result);
+  } catch (err) {
+      console.log(err);
+    console.error("Registration Error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
   
 // Controller for user login (sign-in)
 const userLogIn = async (req, res) => {

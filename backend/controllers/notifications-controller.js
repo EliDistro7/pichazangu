@@ -22,6 +22,7 @@ const getNotificationsByUserId = async (req, res) => {
     for (let i = 0; i < notifications.length; i++) {
       const notification = notifications[i];
       
+      
       // Check if notification has event ID but no eventTitle
       if (notification.event && (!notification.eventTitle || notification.eventTitle === null)) {
         try {
