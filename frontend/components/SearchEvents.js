@@ -267,7 +267,7 @@ const SearchEvents = () => {
       </header>
   
       {/* Spacer to prevent fixed header from covering content */}
-      <div className="h-16" />
+      <div className="h-8" />
   
       {isModalOpen && <NotificationModal userId={user} onClose={() => setIsModalOpen(false)} />}
   
