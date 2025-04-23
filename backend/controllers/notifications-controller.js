@@ -2,64 +2,6 @@ const Notification = require("../models/NotificationsSchema.js");
 const Event = require("../models/eventSchema.js")
 
 
-async function populateEventTitles() {
-  console.log('Starting to populate event titles...');
-  
-  // Find all notifications that have an event ID but no eventTitle
-  const notificationsToUpdate = await Notification.find({
-    event: { $exists: true, $ne: null },
-    eventTitle: { $exists: false }
-  });
-  
-  console.log(`Found ${notificationsToUpdate.length} notifications to update`);
-  
-  // Group notifications by event ID to minimize database queries
-  const eventGroups = {};
-  notificationsToUpdate.forEach(notification => {
-    const eventId = notification.event.toString();
-    if (!eventGroups[eventId]) {
-      eventGroups[eventId] = [];
-    }
-    eventGroups[eventId].push(notification._id);
-  });
-  
-  // Process each event group
-  let updatedCount = 0;
-  let errorCount = 0;
-  
-  for (const eventId of Object.keys(eventGroups)) {
-    try {
-      // Find the event
-      const event = await Event.findById(eventId);
-      
-      if (event && event.title) {
-        // Update all notifications for this event
-        const result = await Notification.updateMany(
-          { _id: { $in: eventGroups[eventId] } },
-          { $set: { eventTitle: event.title } }
-        );
-        
-        updatedCount += result.nModified;
-        console.log(`Updated ${result.nModified} notifications for event "${event.title}" (${eventId})`);
-      } else {
-        console.log(`Event ${eventId} not found or has no title. Skipping ${eventGroups[eventId].length} notifications.`);
-        errorCount += eventGroups[eventId].length;
-      }
-    } catch (error) {
-      console.error(`Error processing event ${eventId}:`, error);
-      errorCount += eventGroups[eventId].length;
-    }
-  }
-  
-  console.log(`
-    Update complete:
-    - Total notifications processed: ${notificationsToUpdate.length}
-    - Successfully updated: ${updatedCount}
-    - Failed to update: ${errorCount}
-  `);
-}
-
-populateEventTitles()
 
 const getNotificationsByUserId = async (req, res) => {
   try {
@@ -69,9 +11,50 @@ const getNotificationsByUserId = async (req, res) => {
       return res.status(400).json({ message: "User ID is required" });
     }
 
-    const notifications = await Notification.find({ user: userId })
+    // Fetch all notifications
+    let notifications = await Notification.find({ user: userId })
       .sort({ createdAt: -1 }) // Sort by latest notifications first
       .lean();
+    
+    // Process notifications to fill missing eventTitles
+    const notificationsToUpdate = [];
+    
+    for (let i = 0; i < notifications.length; i++) {
+      const notification = notifications[i];
+      
+      // Check if notification has event ID but no eventTitle
+      if (notification.event && (!notification.eventTitle || notification.eventTitle === null)) {
+        try {
+          // Fetch the event to get its title
+          const event = await Event.findById(notification.event).lean();
+          
+          if (event && event.title) {
+            // Update notification object in memory
+            notifications[i].eventTitle = event.title;
+            
+            // Also prepare for database update
+            notificationsToUpdate.push({
+              updateOne: {
+                filter: { _id: notification._id },
+                update: { $set: { eventTitle: event.title } }
+              }
+            });
+          }
+        } catch (eventError) {
+          console.error(`Error fetching event for notification ${notification._id}:`, eventError);
+        }
+      }
+    }
+    
+    // Update notifications in database if any need to be updated
+    if (notificationsToUpdate.length > 0) {
+      try {
+        await Notification.bulkWrite(notificationsToUpdate);
+      } catch (bulkError) {
+        console.error("Error updating notification eventTitles:", bulkError);
+        // Continue with response even if updates fail
+      }
+    }
 
     res.status(200).json(notifications);
   } catch (error) {
