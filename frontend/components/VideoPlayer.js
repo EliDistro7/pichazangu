@@ -1,4 +1,5 @@
 
+'use client'
 import { useState, useRef, useEffect } from "react";
 import { Download, Play, Pause, Volume2, VolumeX, Maximize, Minimize, SkipBack, SkipForward } from "lucide-react";
 
