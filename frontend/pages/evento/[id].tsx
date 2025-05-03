@@ -257,7 +257,7 @@ const EventDetails = ({ initialEvent }) => {
         {isPasswordModalOpen && (
           <PasswordModal
             eventId={event._id}
-            onClose={() => router.push('/')}
+            onClose={() => setIsPasswordModalOpen(false)}
             onAuthenticate={handleAuthenticate}
           />
         )}
