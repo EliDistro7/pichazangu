@@ -196,6 +196,7 @@ const EventDetails = ({ initialEvent }) => {
       
       const updatePayload = {
         eventId: event._id,
+        token:token,
         senderName: isTokenValid ? "Token User" : event.author.username,
         userId: userId,
         socket,

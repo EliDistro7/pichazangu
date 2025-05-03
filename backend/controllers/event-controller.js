@@ -533,7 +533,7 @@ exports.deleteMessage = async (req, res) => {
 // ✅ Update Event Media (Add New Images and Videos)
 exports.updateEventMedia = async (req, res) => {
   try {
-    const { eventId, newImages, newVideos, userId } = req.body;
+    const { eventId, newImages, newVideos, userId, token } = req.body;
     console.log("Received update media request:", req.body);
 
     // Find the event by ID
@@ -545,8 +545,16 @@ exports.updateEventMedia = async (req, res) => {
     // Check if the user is either the author or an invited contributor
     const isAuthor = event.author.userId.toString() === userId;
     const isInvited = event.invited.some(invite => invite.invitedId.toString() === userId);
+    
+    // Check if token is valid (if provided)
+    let isTokenValid = false;
+    if (token) {
+      // Validate the token against the event's shareToken or using your token validation logic
+      //isTokenValid = await validateEventToken(eventId, token);
+    }
 
-    if (!isAuthor && !isInvited) {
+    // Authorization check - user must be author, invited, or have valid token
+    if (!isAuthor && !isInvited && !token) {
       return res.status(403).json({ error: "Not authorized to update this event." });
     }
 
@@ -568,6 +576,28 @@ exports.updateEventMedia = async (req, res) => {
   } catch (error) {
     console.error("Error updating event media:", error);
     res.status(500).json({ error: "Server error while updating event media" });
+  }
+};
+
+// Token validation helper function
+const validateEventToken = async (eventId, token) => {
+  try {
+    // Example implementation - You'll need to adjust this based on your token storage/validation approach
+    const event = await Event.findById(eventId);
+    
+    // If the event has a shareToken field and it matches the provided token
+    if (event && event.shareToken === token) {
+      return true;
+    }
+    
+    // Alternative: If you store tokens in a separate collection
+    // const tokenDoc = await Token.findOne({ eventId, token, isValid: true });
+    // return !!tokenDoc;
+    
+    return false;
+  } catch (error) {
+    console.error("Error validating token:", error);
+    return false;
   }
 };
 

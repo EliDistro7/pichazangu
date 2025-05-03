@@ -210,6 +210,7 @@ export const updateEventMedia = async ({
   newImages,
   newVideos,
   userId,
+  token,
   mediaType,
   socket = null,
   senderName,
@@ -221,6 +222,7 @@ export const updateEventMedia = async ({
       eventId,
       newImages,
       newVideos,
+      token,
       userId, // Ensuring userId is sent for authorization
     });
 
