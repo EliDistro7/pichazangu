@@ -23,7 +23,7 @@ const createGlobalUser = async () => {
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             //console.log('exixsting user', existingUser)
-            console.log('User with this email already exists.');
+            console.log('User with this email already exists.', existingUser);
             return;
         }
 
