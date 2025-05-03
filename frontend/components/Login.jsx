@@ -4,12 +4,13 @@ import { toast, ToastContainer } from "react-toastify";
 import { useRouter } from "next/router";
 import "react-toastify/dist/ReactToastify.css";
 import { setSecureCookie } from "../hooks/useUser";
-import { Mail, Lock, Check } from 'lucide-react'; // Import icons for consistency
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react'; // Added Eye and EyeOff icons
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // New state for password visibility
   const router = useRouter();
 
   // Dynamically load Google script
@@ -44,8 +45,14 @@ const Login = () => {
 
             setSecureCookie('eventifyUserId', authResponse.data.user._id);
             setSecureCookie('eventifyUsername', authResponse.data.user.username);
+
+            if (authResponse.data.isNewUser) {
+              toast.success("Welcome! Your account has been created with Google");
+            } else {
+              toast.success("Welcome back!");
+            }
             
-            toast.success("Google login successful!");
+            
             setTimeout(() => router.push("/"), 1500);
           } catch (error) {
             toast.error(
@@ -72,6 +79,11 @@ const Login = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Toggle password visibility
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   const handleSubmit = async (e) => {
@@ -160,14 +172,26 @@ const Login = () => {
                 </div>
                 <input
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="bg-gray-700 border border-gray-600 w-full text-sm text-gray-300 pl-10 px-4 py-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                  className="bg-gray-700 border border-gray-600 w-full text-sm text-gray-300 pl-10 pr-12 py-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter your password"
                   disabled={loading}
                 />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-200 focus:outline-none"
+                  onClick={togglePasswordVisibility}
+                  tabIndex="-1"
+                >
+                  {showPassword ? (
+                    <EyeOff size={18} aria-label="Hide password" />
+                  ) : (
+                    <Eye size={18} aria-label="Show password" />
+                  )}
+                </button>
               </div>
             </div>
             
@@ -200,7 +224,7 @@ const Login = () => {
               </div>
             ) : "Sign in"}
           </button>
-
+   {/*
           <div className="my-6 flex items-center gap-4">
             <hr className="w-full border-gray-600" />
             <p className="text-sm text-gray-400">or</p>
@@ -217,7 +241,7 @@ const Login = () => {
               <img src="/img/google.svg" alt="Google" className="w-5 h-5" />
               <span>Continue with Google</span>
             </button>
-          </div>
+          </div> */}
         </form>
       </div>
 

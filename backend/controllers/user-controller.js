@@ -626,47 +626,76 @@ const { OAuth2Client } = require('google-auth-library');
 
 // controllers/authController.js
 const googleAuth = async (req, res) => {
-    try {
-      const { token } = req.body;
-      console.log('google client',process.env.GOOGLE_CLIENT_ID);
-      console.log('token from frontend',token);
-      const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+  try {
+    const { token } = req.body;
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID
+    });
+
+    const payload = ticket.getPayload();
+    
+    // Check for existing user
+    let user = await User.findOne({ 
+      $or: [
+        { email: payload.email },
+        { googleId: payload.sub }
+      ]
+    });
+
+    let isNewUser = false;
+    
+    if (!user) {
+      // Create new user if none exists
+      isNewUser = true;
       
-      const ticket = await client.verifyIdToken({
-        idToken: token,
-        audience: process.env.GOOGLE_CLIENT_ID
-      });
-  
-      const payload = ticket.getPayload();
+      // Generate a unique username if name is already taken
+      let username = payload.name.replace(/\s+/g, '').toLowerCase();
+      const usernameExists = await User.findOne({ username });
       
-      // Check for existing user
-      let user = await User.findOne({ 
-        $or: [
-          { email: payload.email },
-          { googleId: payload.sub }
-        ]
-      });
-  
-      if (!user) {
-        user = new User({
-          username: payload.name,
-          email: payload.email,
-          authType: 'google',
-          googleId: payload.sub,
-          avatar: payload.picture
-        });
-        await user.save();
+      if (usernameExists) {
+        // Add random numbers to ensure uniqueness
+        username = `${username}${Math.floor(Math.random() * 10000)}`;
       }
-  
-      user.password = undefined;
-      res.status(200).json({ user });
-  
-    } catch (error) {
-      console.log(error)
-      console.error('Google Auth Error:', error);
-      res.status(500).json({ message: 'Google authentication failed' });
+      
+      user = new User({
+        username,
+        email: payload.email,
+        authType: 'google',
+        googleId: payload.sub,
+        avatar: payload.picture,
+        isEmailVerified: true // Since Google has verified their email
+      });
+      
+      await user.save();
+    } else if (!user.googleId) {
+      // If user exists with same email but no googleId (they previously registered with email/password)
+      // Update their account to link Google
+      user.googleId = payload.sub;
+      user.authType = user.authType === 'email' ? 'both' : 'google'; // Track both auth methods
+      if (!user.avatar && payload.picture) {
+        user.avatar = payload.picture;
+      }
+      await user.save();
     }
-  };
+
+    // Remove sensitive information
+    user.password = undefined;
+    
+    // Return response with isNewUser flag to help frontend show appropriate message
+    res.status(200).json({ 
+      user,
+      isNewUser,
+      message: isNewUser ? "Account created successfully with Google" : "Login successful" 
+    });
+
+  } catch (error) {
+    console.error('Google Auth Error:', error);
+    res.status(500).json({ message: 'Google authentication failed', error: error.message });
+  }
+};
 
 module.exports = {
     userRegister,
