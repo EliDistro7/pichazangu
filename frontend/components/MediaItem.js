@@ -1,5 +1,6 @@
 
 'use client';
+
 import Image from "next/image";
 import Link from "next/link";
 import { Download } from "lucide-react";
@@ -7,6 +8,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import downloadPhoto from "utils/downloadPhoto";
 import VideoPlayer from "./VideoPlayer"; // Import the new VideoPlayer component
+
 
 const MediaItem = ({ 
   item, 
@@ -31,19 +33,9 @@ const MediaItem = ({
   return (
     <div className="mb-5 group">
       <div className="relative overflow-hidden rounded-xl shadow-lg bg-gray-100 dark:bg-gray-800">
-        {!isLoaded && (
-          <div className="aspect-[4/3]">
-            <Skeleton 
-              height="100%"
-              width="100%"
-              baseColor="#f3f4f6"
-              highlightColor="#e5e7eb"
-              style={{ borderRadius: '0.75rem' }}
-            />
-          </div>
-        )}
+
         
-        <div className={`transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`transition-opacity duration-300 ${mediaType === "photo" && isLoaded ? 'opacity-100' : 'opacity-100'}`}>
           {mediaType === "photo" ? (
             // Photo display with position indicator and download button
             <>

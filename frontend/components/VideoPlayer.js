@@ -1,7 +1,5 @@
-
-'use client'
 import { useState, useRef, useEffect } from "react";
-import { Download, Play, Pause, Volume2, VolumeX, Maximize, Minimize, SkipBack, SkipForward } from "lucide-react";
+import { Download, Play, Pause, Volume2, VolumeX, Maximize, Minimize, SkipBack, SkipForward, Loader2 } from "lucide-react";
 
 const VideoPlayer = ({ 
   src, 
@@ -10,7 +8,8 @@ const VideoPlayer = ({
   autoPlay = false, 
   controls = true,
   index,
-  totalItems
+  totalItems,
+  onLoad
 }) => {
   const [isPlaying, setIsPlaying] = useState(autoPlay);
   const [isMuted, setIsMuted] = useState(true);
@@ -20,6 +19,8 @@ const VideoPlayer = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoadingFailed, setIsLoadingFailed] = useState(false);
   
   const videoRef = useRef(null);
   const containerRef = useRef(null);
@@ -35,6 +36,15 @@ const VideoPlayer = ({
   // Handle video metadata load
   const handleLoadedMetadata = () => {
     setDuration(videoRef.current.duration);
+    setIsLoaded(true);
+    if (onLoad) {
+      onLoad(index);
+    }
+  };
+  
+  // Handle loading error
+  const handleError = () => {
+    setIsLoadingFailed(true);
   };
 
   // Handle time update during playback
@@ -164,11 +174,41 @@ const VideoPlayer = ({
         <Download className="w-4 h-4" />
       </button>
 
+      {/* Loading state */}
+      {!isLoaded && !isLoadingFailed && (
+        <div className="flex items-center justify-center aspect-video w-full bg-gray-800 text-white">
+          <div className="flex flex-col items-center">
+            <Loader2 className="w-10 h-10 animate-spin mb-2" />
+            <p className="text-sm">Loading video...</p>
+          </div>
+        </div>
+      )}
+      
+      {/* Error state */}
+      {isLoadingFailed && (
+        <div className="flex items-center justify-center aspect-video w-full bg-gray-800 text-white">
+          <div className="flex flex-col items-center">
+            <p className="text-sm mb-2">Failed to load video</p>
+            <button 
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm"
+              onClick={() => {
+                setIsLoadingFailed(false);
+                if (videoRef.current) {
+                  videoRef.current.load();
+                }
+              }}
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      )}
+      
       {/* Video Element */}
       <video
         ref={videoRef}
         src={src}
-        className="w-full h-auto max-h-[80vh] object-contain"
+        className={`w-full h-auto max-h-[80vh] object-contain ${!isLoaded ? 'hidden' : ''}`}
         autoPlay={autoPlay}
         muted={isMuted}
         loop
@@ -178,6 +218,7 @@ const VideoPlayer = ({
         onTimeUpdate={handleTimeUpdate}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
+        onError={handleError}
       />
 
       {/* Play/Pause overlay button (large center) */}
