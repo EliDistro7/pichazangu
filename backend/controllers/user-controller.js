@@ -49,7 +49,7 @@ const createGlobalUser = async () => {
 };
 
 // Call the function to create the user
-//createGlobalUser();
+createGlobalUser();
 
 
 // Handler to verify a user (set verified to true)

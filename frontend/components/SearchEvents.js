@@ -4,90 +4,100 @@ import {
   Search,
   Loader2,
   User,
-  LogIn,
-  UserPlus,
-  LayoutDashboard,
   Bell,
-  Camera,
   CalendarPlus,
-  MessageCircle,
-  Home,
-  X,
+  X
 } from "lucide-react";
 import { searchEvents } from "actions/event";
 import { getLoggedInUserId } from "hooks/useUser";
 import socket from "hooks/socket";
-import {getNotifications} from "actions/notifications";
+import { getNotifications } from "actions/notifications";
 import NotificationModal from "./NotificationModal";
-import Image from "next/image";
 
 const SearchEvents = () => {
   const router = useRouter();
+  
+  // Search states
   const [username, setUsername] = useState("");
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [searched, setSearched] = useState(false); // Tracks if a search has been made
-  const [isSearchOpen, setIsSearchOpen] = useState(false); // Toggle search form
+  const [searched, setSearched] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  
+  // User states
+  const [darkMode, setDarkMode] = useState(true);
+  const [user, setUser] = useState(null);
   const [notificationCount, setNotificationCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-
-
-
-  // Header Logic
-  const [darkMode, setDarkMode] = useState(true);
-  const [user, setUser] = useState(null);
-
+  // Fetch user and notification data on component mount
   useEffect(() => {
     const fetchUserAndNotifications = async () => {
-      const user1 = await getLoggedInUserId();
-      if (user1) {
-        setUser(user1);
-  
-        try {
-          const notifications = await getNotifications(user1);
-         // console.log('notifications', notifications);
-          const unreadCount = notifications.filter(n => !n.read).length;
-          setNotificationCount(unreadCount);
-        } catch (error) {
-          console.error("Error fetching notifications:", error);
+      try {
+        const userId = await getLoggedInUserId();
+        
+        if (userId) {
+          setUser(userId);
+          
+          // Fetch notifications
+          try {
+            const notifications = await getNotifications(userId);
+            const unreadCount = notifications.filter(n => !n.read).length;
+            setNotificationCount(unreadCount);
+          } catch (error) {
+            console.error("Error fetching notifications:", error);
+          }
+          
+          // Set up socket listeners for real-time notifications
+          setupSocketListeners();
+        } else {
+          setUser(false);
         }
-  
-        // Listen for new notifications via socket
-        socket.on("new_message", (notification) => {
-          setNotificationCount((prevCount) => prevCount + 1);
-        });
-        // Listen for new notifications via socket
-        socket.on("view_event", (notification) => {
-          setNotificationCount((prevCount) => prevCount + 1);
-        });
-      } else {
-        setUser(false);
+      } catch (error) {
+        console.error("Error fetching user:", error);
       }
     };
-  
+    
     fetchUserAndNotifications();
-  
-    return () => {
-      socket.off("new_message");
-      socket.off('view_event');
-    };
+    
+    // Cleanup socket listeners on component unmount
+    return () => cleanupSocketListeners();
   }, []);
   
+  // Socket setup and cleanup functions
+  const setupSocketListeners = () => {
+    socket.on("new_message", () => {
+      setNotificationCount(prevCount => prevCount + 1);
+    });
+    
+    socket.on("view_event", () => {
+      setNotificationCount(prevCount => prevCount + 1);
+    });
+  };
+  
+  const cleanupSocketListeners = () => {
+    socket.off("new_message");
+    socket.off("view_event");
+  };
 
-  // Search Logic
-  const handleSearch = async () => {
+  // Handle search form submission
+  const handleSearch = async (e) => {
+    if (e) e.preventDefault();
+    
+    // Validate input
     if (!username.trim()) {
       setError("Please enter a username.");
       return;
     }
 
+    // Set loading state and clear previous errors
     setLoading(true);
     setError("");
-    setSearched(true); // Mark that a search has been initiated
+    setSearched(true);
 
     try {
+      // Execute search and update state with results
       const response = await searchEvents(username);
       setEvents(response.data);
     } catch (error) {
@@ -98,9 +108,57 @@ const SearchEvents = () => {
     }
   };
 
+  // Handle search input change
+  const handleInputChange = (e) => {
+    setUsername(e.target.value);
+  };
+
+  // SearchBar component
+  const SearchBar = () => (
+    <div className={`relative transition-all duration-300 ${isSearchOpen ? "w-48 md:w-64" : "w-0 opacity-0"}`}>
+      {isSearchOpen && (
+        <div className="absolute right-0 top-0">
+          <div className={`relative flex items-center ${
+            darkMode ? "bg-gray-800/80 border-gray-700 focus-within:ring-blue-500/40" : 
+                    "bg-gray-100/80 border-gray-200 focus-within:ring-blue-500/30"
+          } rounded-full pl-4 pr-2 h-10 border transition-all duration-300 focus-within:ring-2`}>
+            <input
+              type="text"
+              value={username}
+              onChange={handleInputChange}
+              placeholder="Search albums..."
+              className={`w-full bg-transparent outline-none text-sm ${
+                darkMode ? "text-white placeholder-gray-400" : "text-gray-900 placeholder-gray-400"
+              }`}
+              autoFocus
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+            />
+            <button
+              onClick={handleSearch}
+              disabled={loading}
+              className={`ml-2 p-1.5 rounded-full ${
+                darkMode ? "hover:bg-gray-700" : "hover:bg-gray-200"
+              } transition-colors`}
+              aria-label="Submit search"
+            >
+              {loading ? (
+                <Loader2 size={16} className="animate-spin text-blue-400" />
+              ) : (
+                <Search size={16} className={darkMode ? "text-blue-400" : "text-blue-500"} />
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <>
-      <header className={`fixed w-full top-0 left-0 z-50 transition-all duration-300 ${darkMode ? "bg-gray-900/95 backdrop-blur-lg border-b border-gray-800" : "bg-white/95 backdrop-blur-lg border-b border-gray-200"}`}>
+      {/* Header Navigation */}
+      <header className={`fixed w-full top-0 left-0 z-50 transition-all duration-300 ${
+        darkMode ? "bg-gray-900/95 backdrop-blur-lg border-b border-gray-800" : "bg-white/95 backdrop-blur-lg border-b border-gray-200"
+      }`}>
         <div className="container mx-auto px-4 md:px-6">
           <div className="flex items-center justify-between h-16">
             {/* Brand Logo & Name */}
@@ -115,16 +173,14 @@ const SearchEvents = () => {
                   >
                     <defs>
                       <linearGradient id="pGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#3B82F6" /> {/* blue-500 */}
-                        <stop offset="70%" stopColor="#8B5CF6" /> {/* violet-500 */}
+                        <stop offset="0%" stopColor="#3B82F6" />
+                        <stop offset="70%" stopColor="#8B5CF6" />
                       </linearGradient>
                       <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
                         <feGaussianBlur stdDeviation="4" result="blur" />
                         <feComposite in="SourceGraphic" in2="blur" operator="over" />
                       </filter>
                     </defs>
-                    
-                    {/* Outer P shape with extended tail */}
                     <path
                       d="M30 15
                       C45 0 55 0 70 15
@@ -151,45 +207,15 @@ const SearchEvents = () => {
             {/* Right Side Controls */}
             <div className="flex items-center space-x-1 md:space-x-3">
               {/* Dynamic Search Bar */}
-              <div className={`relative transition-all duration-300 ${isSearchOpen ? "w-48 md:w-64" : "w-0 opacity-0"}`}>
-                {isSearchOpen && (
-                  <form 
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      handleSearch();
-                    }}
-                    className="absolute right-0 top-0"
-                  >
-                    <div className={`relative flex items-center ${darkMode ? "bg-gray-800/80" : "bg-gray-100/80"} rounded-full pl-4 pr-2 h-10 border ${darkMode ? "border-gray-700" : "border-gray-200"} transition-all duration-300 focus-within:ring-2 ${darkMode ? "focus-within:ring-blue-500/40" : "focus-within:ring-blue-500/30"}`}>
-                      <input
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="Search albums..."
-                        className={`w-full bg-transparent outline-none text-sm ${darkMode ? "text-white placeholder-gray-400" : "text-gray-900 placeholder-gray-400"}`}
-                        autoFocus
-                      />
-                      <button
-                        type="submit"
-                        disabled={loading}
-                        className={`ml-2 p-1.5 rounded-full ${darkMode ? "hover:bg-gray-700" : "hover:bg-gray-200"} transition-colors`}
-                        aria-label="Submit search"
-                      >
-                        {loading ? (
-                          <Loader2 size={16} className="animate-spin text-blue-400" />
-                        ) : (
-                          <Search size={16} className={`${darkMode ? "text-blue-400" : "text-blue-500"}`} />
-                        )}
-                      </button>
-                    </div>
-                  </form>
-                )}
-              </div>
+              <SearchBar />
   
-              {/* Search Toggle */}
+              {/* Search Toggle Button */}
               <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className={`p-2 rounded-full transition-all ${darkMode ? "hover:bg-gray-800/70 text-gray-300 hover:text-blue-400" : "hover:bg-gray-100 text-gray-600 hover:text-blue-500"}`}
+                className={`p-2 rounded-full transition-all ${
+                  darkMode ? "hover:bg-gray-800/70 text-gray-300 hover:text-blue-400" : 
+                            "hover:bg-gray-100 text-gray-600 hover:text-blue-500"
+                }`}
                 aria-label="Search"
               >
                 {isSearchOpen ? (
@@ -199,9 +225,10 @@ const SearchEvents = () => {
                 )}
               </button>
   
-              {/* User Controls */}
+              {/* User Controls - Conditional Rendering */}
               {user ? (
                 <div className="flex items-center space-x-2">
+                  {/* Create Button */}
                   <a
                     href="/events?tab=create"
                     className={`px-3 py-1.5 rounded-full flex items-center gap-2 text-sm font-medium transition-all duration-200 ${
@@ -214,18 +241,26 @@ const SearchEvents = () => {
                     <span className="hidden md:inline">Create</span>
                   </a>
                   
+                  {/* User and Notification Icons */}
                   <div className="flex items-center space-x-1">
                     <a
                       href="/dashboard"
-                      className={`p-2 rounded-full ${darkMode ? "hover:bg-gray-800/70 text-gray-300 hover:text-blue-400" : "hover:bg-gray-100 text-gray-600 hover:text-blue-500"} transition-all`}
+                      className={`p-2 rounded-full ${
+                        darkMode ? "hover:bg-gray-800/70 text-gray-300 hover:text-blue-400" : 
+                                  "hover:bg-gray-100 text-gray-600 hover:text-blue-500"
+                      } transition-all`}
                       aria-label="Dashboard"
                     >
                       <User size={16} />
                     </a>
   
+                    {/* Notifications with Badge */}
                     <button
                       onClick={() => setIsModalOpen(true)}
-                      className={`p-2 rounded-full relative ${darkMode ? "hover:bg-gray-800/70 text-gray-300 hover:text-blue-400" : "hover:bg-gray-100 text-gray-600 hover:text-blue-500"} transition-all`}
+                      className={`p-2 rounded-full relative ${
+                        darkMode ? "hover:bg-gray-800/70 text-gray-300 hover:text-blue-400" : 
+                                  "hover:bg-gray-100 text-gray-600 hover:text-blue-500"
+                      } transition-all`}
                       aria-label="Notifications"
                     >
                       <Bell size={16} />
@@ -239,6 +274,7 @@ const SearchEvents = () => {
                 </div>
               ) : (
                 <div className="flex items-center space-x-2">
+                  {/* Login Button */}
                   <a
                     href="/login"
                     className={`px-4 py-1.5 text-sm font-medium rounded-full ${
@@ -249,6 +285,8 @@ const SearchEvents = () => {
                   >
                     Login
                   </a>
+                  
+                  {/* Sign Up Button */}
                   <a
                     href="/sign-up"
                     className={`px-4 py-1.5 text-sm font-medium rounded-full border ${
@@ -267,32 +305,48 @@ const SearchEvents = () => {
       </header>
   
       {/* Spacer to prevent fixed header from covering content */}
-      <div className="h-8" />
+      <div className="h-16" />
   
+      {/* Notification Modal */}
       {isModalOpen && <NotificationModal userId={user} onClose={() => setIsModalOpen(false)} />}
   
-      {/* Search Events Content */}
-      <div className="max-w-4xl mx-auto rounded-lg shadow-lg mt-10">
-        {/* Events List */}
-        {searched && events.length > 0 ? (
-          <div className="mt-8 space-y-6">
-            {events.map((event) => (
-              <button
-                key={event._id}
-                onClick={() => router.push(`/evento/${event._id}`)}
-                className="w-full text-left p-6 bg-gray-800 rounded-lg shadow-md hover:bg-gray-700 transition-all"
-              >
-                <h3 className="text-xl font-semibold text-white">{event.title}</h3>
-                <p className="text-md text-gray-400 mt-2">{event.description}</p>
-                <p className="text-sm text-gray-500 mt-3">
-                  Created by: <span className="text-blue-400">{event.author.username}</span>
-                </p>
-              </button>
-            ))}
-          </div>
-        ) : (
-          searched && !loading && <p className="mt-6 text-gray-400 text-lg text-center">No events found.</p>
-        )}
+      {/* Search Results */}
+      <div className="container max-w-4xl mx-auto px-4 pt-8">
+        {/* Display error message if there is one */}
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+      
+        {/* Search Results Content */}
+        <div className="rounded-lg shadow-lg">
+          {/* Loading Indicator */}
+          {loading && (
+            <div className="flex justify-center py-8">
+              <Loader2 size={32} className="animate-spin text-blue-500" />
+            </div>
+          )}
+          
+          {/* Events List */}
+          {searched && !loading && events.length > 0 ? (
+            <div className="space-y-4">
+              {events.map((event) => (
+                <button
+                  key={event._id}
+                  onClick={() => router.push(`/evento/${event._id}`)}
+                  className="w-full text-left p-6 bg-gray-800 rounded-lg shadow-md hover:bg-gray-700 transition-all"
+                >
+                  <h3 className="text-xl font-semibold text-white">{event.title}</h3>
+                  <p className="text-md text-gray-400 mt-2">{event.description}</p>
+                  <p className="text-sm text-gray-500 mt-3">
+                    Created by: <span className="text-blue-400">{event.author.username}</span>
+                  </p>
+                </button>
+              ))}
+            </div>
+          ) : (
+            searched && !loading && (
+              <p className="py-8 text-gray-400 text-lg text-center">No events found.</p>
+            )
+          )}
+        </div>
       </div>
     </>
   );
